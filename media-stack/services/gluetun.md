@@ -19,4 +19,20 @@ TZ	Sets the container’s timezone.
 
 # ** Compose File Break Down **
 
-image: This is what 
+**image:** Specifies the gluetun image (and its latest version) be pulled
+
+**Container Name:** sets the name for the container for easy identification
+
+**cap_add:NET_ADMIN:** Grants network administration privilages required for 
+VPN operation
+
+**devices:/dev/net/tun:** Maps the TuN device from the host, necessary from creating the VPN tunnel.
+
+**Ports:** Exposes specific ports for Gluetun to the host, which allows access to aspps that share its network (qbittorrent)
+
+**Environment:** Passes VPN credentials and config values, loaded from the *.env* file for securitry
+    - Region, vpn service provider, passwords etc
+
+**Volumes:** Persists Gluetun configuration files on this server host (C:\media\config\gluetun).
+
+**Restart:** Ensures the Gluetun restarts ybkess manually stopped.
