@@ -19,10 +19,14 @@ Analytics database layer for the homelab. Provides PostgreSQL for data storage a
 ## Common Commands
 
 ```powershell
-# Start services
-docker compose up -d
+# Start services (preferred - creates network automatically)
+.\start-services.ps1
 
 # Stop services
+.\stop-services.ps1
+
+# Or manually:
+docker compose up -d
 docker compose down
 
 # Check status
@@ -52,6 +56,8 @@ Metabase (this repo) or Lightdash (docker-projects)
 ```
 home-metrics-infrastructure/
 ├── docker-compose.yml    # Postgres + Metabase services
+├── start-services.ps1    # Start script (creates network, starts containers)
+├── stop-services.ps1     # Stop script
 ├── .env                  # Database credentials (do not commit)
 ├── .env.example          # Template for .env
 ├── postgres/
@@ -61,6 +67,14 @@ home-metrics-infrastructure/
 │   └── data/             # Metabase config
 └── README.md             # Setup documentation
 ```
+
+## Adding New Services
+
+When adding a new service to this repo:
+1. Add service to `docker-compose.yml`
+2. Update `start-services.ps1` if special startup logic needed
+3. Update this CLAUDE.md with port and purpose
+4. Document in README.md
 
 ## Network
 
