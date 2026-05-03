@@ -1,0 +1,7 @@
+# This file previously contained homevpn and privacyvpn configurations.
+# Both have been removed and replaced by wg-easy (located in docker-projects/wireguard/).
+#
+# The vpn directory can be deleted if no longer needed.
+# The only remaining VPN service needed is gluetun in the media_stack.
+
+services:

@@ -1,0 +1,255 @@
+#version: "3.8"
+
+services:
+
+# ----------------------
+#   Gluetun
+# ----------------------
+  gluetun:
+    image: qmcgaw/gluetun:latest
+    container_name: gluetun
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    ports:
+      - "8080:8080"  # qBittorrent WebUI
+      - "6881:6881"  # qBittorrent port
+      - "6881:6881/udp"
+    environment:
+      - VPN_SERVICE_PROVIDER=private internet access
+      - OPENVPN_USER=${OPENVPN_USER}
+      - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
+      - SERVER_REGIONS=US California
+      - OPENVPN_VERSION=2.6
+      - OPENVPN_VERBOSITY=3
+      - TZ=${TZ}
+      - FIREWALL_OUTBOUND_SUBNETS=192.168.0.0/16,10.0.0.0/8,172.16.0.0/12
+
+    volumes:
+      - C:/media/config/gluetun:/gluetun
+    restart: unless-stopped
+
+# ----------------------
+#   Qbittorrent
+# ----------------------
+  qbittorrent:
+    image: linuxserver/qbittorrent:latest
+    container_name: qbittorrent
+    network_mode: "service:gluetun"
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - WEBUI_PORT=8080
+    volumes:
+      - C:/media/config/qbittorrent:/config
+      - C:/media/downloads:/downloads
+    depends_on:
+      - gluetun
+    restart: unless-stopped
+
+# ----------------------
+#   Radarr
+# ----------------------
+  radarr:
+    image: linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - C:/media/config/radarr:/config
+      - C:/media/movies:/movies
+      - C:/media/downloads:/downloads
+    ports:
+      - "7878:7878"
+    restart: unless-stopped
+
+# ----------------------
+#   Prowlarr
+# ----------------------
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - C:/media/config/prowlarr:/config
+    ports:
+      - "9696:9696"
+    restart: unless-stopped
+
+# ----------------------
+#   Flaresolverr
+# ----------------------
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=info
+      - TZ=${TZ}
+    # No external port needed - Prowlarr accesses via internal network
+    restart: unless-stopped
+
+# ----------------------
+#   Sonarr
+# ----------------------
+  sonarr:
+    image: linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=${PUID}  # references the values in the .env file
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - C:/media/config/sonarr:/config
+      - C:/media/tv:/tv
+      - C:/media/downloads:/downloads
+    ports:
+      - "8989:8989"
+    restart: unless-stopped
+
+# ----------------------
+#   Plex
+# ----------------------
+  plex:
+    image: linuxserver/plex:latest
+    container_name: plex
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - VERSION=docker
+    volumes:
+      - C:/media/config/plex:/config
+      - C:/media/movies:/movies
+      - C:/media/tv:/tv
+      - C:/media/downloads:/downloads
+    ports:
+      - "32400:32400"
+    deploy:
+      resources:
+        limits:
+          memory: 4g
+          cpus: '4.0'
+    restart: unless-stopped
+
+# ----------------------
+#   Tautulli
+# ----------------------
+  tautulli:
+    image: linuxserver/tautulli:latest
+    container_name: tautulli
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - C:/media/config/tautulli:/config
+    ports:
+      - "8181:8181"
+    restart: unless-stopped
+
+# ----------------------
+#   Overseerr
+# ----------------------
+  overseerr:
+    image: linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - C:/media/config/overseerr:/config
+    ports:
+      - "5055:5055"
+    restart: unless-stopped
+
+# ----------------------
+#   Homarr
+# ----------------------
+  homarr:
+    image: ghcr.io/homarr-labs/homarr:latest
+    container_name: homarr
+    volumes:
+      - "C:/media/config/homarr:/appdata"
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "7575:7575"
+    environment:
+      - TZ=${TZ}
+      - SECRET_ENCRYPTION_KEY=${HOMARR_SECRET_KEY}
+      - DISABLE_ANALYTICS=true
+    restart: unless-stopped
+
+# ----------------------
+#   Dash.
+# ----------------------
+  dashdot:
+    image: mauricenino/dashdot:latest
+    container_name: dashdot
+    restart: unless-stopped
+    ports:
+      - "3002:3001"
+    volumes:
+      - /proc:/mnt/host/proc:ro
+      - /sys:/mnt/host/sys:ro
+
+# ----------------------
+#   Portainer
+# ----------------------
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    ports:
+      - "9443:9443"
+      # The standard volume mount for Docker Desktop on Windows/Linux/Mac
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - 'C:/media/config/portainer:/data'
+      # The command section is usually not needed when using the standard socket mount
+    # command:
+    #  - -H
+    #  - 'npipe:////./pipe/docker_engine'
+    restart: unless-stopped
+
+# ----------------------
+#   Lazy Librarian
+# ----------------------
+  lazylibrarian:
+    image: linuxserver/lazylibrarian:latest
+    container_name: lazylibrarian
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - "C:/media/config/lazylibrarian:/config"
+      - "C:/media/downloads:/downloads"
+      - "C:/media/books:/books"
+    ports:
+      - "5299:5299"
+    restart: unless-stopped
+
+# ----------------------
+#   Audio Book Shelf
+# ----------------------
+  audiobookshelf:
+    image: ghcr.io/advplyr/audiobookshelf:latest
+    container_name: audiobookshelf
+    environment:
+      - TZ=${TZ}
+    ports:
+      - "13378:80"  # change left side if you prefer a different host port
+    volumes:
+      - "C:/media/config/audiobookshelf:/config"
+      - "C:/media/audiobooks:/audiobooks"
+      - "C:/media/podcasts:/podcasts"
+      - "C:/media/abs-metadata:/metadata"
+    restart: unless-stopped

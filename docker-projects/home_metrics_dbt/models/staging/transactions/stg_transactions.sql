@@ -1,0 +1,107 @@
+
+{{ config(
+    materialized='view',
+    schema='staging'
+) }}
+
+with transactions_data as (
+    select
+        *
+    from {{ source('home_metrics_raw', 'raw_transactions') }}
+),
+cleaning as (
+    select
+        -- Primary key (unique row identifier)
+        id as transaction_pk,
+        -- Surrogate key for unique row identification
+        {{ dbt_utils.generate_surrogate_key(['id']) }} as transaction_skey,
+        -- Dimension keys (for grouping/joining)
+        {{ dbt_utils.generate_surrogate_key(['account_name']) }} as account_key,
+        {{ dbt_utils.generate_surrogate_key(['category']) }} as category_key,
+        case
+            when account_name like '%CHECKING%' then 'checking'
+            when account_name like '%SAVINGS%' then 'savings'
+            when account_name like '%CARD%'then 'credit'
+                end as account_type,
+        
+        case
+            when account_name = 'EVERYDAY CHECKING ...7868' then 'Matt Checking '
+            when account_name = 'WAY2SAVE�� SAVINGS ...0999' then 'Jessica Savings'
+            when account_name = 'WAY2SAVE�� SAVINGS ...8119' then 'Matt Savings'
+            when account_name = 'WELLS FARGO CASH BACK VISA SIGNATURE�� CARD ...5766' then 'Matt Credit Card'
+            when account_name = 'EVERYDAY CHECKING ...0325' then 'Jessica Checking'
+            when account_name = 'PLATINUM CARD ...4113' then 'Jessica CapitalOne Credit Card'
+            when account_name = 'WELLS FARGO CASH BACK VISA SIGNATURE® CARD ...2410' then 'Jessica WF Credit Card'
+                end as account_name,
+        account_number,
+        case
+            when account_number = '7868' then 'Matt'
+            when account_number = '0325' then 'Jessica'
+            when account_number = '8119' then 'Matt'
+            when account_number = '5766' then 'Matt'
+            when account_number = '0999' then 'Jessica'
+            when account_number = '2410' then 'Jessica'
+                end as account_holder,
+        name as transaction_name,
+        cast(amount as numeric(12,2)) * -1 as transaction_amount,   -- switched to negative for debits
+        description,
+        category as transaction_category,
+        cast(transaction_date as date) as transaction_date,
+        cast({{ to_local_time('transaction_date') }} as time) as transaction_time,
+        inserted_at::date as date_inserted,
+        cast({{ to_local_time('inserted_at') }} as time) as time_of_insertion
+    from transactions_data
+),
+dedupes as (        -- due to multiple ingestions of the same data, we have some duplicates in the raw data. This CTE deduplicates exact matches (same date, account, name, amount)
+    select
+        transaction_pk,
+        transaction_skey,
+        account_key,
+        category_key,
+        account_type,
+        account_name,
+        account_number,
+        account_holder,
+        transaction_name,
+        case when transaction_amount > 0 then 'Credit' else 'Debit' end as transaction_type,
+        transaction_amount,
+        case
+            -- Internal transfers between household accounts (excluded from spending/income)
+            when transaction_name like 'ZELLE%DAMBERG%' then 'Internal Transfer'
+            -- Credit card payments (both sides of the transaction)
+            when (transaction_name like 'ONLINE TRANSFER REF%' and transaction_name like '%CASH BACK VISA%')
+                or transaction_name like '%PLATINUM CARD XXXXXXXXXXXX4113%'
+                or transaction_name like '%CARD 2294%'
+                or transaction_name = 'INTEREST CHARGE ON PURCHASES'
+                or transaction_name like 'WF Credit Card AUTO PAY%'
+                or transaction_name like '%AUTOMATIC PAYMENT%THANK YOU%'
+                    then 'Credit Card Payment'
+            when transaction_name like '%Venmo%' or transaction_name like 'ZELLE%' then 'Entertainment & Rec.'
+            when transaction_name like 'FIRSTMARK PAYMENTS%' then 'Loan Payment'
+            when transaction_name like 'MN DEPT OF REVEN MNSTTAXRFD%'
+                or transaction_name like 'MN DRIVER AND VEHICLE%'
+                or transaction_name like '%AUTO%'
+                or transaction_name like 'DMV%'
+                or transaction_name in ('CITY OF HUDSON', 'City of Hudson, WI')
+                    then 'Auto & Transport'
+            when transaction_name like 'PURCHASE AUTHORIZED%'then 'Shopping'
+            when transaction_name like 'RECURRING PAYMENT AUTHORIZED%' then 'Bills & Utilities'
+            when transaction_name = 'WF *STILLWATERDENTISTRY OAK PARK HEIGMN' or transaction_name like 'FAIRVIEW%' then 'Medical'
+            when transaction_name like '%CREDIT SYSTEMS%' or transaction_name like '%DEPT OF REV' then 'Taxes'
+                else transaction_category end as transaction_category,
+        case
+            when transaction_amount < 0 and description ilike '%RECURRING PAYMENT%' then 1
+                else 0
+                    end as is_recurring_payment_flag,
+        case when transaction_amount < -3000 then 1 else 0 end as is_large_transaction_flag,  -- only flags large expenses (debits), not income
+        transaction_date,
+        transaction_time,
+        date_inserted,
+        time_of_insertion,
+        row_number() over(partition by transaction_date, account_key, transaction_name, transaction_amount order by transaction_date) as rn
+    from cleaning
+)
+select
+    *
+from dedupes
+where rn = 1 -- deduplicate exact matches (same date, account, name, amount)
