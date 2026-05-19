@@ -64,7 +64,7 @@ $InfraServices = @{
     'n8n' = 'n8n'
     'backups' = 'backups'
     'phpipam' = 'phpipam'
-    'homemetrics' = '..\temp_home_metrics_files'
+    'homemetrics' = '..\..\dbt'
     'lightdash' = 'lightdash'
     'watchtower' = 'watchtower'
 }
