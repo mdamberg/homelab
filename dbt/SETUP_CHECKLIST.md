@@ -4,25 +4,16 @@ Follow this checklist to set up the home metrics infrastructure.
 
 ## Phase 1: Infrastructure Setup
 
-### Step 1: Create GitHub Repository
-- [ ] Go to https://github.com/new
-- [ ] Name: `home-metrics-infrastructure`
-- [ ] Visibility: **Private**
-- [ ] Initialize with README
-- [ ] Create repository
-
-### Step 2: Clone and Setup
+### Step 1: Clone the Monorepo
 ```bash
-cd "C:\Users\mattd\OneDrive\Matts Documents"
-git clone https://github.com/YOUR_USERNAME/home-metrics-infrastructure.git
-cd home-metrics-infrastructure
+git clone https://github.com/mdamberg/homelab.git C:\Users\mattd\repos\homelab
+cd C:\Users\mattd\repos\homelab\dbt
 ```
 
-### Step 3: Copy Files
-- [ ] Copy all files from `temp_home_metrics_files/` to `home-metrics-infrastructure/`
-- [ ] Verify directory structure:
+### Step 2: Verify Directory Structure
+- [ ] Confirm directory structure:
   ```
-  home-metrics-infrastructure/
+  homelab/dbt/
   ├── docker-compose.yml
   ├── .env.example
   ├── .gitignore
@@ -94,7 +85,7 @@ git push origin main
 ## Phase 2: n8n Integration
 
 ### Step 1: Update n8n Workflow
-In your `docker-projects` repo:
+In `docker/docker-projects/n8n`:
 
 - [ ] Open the power consumption workflow in n8n
 - [ ] Add PostgreSQL node after "Generate Report"
@@ -110,15 +101,12 @@ In your `docker-projects` repo:
 
 ## Phase 3: dbt Setup
 
-### Step 1: Create dbt Repository
-- [ ] Create new GitHub repo: `home-metrics-dbt`
-- [ ] Clone locally
+### Step 1: Install dbt
 - [ ] Install dbt: `pip install dbt-postgres`
 
-### Step 2: Initialize dbt Project
+### Step 2: Navigate to dbt Project
 ```bash
-cd home-metrics-dbt
-dbt init home_metrics
+cd C:\Users\mattd\repos\homelab\dbt
 ```
 
 ### Step 3: Configure dbt

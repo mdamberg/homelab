@@ -22,8 +22,8 @@ Data Sources → n8n → PostgreSQL (raw) → dbt → PostgreSQL (marts) → Met
 
 - **PostgreSQL 16** - Time-series data warehouse
 - **Metabase** - Business intelligence and visualization
-- **n8n** - Data collection orchestration (separate repo)
-- **dbt** - Data transformation (separate repo)
+- **n8n** - Data collection orchestration (`docker/docker-projects/n8n`)
+- **dbt** - Data transformation (`dbt/home_metrics_dbt`)
 
 ## Quick Start
 
@@ -35,8 +35,8 @@ Data Sources → n8n → PostgreSQL (raw) → dbt → PostgreSQL (marts) → Met
 ### 2. Clone and Configure
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/home-metrics-infrastructure.git
-cd home-metrics-infrastructure
+git clone https://github.com/mdamberg/homelab.git
+cd homelab/dbt
 
 # Copy environment template
 cp .env.example .env
@@ -125,10 +125,10 @@ docker exec home-metrics-postgres pg_dump -U metrics_user home_metrics > backup_
 docker exec -i home-metrics-postgres psql -U metrics_user -d home_metrics < backup_20260111.sql
 ```
 
-## Related Repositories
+## Related Sections (homelab monorepo)
 
-- **home-metrics-dbt** - dbt transformation models
-- **docker-projects** - n8n workflows and other Docker services
+- **dbt/home_metrics_dbt** - dbt transformation models
+- **docker/docker-projects** - n8n workflows and other Docker services
 
 ## Configuration
 

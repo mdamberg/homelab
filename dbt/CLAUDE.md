@@ -2,12 +2,12 @@
 
 Analytics database layer for the homelab. Provides PostgreSQL for data storage and Metabase for visualization.
 
-## Related Repos
+## Related Sections (homelab monorepo)
 
-| Repo | Purpose | Connection |
-|------|---------|------------|
-| **This repo** | Postgres + Metabase | Database and visualization |
-| docker-projects | Main homelab services | n8n writes data here, dbt transforms it |
+| Folder | Purpose | Connection |
+|--------|---------|------------|
+| **dbt/** (this folder) | Postgres + Metabase | Database and visualization |
+| docker/docker-projects | Main homelab services | n8n writes data here, dbt transforms it |
 
 ## Services
 
@@ -42,19 +42,19 @@ docker exec -it home-metrics-postgres psql -U <username> -d <database>
 ## Data Pipeline
 
 ```
-n8n (docker-projects)
+n8n (docker/docker-projects/n8n)
     ↓ writes raw data
-PostgreSQL (this repo)
+PostgreSQL (dbt/)
     ↓ transformed by
-dbt models (docker-projects/home_metrics_dbt)
+dbt models (dbt/home_metrics_dbt)
     ↓ visualized in
-Metabase (this repo) or Lightdash (docker-projects)
+Metabase (dbt/) or Lightdash (docker/docker-projects/lightdash)
 ```
 
 ## File Structure
 
 ```
-home-metrics-infrastructure/
+homelab/dbt/
 ├── docker-compose.yml    # Postgres + Metabase services
 ├── start-services.ps1    # Start script (creates network, starts containers)
 ├── stop-services.ps1     # Stop script
@@ -91,5 +91,5 @@ Uses `home-metrics` Docker network. Other containers can connect to Postgres at:
 ## Gotchas
 
 - Metabase depends on Postgres healthcheck - if Postgres isn't healthy, Metabase won't start
-- The `home-metrics` network must exist for Lightdash (in docker-projects) to connect
+- The `home-metrics` network must exist for Lightdash (in docker/docker-projects/lightdash) to connect
 - Database files in `postgres/data/` should be gitignored
