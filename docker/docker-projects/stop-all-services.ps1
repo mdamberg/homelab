@@ -36,6 +36,7 @@ $InfraServices = @{
     'linkding' = 'linkding'
     'monitoring' = 'monitoring'
     'flash' = 'flash_todo'
+    'work' = 'work_todo'
     'weather' = 'weather_api_project'
     'wireguard' = 'wireguard'
     'n8n' = 'n8n'
