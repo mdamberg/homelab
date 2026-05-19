@@ -4,67 +4,51 @@ Windows-based homelab running Docker Desktop with media stack, monitoring, autom
 
 ## Repository Structure
 
-**Three separate git repos:**
+**Monorepo:** [mdamberg/homelab](https://github.com/mdamberg/homelab) — stored at `C:\Users\mattd\repos\homelab\`
 
-| Repo | Path | GitHub | Purpose |
-|------|------|--------|---------|
-| docker-projects | `Matts Documents\Docker` | mdamberg/docker-projects | Main homelab - all Docker services, docs, dbt models |
-| home-metrics-infrastructure | `Matts Documents\home-metrics-infrastructure` | mdamberg/home-metrics-infrastructure | Analytics DB layer - Postgres + Metabase (works with dbt models) |
-| Docker-Files | `Matts Documents\GitHub\Docker-Files` | mdamberg/Docker-Files | Empty/abandoned - can be deleted |
+```
+homelab/
+├── docker/                        # This folder — Docker services and scripts
+│   ├── docker-projects/           # All Docker services (compose files, configs)
+│   │   ├── media_stack/           # Plex, *arr apps, qBittorrent, Portainer
+│   │   ├── monitoring/            # Uptime Kuma, Glances
+│   │   ├── n8n/                   # Workflow automation
+│   │   ├── lightdash/             # Analytics dashboards
+│   │   ├── backups/               # Duplicati
+│   │   └── ...
+│   ├── start-all-services.ps1
+│   ├── stop-all-services.ps1
+│   ├── setup-autostart.ps1
+│   └── CLAUDE.md                  # This file
+├── dbt/                           # Postgres + dbt models (home-metrics)
+└── docs/                          # Homelab documentation (markdown)
+```
 
 ### Container Distribution
 
-| Repo | Count | Contains |
-|------|-------|----------|
-| docker-projects | 35 | All homelab services (media, monitoring, automation, utilities) |
-| home-metrics-infrastructure | 2 | Analytics DB layer (home-metrics-postgres, home-metrics-metabase) |
+| Folder | Count | Contains |
+|--------|-------|----------|
+| docker/docker-projects | 35 | All homelab services (media, monitoring, automation, utilities) |
+| dbt | 2 | Analytics DB layer (home-metrics-postgres, home-metrics-metabase) |
 
-**Note:** Two visualization tools exist - Lightdash (docker-projects) and Metabase (home-metrics-infrastructure). Both can connect to Postgres for analytics.
-
-### docker-projects (this repo)
-
-```
-C:\Users\mattd\OneDrive\Matts Documents\Docker\
-├── docker-projects/       # Docker services (compose files, configs)
-│   ├── media_stack/       # Plex, *arr apps, qBittorrent, Portainer
-│   ├── monitoring/        # Uptime Kuma, Glances
-│   ├── n8n/               # Workflow automation
-│   ├── lightdash/         # Analytics dashboards
-│   ├── home_metrics_dbt/  # dbt models for analytics
-│   ├── backups/           # Duplicati
-│   └── ...
-├── homelab-docs/          # Documentation (markdown)
-│   ├── SUMMARY.md         # Index of all docs
-│   ├── TODO.md            # Prioritized action items
-│   └── <topic>/README.md
-├── data-projects/         # Data/analytics experiments
-├── project-plans/         # Project planning documents
-│   ├── dbt/               # dbt model projects
-│   ├── n8n/               # Workflow automation projects
-│   ├── docker/            # Container/service projects
-│   └── general/           # Other projects
-├── temp_home_metrics_files/ # Temp files for metrics pipeline
-├── CLAUDE.md              # This file
-├── *.ps1                  # PowerShell utility scripts
-└── .gitignore
-```
+**Note:** Two visualization tools exist — Lightdash (docker) and Metabase (dbt). Both connect to Postgres for analytics.
 
 ### What Goes Where
 
 | Change Type | Location | Example |
 |-------------|----------|---------|
-| New Docker service | `docker-projects/<service>/` | Adding Jellyfin |
-| Service config changes | `docker-projects/<service>/` | Updating compose file |
-| Documentation | `homelab-docs/` | How-to guides, READMEs |
-| dbt models | `docker-projects/home_metrics_dbt/` | SQL transformations |
-| Project plans | `project-plans/<type>/` | Planning docs (dbt, n8n, docker, general) |
-| Utility scripts | Root directory | PowerShell helpers |
+| New Docker service | `docker/docker-projects/<service>/` | Adding Jellyfin |
+| Service config changes | `docker/docker-projects/<service>/` | Updating compose file |
+| Documentation | `docs/` | How-to guides, READMEs |
+| dbt models | `dbt/` | SQL transformations |
+| Project plans | `docker/docker-projects/project-plans/<type>/` | Planning docs |
+| Utility scripts | `docker/` | PowerShell helpers |
 
 ## Common Commands
 
 ```powershell
 # Start/stop a service
-cd docker-projects/<service>
+cd C:\Users\mattd\repos\homelab\docker\docker-projects\<service>
 docker compose up -d
 docker compose down
 
@@ -72,8 +56,9 @@ docker compose down
 docker compose ps
 docker compose logs -f <container>
 
-# Start all services
-.\start-all-services.ps1
+# Start/stop all services
+C:\Users\mattd\repos\homelab\docker\docker-projects\start-all-services.ps1
+C:\Users\mattd\repos\homelab\docker\docker-projects\stop-all-services.ps1
 ```
 
 **Important:** When adding new containers, always add them to `start-all-services.ps1` where applicable.
@@ -127,11 +112,11 @@ docker compose logs -f <container>
 ## Workflows
 
 ### Adding a new service
-1. Create `docker-projects/<service>/docker-compose.yml`
+1. Create `docker/docker-projects/<service>/docker-compose.yml`
 2. Add `.env` for sensitive values
 3. Test with `docker compose up -d && docker compose ps`
-4. Add to `start-all-services.ps1`
-5. Document in `homelab-docs/`
+4. Add to `docker/docker-projects/start-all-services.ps1`
+5. Document in `docs/`
 
 ### Project planning
 For non-trivial work, use `/project-planning` to enter structured planning mode:
@@ -144,15 +129,15 @@ For non-trivial work, use `/project-planning` to enter structured planning mode:
 7. **User approval** - explicit agreement before implementation
 8. **Auto-handoff** - invoke appropriate builder skill (dbt-query, n8n-workflow, docker-service)
 
-Plans are saved to `project-plans/<type>/` for documentation. For n8n projects, the skill queries the MCP server to understand existing workflows before planning.
+Plans are saved to `docker/docker-projects/project-plans/<type>/` for documentation. For n8n projects, the skill queries the MCP server to understand existing workflows before planning.
 
 ### Deleting media properly
-Delete through Radarr/Sonarr UI, not filesystem. See `homelab-docs/media-stack/ops/deleting-media.md`
+Delete through Radarr/Sonarr UI, not filesystem. See `docs/media-stack/ops/deleting-media.md`
 
 ### Git commits
 - Imperative mood: "Add feature" not "Added feature"
 - Never commit `.env` files or secrets
-- Check `homelab-docs/TODO.md` for pending security items
+- Check `docs/TODO.md` for pending security items
 - Always check with user before pushing
 
 ## Common Gotchas
@@ -164,8 +149,9 @@ Delete through Radarr/Sonarr UI, not filesystem. See `homelab-docs/media-stack/o
 
 ## Documentation
 
-Always check `homelab-docs/SUMMARY.md` for existing docs before creating new ones. Key references:
-- `homelab-docs/TODO.md` - Prioritized security/config fixes
-- `homelab-docs/homelab-docker-review.md` - Full infrastructure audit
-- `homelab-docs/home-assistant/README.md` - VirtualBox HA setup
-When creating new containers or infrastructure, always update HomeLab docs with either a new entry if whats getting added is new or change exisitng docs.  
+Always check `docs/SUMMARY.md` for existing docs before creating new ones. Key references:
+- `docs/TODO.md` - Prioritized security/config fixes
+- `docs/homelab-docker-review.md` - Full infrastructure audit
+- `docs/home-assistant/README.md` - VirtualBox HA setup
+
+When creating new containers or infrastructure, always update docs with either a new entry if what's getting added is new or update existing docs.
