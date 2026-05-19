@@ -1,0 +1,20 @@
+services:
+  duplicati:
+    image: lscr.io/linuxserver/duplicati:latest
+    container_name: duplicati
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TZ}
+      - SETTINGS_ENCRYPTION_KEY=${SETTINGS_ENCRYPTION_KEY}
+      - CLI_ARGS=--webservice-password=${DUPLICATI_WEBPASS}
+      - HEALTHCHECKS_URL=${HEALTHCHECKS_URL}
+    volumes:
+      - ./duplicati/config:/config
+      - C:\backups:/backups
+      # Source paths for backup
+      - "C:/Users/mattd/OneDrive/Matts Documents/Docker/docker-projects:/source/docker-configs:ro"
+      - "C:/media/config:/source/media-configs:ro"
+    ports:
+      - 8200:8200
+    restart: unless-stopped

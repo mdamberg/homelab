@@ -1,0 +1,47 @@
+services:
+  mcp-docker-server:
+    build: ./mcp_servers/server1
+    container_name: mcp-docker-server
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./mcp_servers/server1:/app
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - mcp-network
+    environment:
+      - SERVER_NAME=docker-manager
+    # Remove restart policy - stdio servers run on-demand
+
+  mcp-filesystem-server:
+    build: ./mcp_servers/server2
+    container_name: mcp-filesystem-server
+    ports:
+      - "8002:8000"
+    volumes:
+      - ./mcp_servers/server2:/app
+      - "C:/Users/mattd:/host"
+    networks:
+      - mcp-network
+    environment:
+      - SERVER_NAME=filesystem-manager
+    # Remove restart policy - stdio servers run on-demand
+
+  mcp-n8n-server:
+    build: ./mcp_servers/server3
+    container_name: mcp-n8n-server
+    ports:
+      - "8003:8000"
+    volumes:
+      - ./mcp_servers/server3:/app
+    networks:
+      - mcp-network
+    environment:
+      - SERVER_NAME=n8n-manager
+      - N8N_API_URL=${N8N_API_URL}
+      - N8N_API_KEY=${N8N_API_KEY}
+    # Remove restart policy - stdio servers run on-demand
+
+networks:
+  mcp-network:
+    driver: bridge

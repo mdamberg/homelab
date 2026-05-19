@@ -1,0 +1,75 @@
+version: 2
+
+models:
+  - name: stg_pihole_metrics
+    description: "Staging table for Pi-hole metrics data"
+    columns:
+      - name: id
+        description: "Unique identifier for each Pi-hole metrics record"
+        tests:
+          - unique
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: blocked_queries
+        description: "Number of blocked DNS queries"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: percent_blocked
+        description: "Percentage of DNS queries that were blocked"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: recorded_at
+        description: "Timestamp when the Pi-hole metrics were recorded"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: inserted_at
+        description: "Timestamp when the record was inserted into the raw table"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: metadata
+        description: "Additional metadata related to the Pi-hole metrics in JSON format"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: pihole_instance
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: unique_domains
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: unique_clients
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: top_blocked_domains
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: top_queries
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
