@@ -1,0 +1,4 @@
+entity_id,friendly_name,power_entity
+sensor.work_and_gaming_setup_current_consumption,Current ⚡️,work_and_gaming_setup
+sensor.living_room_entertainment_wall_current_consumption,Living Room Entertainment Wall Current consumption,living_room_entertainment_wall
+sensor.basement_entertainment_center_current_consumption,Basement Entertainment Center Current consumption,basement_entertainment_center
