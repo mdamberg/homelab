@@ -1,10 +1,13 @@
 models:
   - name: fct_transactions
+    meta:
+      hidden: true
     columns:
       - name: account_key
         description: "Dimension key - groups transactions by account"
         config:
           meta:
+            hidden: true
             dimension:
               type: string
       - name: category_key

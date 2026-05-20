@@ -4,6 +4,7 @@ models:
   - name: fct_power_consumption
     description: "Fact table for power consumption readings at 5-minute intervals"
     meta:
+      hidden: true
       metrics:
         total_kwh:
           type: sum

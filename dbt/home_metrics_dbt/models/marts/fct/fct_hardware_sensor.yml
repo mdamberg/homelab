@@ -1,10 +1,13 @@
 models:
   - name: fct_hardware_sensor
+    meta:
+      hidden: true
     columns:
       - name: recorded_date
         description: ""
         config:
           meta:
+            hidden: true
             dimension:
               type: date
       - name: recorded_time
