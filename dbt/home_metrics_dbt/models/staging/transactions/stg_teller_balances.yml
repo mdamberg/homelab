@@ -2,6 +2,8 @@ models:
   - name: stg_teller_balances
     description: "Daily account balance snapshots from Teller API, enriched with
       account details"
+    meta:
+      hidden: true
     columns:
       - name: balance_pk
         description: "Primary key from raw table"

@@ -4,6 +4,8 @@ models:
   - name: stg_transactions
     description: "Staging table for financial transaction data with type casting and
       key generation"
+    meta:
+      hidden: true
     columns:
       - name: transaction_pk
         description: "Primary key from raw table"

@@ -1,6 +1,8 @@
 models:
   - name: intmdt_transactions
     description: "Enriched transactions with account details and dimension keys for analytics"
+    meta:
+      hidden: true
     columns:
       - name: transaction_pk
         description: "Primary key from raw transactions table"

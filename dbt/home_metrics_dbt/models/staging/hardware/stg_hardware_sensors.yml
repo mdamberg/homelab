@@ -4,6 +4,8 @@ models:
   - name: stg_hardware_sensors
     description: "Pivoted hardware sensor metrics - one row per 15-minute collection
       interval per hostname"
+    meta:
+      hidden: true
     columns:
       - name: host_id
         description: "Surrogate key for the hostname"

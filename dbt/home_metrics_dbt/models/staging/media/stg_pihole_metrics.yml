@@ -3,6 +3,8 @@ version: 2
 models:
   - name: stg_pihole_metrics
     description: "Staging table for Pi-hole metrics data"
+    meta:
+      hidden: true
     columns:
       - name: id
         description: "Unique identifier for each Pi-hole metrics record"

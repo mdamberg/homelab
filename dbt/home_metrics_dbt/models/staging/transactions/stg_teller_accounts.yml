@@ -1,6 +1,8 @@
 models:
   - name: stg_teller_accounts
     description: "Cleaned and standardized bank accounts from Teller API"
+    meta:
+      hidden: true
     columns:
       - name: account_pk
         description: "Primary key from raw table"

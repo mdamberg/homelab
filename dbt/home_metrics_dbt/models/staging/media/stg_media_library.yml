@@ -3,6 +3,8 @@ version: 2
 models:
   - name: stg_media_library
     description: "Staging table for media library data"
+    meta:
+      hidden: true
     columns:
       - name: media_source_key
         description: "Surrogate key for the media source"

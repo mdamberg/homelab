@@ -3,6 +3,8 @@ version: 2
 models:
   - name: stg_power_consumption
     description: "Staging table for power consumption data"
+    meta:
+      hidden: true
     columns:
       - name: month_recorded_at
         description: "Month when the power consumption data was recorded"

@@ -3,6 +3,8 @@ version: 2
 models:
   - name: stg_system_health
     description: "Staging table for system health metrics with standardized column names"
+    meta:
+      hidden: true
     columns:
       - name: system_health_id
         description: "Unique identifier for each system health record"

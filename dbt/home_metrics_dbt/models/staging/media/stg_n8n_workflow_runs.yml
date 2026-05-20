@@ -2,6 +2,8 @@ version: 2
 
 models:
   - name: stg_n8n_workflow_runs
+    meta:
+      hidden: true
     columns:
       - name: workflow_run_pk
         description: "Unique identifier for each n8n workflow run record"

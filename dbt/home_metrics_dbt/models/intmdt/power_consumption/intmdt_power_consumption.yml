@@ -1,5 +1,7 @@
 models:
   - name: intmdt_power_consumption
+    meta:
+      hidden: true
     columns:
       - name: recorded_date
         description: ""

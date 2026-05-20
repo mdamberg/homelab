@@ -1,6 +1,8 @@
 models:
   - name: stg_teller_transactions
     description: "Cleaned financial transactions from Teller API with account enrichment"
+    meta:
+      hidden: true
     columns:
       - name: transaction_pk
         description: "Primary key from raw table"
