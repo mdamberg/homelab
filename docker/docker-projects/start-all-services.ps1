@@ -61,7 +61,6 @@ $InfraServices = @{
     'flash' = 'flash_todo'
     'work' = 'work_todo'
     'weather' = 'weather_api_project'
-    'wireguard' = 'wireguard'
     'n8n' = 'n8n'
     'backups' = 'backups'
     'phpipam' = 'phpipam'

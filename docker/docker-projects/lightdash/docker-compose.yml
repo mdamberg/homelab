@@ -38,7 +38,7 @@ services:
       - "8090:8080"
     volumes:
       # Mount your dbt project
-      - ../home_metrics_dbt:/usr/app/dbt:ro
+      - ../../../dbt/home_metrics_dbt:/usr/app/dbt:ro
     networks:
       - lightdash
       - home-metrics

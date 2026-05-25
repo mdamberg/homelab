@@ -13,7 +13,7 @@ services:
       - ./duplicati/config:/config
       - C:\backups:/backups
       # Source paths for backup
-      - "C:/Users/mattd/OneDrive/Matts Documents/Docker/docker-projects:/source/docker-configs:ro"
+      - "C:/Users/mattd/repos/homelab/docker/docker-projects:/source/docker-configs:ro"
       - "C:/media/config:/source/media-configs:ro"
     ports:
       - 8200:8200

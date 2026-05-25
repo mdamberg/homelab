@@ -15,22 +15,28 @@ select
     description as transaction_description,
     amount as transaction_amount,
     status as transaction_status,
-    type as transaction_type,
     case
-        when amount > 0 then 'debit'
-        when amount < 0 then 'credit'
-        else 'zero'
-    end as transaction_flow,
-    case
-        when type = 'payment' then 0
-        when amount > 0 then -abs(amount)
-        when amount < 0 then abs(amount)
-        else 0
-    end as amount_normalized,
-    category as transaction_category,
-    merchant_name as vendor_name,
-    merchant_category as vendor_category,
+        when
+            description ilike '%payroll%' or
+            description ilike '%Fairview Health PR PAYMENT%'
+            or description ilike '%ANDREW RESIDENCE DIRECT DEP%'then 'income'
+                else type
+                    end as transaction_type,
+    category as teller_category,
+    merchant_name as teller_vendor_name,
+    merchant_category as teller_vendor_category,
     running_balance,
     inserted_at,
     updated_at
 from {{ source('home_metrics_raw', 'raw_teller_transactions') }}
+where 
+    (description not ilike '%ONLINE PAYMENT THANK YOU%' and 
+    description not ilike '%ONLINE TRANSFER%' and
+    description not ilike '%RECURRING TRANSFER%' and 
+    description not ilike '%ZELLE%' and 
+    description not ilike '%WF Credit Card %' and
+    description not ilike '%OVERDRAFT PROTECTION%' and
+    description not ilike '%CHASE CREDIT CRD EPAY %') 
+and (
+    description not in ('INTEREST PAYMENT', 'WELLS FARGO REWARDS')
+)

@@ -1,40 +1,30 @@
 description_pattern,custom_category,custom_subcategory,vendor_normalized,is_recurring,billing_cycle
-INTEREST PAYMENT,Income,Interest,Bank Interest,false
-WELLS FARGO REWARDS,Income,Rewards,Wells Fargo,false
+STILLWATERDENTISTRY,Health,Dentist,Still Water Modern Dentistry,false
 HLU*HULUPLUS,Streaming,Subscription,Hulu,true,monthly
 SPOTIFY USA,Streaming,Subscription,Spotify,true,monthly
 Hulu 877-8244858,Streaming,Subscription,Hulu,true,monthly
-Spotify USA,Streaming,Subscription,Spotify,true,monthly
 FuboTV Inc,Streaming,Subscription,FuboTV,true,monthly
 Sling TV,Streaming,Subscription,Sling TV,true,monthly
-OPENAI *CHATGPT,Subscriptions,Software,OpenAI,true,monthly
+PLEXINC*PASS YEARLY PLEX.TV CA,Streaming,Subscription,Plex,true,yearly
+OPENAI *CHATGPT,Streaming,Software,OpenAI,true,monthly
 MICROSOFT*XBOX,Entertainment,Gaming,Xbox,true,monthly
 WL *STEAM,Entertainment,Gaming,Steam,false
 STEAMGAMES.COM,Entertainment,Gaming,Steam,false
+CHUCKEMEMBERSHIP,Entertainment,Family,Chuck E. Cheese,true,monthly
+WOODBURY 10 THEATRE,Entertainment,Movies,Woodbury 10 Theatre,false
 TMNA SUBSCRIPTION,Auto,Membership,Toyota,true,monthly
+NIC*VEHICLEREGRENEW,Auto,Registration,Wisconsin DMV,false
 KWIK TRIP,Transportation,Gas,Kwik Trip,false
-COSTCO GAS,Transportation,Gas,Costco,false
+COSTCO GAS,Transportation,Gas,Costco Gas,false
+UBER *TRIP,Transportation,Rideshare,Uber,false
+ONSTREET,Transportation,Parking,OnStreet Parking,false
+10002N UMMC PARKING,Transportation,Parking,UMMC Parking,false
+IMPARK,Transportation,Parking,Impark,false
 COSTCO WHSE,Groceries,Wholesale,Costco,false
-TARGET,Shopping,Retail,Target,false
 WM SUPERCENTER,Groceries,Supermarket,Walmart,false
 TRADER JOE S,Groceries,Supermarket,Trader Joe's,false
 SQ *EAST VILLAGE MARKET,Groceries,Local,East Village Market,false
-MCDONALD,Dining,Fast Food,McDonald's,false
-CHICK-FIL-A,Dining,Fast Food,Chick-fil-A,false
-CULVERS,Dining,Fast Food,Culver's,false
-LITTLE CAESARS,Dining,Fast Food,Little Caesars,false
-DOMINO,Dining,Delivery,Domino's,false
-CHIPOTLE,Dining,Fast Casual,Chipotle,false
-TST* CARIBOU COFFEE,Dining,Coffee,Caribou Coffee,false
-DUNN BROTHERS COFFEE,Dining,Coffee,Dunn Brothers,false
-SQ *WHEELHOUSE COFFEE,Dining,Coffee,Wheelhouse Coffee,false
-SPORTSMAN,Dining,Bar & Grill,Sportsman's Bar & Grill,false
-SHANGHAI HENRI,Dining,Restaurant,Shanghai Henri's,false
-EDGY EATS,Dining,Restaurant,Edgy Eats,false
-TST*TAQUERIA 10 DE 10,Dining,Restaurant,Taqueria 10 de 10,false
-SQ *DIPSY,Dining,Restaurant,Dipsy,false
-CAB STORE,Shopping,Convenience,Cab Store,false
-ALOFT AUSTIN,Dining,Hotel,Aloft Austin,false
+TARGET,Shopping,Retail,Target,false
 THE HOME DEPOT,Shopping,Home Improvement,Home Depot,false
 HOMEDEPOT.COM,Shopping,Home Improvement,Home Depot,false
 LOWES,Shopping,Home Improvement,Lowe's,false
@@ -47,28 +37,47 @@ ZENNI OPTICAL,Shopping,Eyewear,Zenni Optical,false
 TEMU.COM,Shopping,Online,Temu,false
 TIKTOK SHOP,Shopping,Online,TikTok Shop,false
 TikTok Shop,Shopping,Online,TikTok Shop,false
-CHUCKEMEMBERSHIP,Entertainment,Family,Chuck E. Cheese,true,monthly
-WOODBURY 10 THEATRE,Entertainment,Movies,Woodbury 10 Theatre,false
-UBER *TRIP,Transportation,Rideshare,Uber,false
+CAB STORE,Shopping,Convenience,Cab Store,false
+PLAY AGAIN SP,Shopping,Sporting Goods,Play It Again Sports,false
+MCDONALD,Dining,Fast Food,McDonald's,false
+CHICK-FIL-A,Dining,Fast Food,Chick-fil-A,false
+CULVERS,Dining,Fast Food,Culver's,false
+LITTLE CAESARS,Dining,Fast Food,Little Caesars,false
+DOMINO,Dining,Delivery,Domino's,false
 UBER *EATS,Dining,Delivery,Uber Eats,false
-MIDWEST NATURAL GAS,Utilities,Gas,Midwest Natural Gas,true,monthly
-MIDWEST NG SERVICEFEE,Utilities,Gas,Midwest Natural Gas,true,monthly
+CHIPOTLE,Dining,Fast Casual,Chipotle,false
+TST* CARIBOU COFFEE,Dining,Coffee,Caribou Coffee,false
+DUNN BROTHERS COFFEE,Dining,Coffee,Dunn Brothers,false
+SQ *WHEELHOUSE COFFEE,Dining,Coffee,Wheelhouse Coffee,false
+SPORTSMAN,Dining,Bar & Grill,Sportsman's Bar & Grill,false
+SHANGHAI HENRI,Dining,Restaurant,Shanghai Henri's,false
+EDGY EATS,Dining,Restaurant,Edgy Eats,false
+TST*TAQUERIA 10 DE 10,Dining,Restaurant,Taqueria 10 de 10,false
+SQ *DIPSY,Dining,Restaurant,Dipsy,false
+ALOFT AUSTIN,Dining,Hotel,Aloft Austin,false
+MIDWEST NATURAL GAS,Utilities,Natural Gas,Midwest Natural Gas,true,monthly
+MIDWEST NG SERVICEFEE,Utilities,Natural Gas,Midwest Natural Gas,true,monthly
+XCEL ENERGY-WI XCELENERGY,Utilities,Electric,XCEL Energy,true,monthly
 ALLPAID*SOMERSET,Utilities,Municipal,Somerset Utilities,true,monthly
 ALLPAID*VILLAGE OF SOMERS,Utilities,Municipal,Somerset Village,true,monthly
 City of Hudson,Utilities,Municipal,City of Hudson,true,monthly
 PROGRESSIVE,Insurance,Auto,Progressive,true,biannually
 AUTO-OWNERS INSURANCE,Insurance,Auto,Auto-Owners,true,biannually
+HUNTINGTON NAT 'L MTG PMTS,Mortgage,Monthly Payment,Huntington Nat. Mortgage,true,monthly
+DEPT EDUCATION STUDENT LN,Student Loan,Monthly Payment,Dept of Education Std Ln,true,monthly
+SUVIDA HEALTHCAR PAYROLL,Income,Paycheck,Suvida,true,bi-monthly
+ANDREW RESIDENCE DIRECT DEP,Income,Paycheck,Andrew Residence,true,bi-monthly
+MOBILE DEPOSIT,Income,Check Deposit,Wells Fargo,false
 INTEREST CHARGE ON PURCHASES,Banking,Fee,Credit Card Interest,false
 LATE FEE,Banking,Fee,Late Fee,false
 ADJUSTMENT-PURCHASES,Banking,Adjustment,Credit Card Adjustment,false
 OVERDRAFT PROTECTION XFER,Banking,Transfer,Overdraft Protection,false
 AUTOMATIC PAYMENT - THANK YOU,Banking,Payment,Auto-Pay,false
 ONLINE PAYMENT THANK YOU,Banking,Payment,Online Payment,false
+ATM WITHDRAWAL,Banking,ATM Withdrawal,ATM Withdrawal,false
+CHECK,Banking,Check,Check,false
 THE UPS STORE,Services,Shipping,UPS Store,false
-NIC*VEHICLEREGRENEW,Auto,Registration,Wisconsin DMV,false
 PROPERTYREC.COM,Services,Records,PropertyRec,false
 INTUIT *TURBOTAX,Services,Tax,TurboTax,false
-ONSTREET,Transportation,Parking,OnStreet Parking,false
-10002N UMMC PARKING,Transportation,Parking,UMMC Parking,false
-IMPARK,Transportation,Parking,Impark,false
 MARRIOTT,Travel,Hotel,Marriott,false
+GILLETTE CHILDRENS,Healthcare,PT/OT,Gillette Children's Hospital,false

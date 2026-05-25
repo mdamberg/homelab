@@ -62,7 +62,7 @@ with transactions as (
         transaction_inserted_at,
         transaction_updated_at
 
-    from {{ ref('intmdt_transactions') }}
+    from {{ ref('intmdt_teller_transactions') }}
 )
 
 select * from transactions

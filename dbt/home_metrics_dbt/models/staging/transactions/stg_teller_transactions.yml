@@ -39,8 +39,8 @@ models:
           meta:
             dimension:
               type: string
-      - name: transaction_category
-        description: "Transaction category"
+      - name: teller_category
+        description: "Transaction category assigned by Teller"
         config:
           meta:
             dimension:
@@ -75,14 +75,14 @@ models:
           meta:
             dimension:
               type: string
-      - name: vendor_name
-        description: ""
+      - name: teller_vendor_name
+        description: "Merchant name assigned by Teller"
         config:
           meta:
             dimension:
               type: string
-      - name: vendor_category
-        description: ""
+      - name: teller_vendor_category
+        description: "Merchant category assigned by Teller"
         config:
           meta:
             dimension:

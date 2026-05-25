@@ -1,0 +1,19 @@
+# Environment files
+.env
+*.env.local
+
+# Migration backup artifacts
+*.before-migration/
+**/*.before-migration/
+
+# Runtime data
+docker/docker-projects/work_todo/data/
+
+# dbt backups
+dbt/backups/
+
+# TLS certificates (Pi-hole)
+docker/docker-projects/pie_hole/etc-pihole/tls.crt
+docker/docker-projects/pie_hole/etc-pihole/tls.pem
+docker/docker-projects/pie_hole/etc-pihole/tls_ca.crt
+docker/docker-projects/pie_hole/etc-pihole/migration_backup/
