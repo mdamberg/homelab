@@ -1,0 +1,2 @@
+0 */2 * * *  dbt run && dbt test
+0 0   * * *  dbt source freshness && dbt run --full-refresh --select path:models/staging && dbt test
