@@ -7,8 +7,21 @@ with transactions_data as (
     select * from {{ ref('stg_teller_transactions') }}
 ),
 
+filtered_transactions as (
+    select * from transactions_data
+    where
+        transaction_description not ilike '%ONLINE PAYMENT THANK YOU%'
+        and transaction_description not ilike '%ONLINE TRANSFER%'
+        and transaction_description not ilike '%RECURRING TRANSFER%'
+        and transaction_description not ilike '%ZELLE%'
+        and transaction_description not ilike '%WF Credit Card %'
+        and transaction_description not ilike '%OVERDRAFT PROTECTION%'
+        and transaction_description not ilike '%CHASE CREDIT CRD EPAY %'
+        and transaction_description not in ('INTEREST PAYMENT', 'WELLS FARGO REWARDS')
+),
+
 accounts_data as (
-    select * from {{ ref('stg_teller_accounts') }}
+    select * from {{ ref('intmdt_teller_accounts') }}
 ),
 
 category_map as (
@@ -20,6 +33,7 @@ transactions_with_accounts as (
         t.*,
         a.account_pk,
         a.account_holder,
+        a.account_holder_key,
         a.account_name_friendly,
         a.last_four,
         a.account_type,
@@ -28,12 +42,10 @@ transactions_with_accounts as (
         a.institution_id,
         a.institution_name,
         a.enrollment_id
-    from transactions_data t
-    left join accounts_data a
-        on t.teller_account_id = a.teller_account_id
+    from filtered_transactions t
+    left join accounts_data a on t.teller_account_id = a.teller_account_id
 ),
 
--- map accounts to custom categories created in seed file (map_transactions.csv)
 mapped as (
     select
         t.*,
@@ -41,22 +53,29 @@ mapped as (
         m.custom_subcategory,
         m.vendor_normalized,
         m.is_recurring,
-
-        -- assign a rank to each transaction pk based on length and sort desc (longer description patterns are more specific); 
-        -- this is done because one transaction can match multiple description patterns
-        -- The window fx ranks the multiple matches per transaction, and orders the longest matchnig patterns first
-        -- A longer patternsn is mosre specific and will produce a better match 
+        -- longer description_pattern = more specific match; pick rank 1 when multiple patterns match
         row_number() over (partition by t.transaction_pk order by length(m.description_pattern) desc) as match_rank
     from transactions_with_accounts t
     left join category_map m
         on t.transaction_description ilike '%' || m.description_pattern || '%'
-        -- joins the tx description on any mapping row where the tx description pattern exists
-        -- then uses the window fx to pick the longest match
 ),
 
 best_match as (
     select * from mapped
-    where match_rank = 1 or match_rank is null
+    where match_rank = 1
+),
+
+classified as (
+    select
+        *,
+        case
+            when transaction_description ilike '%payroll%'
+                or transaction_description ilike '%Fairview Health PR PAYMENT%'
+                or transaction_description ilike '%ANDREW RESIDENCE DIRECT DEP%'
+                then 'income'
+            else transaction_type
+        end as transaction_type_resolved
+    from best_match
 ),
 
 enriched as (
@@ -70,8 +89,8 @@ enriched as (
         account_key,
 
         -- Dimensional Keys (for Grouping)
-        {{ dbt_utils.generate_surrogate_key(['account_holder']) }} as account_holder_key,
-        {{ dbt_utils.generate_surrogate_key(['transaction_type']) }} as transaction_type_key,
+        account_holder_key,
+        {{ dbt_utils.generate_surrogate_key(['transaction_type_resolved']) }} as transaction_type_key,
         {{ dbt_utils.generate_surrogate_key(['coalesce(custom_category, teller_category)']) }} as category_key,
         {{ dbt_utils.generate_surrogate_key(['coalesce(vendor_normalized, teller_vendor_name, transaction_description)']) }} as vendor_key,
 
@@ -103,7 +122,7 @@ enriched as (
         end as transaction_amount_normalized,
 
         transaction_status,
-        transaction_type,
+        transaction_type_resolved as transaction_type,
 
         -- Category fields (mapped with fallback to original)
         coalesce(custom_category, teller_category) as category,
@@ -124,7 +143,7 @@ enriched as (
         -- Timestamps
         inserted_at as transaction_inserted_at,
         updated_at as transaction_updated_at
-    from best_match
+    from classified
 )
 
 select 

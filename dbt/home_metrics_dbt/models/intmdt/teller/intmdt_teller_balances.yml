@@ -1,9 +1,11 @@
 models:
-  - name: dim_teller_accounts
-    description: "Account dimension — one row per open account"
+  - name: intmdt_teller_balances
+    description: "Daily account balance snapshots enriched with account holder details"
+    meta:
+      hidden: true
     columns:
-      - name: account_pk
-        description: "Primary key from raw accounts table"
+      - name: balance_pk
+        description: "Primary key from raw balances table"
         tests:
           - unique
           - not_null
@@ -11,21 +13,26 @@ models:
           meta:
             dimension:
               type: number
-      - name: account_key
-        description: "Surrogate key based on teller_account_id, used for joining with fact tables"
-        tests:
-          - unique
-          - not_null
-        config:
-          meta:
-            dimension:
-              type: string
       - name: teller_account_id
         description: "Teller's unique account identifier"
         config:
           meta:
             dimension:
               type: string
+      - name: account_key
+        description: "Surrogate key based on teller_account_id"
+        tests:
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: date_key
+        description: "Balance recorded date as YYYYMMDD integer"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: account_holder
         description: "Account holder name (Matt or Jessica)"
         config:
@@ -39,7 +46,7 @@ models:
             dimension:
               type: string
       - name: account_name_friendly
-        description: "Human-readable account name (e.g. Matt Checking, Jessica WF Credit Card)"
+        description: "Human-readable account name"
         config:
           meta:
             dimension:
@@ -62,26 +69,32 @@ models:
           meta:
             dimension:
               type: string
-      - name: account_status
-        description: "Account connection status (will always be open)"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: institution_name
         description: "Name of the financial institution"
         config:
           meta:
             dimension:
               type: string
-      - name: institution_id
-        description: "Teller's institution identifier"
+      - name: ledger_balance
+        description: "Posted/ledger balance"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: available_balance
+        description: "Available balance for spending"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: recorded_at
+        description: "Full timestamp when balance was recorded"
         config:
           meta:
             dimension:
               type: string
-      - name: enrollment_id
-        description: "Teller enrollment identifier"
+      - name: inserted_at
+        description: "Timestamp when the record was inserted"
         config:
           meta:
             dimension:

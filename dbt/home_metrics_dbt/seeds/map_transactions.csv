@@ -6,7 +6,8 @@ Hulu 877-8244858,Streaming,Subscription,Hulu,true,monthly
 FuboTV Inc,Streaming,Subscription,FuboTV,true,monthly
 Sling TV,Streaming,Subscription,Sling TV,true,monthly
 PLEXINC*PASS YEARLY PLEX.TV CA,Streaming,Subscription,Plex,true,yearly
-OPENAI *CHATGPT,Streaming,Software,OpenAI,true,monthly
+OPENAI *CHATGPT,AI,Software,OpenAI,true,monthly
+CLAUDE.AI SUBSCRIPTION ANTHROPIC.COMCA,AI,Software,Anthropic,true,monthly
 MICROSOFT*XBOX,Entertainment,Gaming,Xbox,true,monthly
 WL *STEAM,Entertainment,Gaming,Steam,false
 STEAMGAMES.COM,Entertainment,Gaming,Steam,false

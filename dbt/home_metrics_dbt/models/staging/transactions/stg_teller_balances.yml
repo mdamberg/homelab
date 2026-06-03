@@ -1,7 +1,6 @@
 models:
   - name: stg_teller_balances
-    description: "Daily account balance snapshots from Teller API, enriched with
-      account details"
+    description: "Raw daily account balance snapshots from Teller API — rename and type cast only, no business logic"
     meta:
       hidden: true
     columns:
@@ -14,24 +13,24 @@ models:
           meta:
             dimension:
               type: number
-      - name: account_key
-        description: "Reference to account dimensional key"
-        config:
-          meta:
-            dimension:
-              type: string
-      - name: recorded_date_key
-        description: "Surrogate key for the date when balance was recorded"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: teller_account_id
         description: "Teller's unique account identifier"
         config:
           meta:
             dimension:
               type: string
+      - name: account_key
+        description: "Surrogate key based on teller_account_id"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: date_key
+        description: "Balance recorded date as YYYYMMDD integer"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: ledger_balance
         description: "Posted/ledger balance"
         config:

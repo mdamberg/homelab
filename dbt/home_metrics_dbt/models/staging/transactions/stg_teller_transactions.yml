@@ -1,17 +1,18 @@
 models:
   - name: stg_teller_transactions
-    description: "Cleaned financial transactions from Teller API with account enrichment"
+    description: "Raw transactions from Teller API — rename and type cast only, no business logic"
     meta:
       hidden: true
     columns:
       - name: transaction_pk
-        description: "Primary key from raw table"
+        description: "Surrogate key generated from source id"
         tests:
+          - unique
           - not_null
         config:
           meta:
             dimension:
-              type: number
+              type: string
       - name: teller_transaction_id
         description: "Teller's unique transaction identifier"
         tests:
@@ -27,32 +28,14 @@ models:
           meta:
             dimension:
               type: string
-      - name: transaction_amount
-        description: "Transaction amount (negative for debits)"
-        config:
-          meta:
-            dimension:
-              type: number
-      - name: transaction_type
-        description: "Credit or Debit"
+      - name: account_key
+        description: "Surrogate key based on teller_account_id"
         config:
           meta:
             dimension:
               type: string
-      - name: teller_category
-        description: "Transaction category assigned by Teller"
-        config:
-          meta:
-            dimension:
-              type: string
-      - name: transaction_status
-        description: "Transaction status (pending, posted)"
-        config:
-          meta:
-            dimension:
-              type: string
-      - name: running_balance
-        description: "Account balance after transaction"
+      - name: date_key
+        description: "Transaction date as YYYYMMDD integer"
         config:
           meta:
             dimension:
@@ -63,14 +46,32 @@ models:
           meta:
             dimension:
               type: date
-      - name: account_key
-        description: "Dimensional key based on teller_account_id"
+      - name: transaction_description
+        description: "Raw transaction description from bank"
         config:
           meta:
             dimension:
               type: string
-      - name: transaction_description
-        description: ""
+      - name: transaction_amount
+        description: "Transaction amount as returned by Teller"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: transaction_status
+        description: "Transaction status (pending, posted)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_type
+        description: "Raw transaction type from Teller (credit, debit)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: teller_category
+        description: "Transaction category assigned by Teller"
         config:
           meta:
             dimension:
@@ -87,14 +88,20 @@ models:
           meta:
             dimension:
               type: string
+      - name: running_balance
+        description: "Account balance after transaction"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: inserted_at
-        description: ""
+        description: "Timestamp when the record was first inserted"
         config:
           meta:
             dimension:
               type: string
       - name: updated_at
-        description: ""
+        description: "Timestamp when the record was last updated"
         config:
           meta:
             dimension:

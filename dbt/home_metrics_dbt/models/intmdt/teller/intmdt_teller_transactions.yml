@@ -1,20 +1,20 @@
 models:
-  - name: intmdt_transactions
-    description: "Enriched transactions with account details and dimension keys for analytics"
+  - name: intmdt_teller_transactions
+    description: "Enriched transactions with account details, category mapping, dimension keys, and income classification"
     meta:
       hidden: true
     columns:
       - name: transaction_pk
-        description: "Primary key from raw transactions table"
+        description: "Surrogate key generated from source id"
         tests:
           - unique
           - not_null
         config:
           meta:
             dimension:
-              type: number
+              type: string
       - name: transaction_skey
-        description: "Surrogate key for transaction"
+        description: "Surrogate key generated from transaction_pk"
         tests:
           - unique
           - not_null
@@ -29,7 +29,7 @@ models:
             dimension:
               type: number
       - name: account_key
-        description: "Dimension key - groups transactions by account"
+        description: "Surrogate key based on teller_account_id"
         tests:
           - not_null
         config:
@@ -37,7 +37,7 @@ models:
             dimension:
               type: string
       - name: account_holder_key
-        description: "Dimension key - groups transactions by account holder (Matt/Jessica)"
+        description: "Surrogate key based on account_holder"
         tests:
           - not_null
         config:
@@ -45,7 +45,7 @@ models:
             dimension:
               type: string
       - name: transaction_type_key
-        description: "Dimension key - groups by credit/debit"
+        description: "Surrogate key based on resolved transaction_type"
         tests:
           - not_null
         config:
@@ -53,25 +53,25 @@ models:
             dimension:
               type: string
       - name: category_key
-        description: "Dimension key - groups by transaction category"
+        description: "Surrogate key based on resolved category"
         config:
           meta:
             dimension:
               type: string
       - name: vendor_key
-        description: "Dimension key - groups by vendor"
-        config:
-          meta:
-            dimension:
-              type: string
-      - name: account_holder
-        description: "Account holder name (Matt or Jessica)"
+        description: "Surrogate key based on resolved vendor"
         config:
           meta:
             dimension:
               type: string
       - name: date_key
-        description: "Surrogate key for transaction date (YYYYMMDD)"
+        description: "Transaction date as YYYYMMDD integer"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: account_holder
+        description: "Account holder name (Matt or Jessica)"
         config:
           meta:
             dimension:
@@ -95,7 +95,31 @@ models:
             dimension:
               type: string
       - name: account_subtype
-        description: "Original Teller account subtype"
+        description: "Teller account subtype"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_status
+        description: "Account connection status"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: institution_id
+        description: "Teller's institution identifier"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: institution_name
+        description: "Name of the financial institution"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: enrollment_id
+        description: "Teller enrollment identifier"
         config:
           meta:
             dimension:
@@ -125,23 +149,17 @@ models:
             dimension:
               type: string
       - name: transaction_amount
-        description: "Transaction amount (negative for debits)"
+        description: "Transaction amount as returned by Teller"
         config:
           meta:
             dimension:
               type: number
       - name: transaction_amount_normalized
-        description: "Transaction amount: credits = + and debits = -"
+        description: "Transaction amount normalized: positive = income, negative = expense"
         config:
           meta:
             dimension:
               type: number
-      - name: transaction_flow
-        description: "Flag for whether a transaction is a debit (-) or credit (+)"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: transaction_status
         description: "Transaction status (pending, posted)"
         config:
@@ -149,19 +167,25 @@ models:
             dimension:
               type: string
       - name: transaction_type
-        description: "Credit or Debit"
+        description: "Resolved transaction type — income override applied for payroll and direct deposits"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_flow
+        description: "expense, income, or zero — derived from transaction_amount_normalized"
         config:
           meta:
             dimension:
               type: string
       - name: category
-        description: "Transaction category (mapped with fallback to Teller category)"
+        description: "Resolved category — custom mapping with fallback to Teller category"
         config:
           meta:
             dimension:
               type: string
       - name: subcategory
-        description: "Custom subcategory from mapping"
+        description: "Custom subcategory from seed mapping"
         config:
           meta:
             dimension:
@@ -173,31 +197,31 @@ models:
             dimension:
               type: string
       - name: vendor
-        description: "Vendor name (mapped with fallback to Teller vendor)"
+        description: "Resolved vendor — custom mapping with fallback to Teller vendor name then description"
         config:
           meta:
             dimension:
               type: string
       - name: teller_vendor_name
-        description: "Original merchant/vendor name from Teller"
+        description: "Original merchant name from Teller"
         config:
           meta:
             dimension:
               type: string
       - name: teller_vendor_category
-        description: "Original merchant category code description from Teller"
+        description: "Original merchant category from Teller"
         config:
           meta:
             dimension:
               type: string
       - name: is_recurring
-        description: "Whether the transaction is recurring"
+        description: "Whether the transaction is recurring per seed mapping"
         config:
           meta:
             dimension:
               type: boolean
       - name: is_mapped
-        description: "Whether the transaction was matched to a custom category mapping"
+        description: "Whether the transaction matched a custom category mapping"
         config:
           meta:
             dimension:
