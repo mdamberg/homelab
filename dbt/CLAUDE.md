@@ -15,6 +15,7 @@ Analytics database layer for the homelab. Provides PostgreSQL for data storage a
 |-----------|------|---------|
 | home-metrics-postgres | 5432 | PostgreSQL 16 database |
 | home-metrics-metabase | 3000 | Metabase visualization UI |
+| home-metrics-dbt-runner | - | Scheduled dbt runs via supercronic (schedule in `cron/dbt-schedule`) |
 
 ## Common Commands
 

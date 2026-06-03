@@ -23,6 +23,28 @@ services:
       timeout: 5s
       retries: 5
 
+  dbt-runner:
+    build:
+      context: ./dbt-runner
+    container_name: home-metrics-dbt-runner
+    restart: unless-stopped
+    working_dir: /usr/app/dbt
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DBT_PROFILES_DIR: /root/.dbt
+    volumes:
+      - ./home_metrics_dbt:/usr/app/dbt
+      - ./profiles:/root/.dbt:ro
+      - ./cron/dbt-schedule:/etc/supercronic/dbt-schedule:ro
+    networks:
+      - home-metrics
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: ["supercronic", "/etc/supercronic/dbt-schedule"]
+
 networks:
   home-metrics:
     name: home-metrics
