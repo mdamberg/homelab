@@ -30,8 +30,8 @@ services:
     volumes:
       - C:/media/config/gluetun:/gluetun
     healthcheck:
-      # Gluetun control server returns {"status":"running"} when the VPN tunnel is up
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8000/v1/vpn/status | grep -q '\"running\"' || exit 1"]
+      # tun0 only has an IP when the VPN tunnel is fully up
+      test: ["CMD-SHELL", "ip addr show tun0 2>/dev/null | grep -q 'inet' || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5
