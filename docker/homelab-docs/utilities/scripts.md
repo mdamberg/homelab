@@ -84,6 +84,26 @@ Unregister-ScheduledTask -TaskName "Docker Infrastructure Auto-Start" -Confirm:$
 
 ---
 
+## setup-env.ps1
+
+Deploys secrets from the master `docker/.env` to each service's folder. Run this after a fresh clone, after editing the master `.env`, or any time per-service `.env` files go missing.
+
+```powershell
+cd C:\Users\mattd\repos\homelab\docker
+.\setup-env.ps1
+```
+
+**Prerequisites:** `docker/.env` must exist. Copy from `docker/.env.example` and fill in values if it doesn't.
+
+**What it does:**
+- Reads `docker/.env` and parses all key=value pairs
+- Writes a `.env` to each service folder containing only the variables that service needs
+- Warns (but does not fail) if a variable is missing from the master file
+
+See [Secrets Handling](../standards/secrets-handling.md) for the full workflow.
+
+---
+
 ## Restart Policy Note
 
 All infrastructure services use `restart: unless-stopped` in their compose files. This means:
