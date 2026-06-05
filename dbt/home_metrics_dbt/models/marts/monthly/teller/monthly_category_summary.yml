@@ -3,6 +3,9 @@ models:
     columns:
       - name: monthly_transaction_skey
         description: ""
+        tests:
+          - not_null
+          - unique
         config:
           meta:
             dimension:

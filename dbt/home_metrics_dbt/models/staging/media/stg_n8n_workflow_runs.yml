@@ -44,6 +44,30 @@ models:
           meta:
             dimension:
               type: string
+      - name: mode
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: retry_of
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: execution_id
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: retry_success_id
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: number
       - name: date_started
         description: "Date when the workflow run started"
         config:

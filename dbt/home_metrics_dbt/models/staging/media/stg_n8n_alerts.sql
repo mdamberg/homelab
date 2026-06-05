@@ -38,8 +38,8 @@ select
     resolved_at,
     case when resolved_at is null then true else false end as is_active,
     inserted_at,
-    metadata,
     metadata->>'execution_id' as execution_id,
     metadata->>'workflow_id' as workflow_id,
-    metadata->>'last_node_executed' as failed_node
+    metadata->>'last_node_executed' as failed_node,
+    metadata
 from n8n_alerts

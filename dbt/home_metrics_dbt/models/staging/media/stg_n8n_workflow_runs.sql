@@ -29,6 +29,13 @@ select
     workflow_name,
     metadata->>'execution_id' as execution_id,
     status as workflow_status,
+
+    -- json parsed metadata
+    metadata->>'mode' as mode,
+	metadata->>'retryOf' as retry_of,
+	metadata->>'execution_id' as execution_id,
+	metadata->>'retrySuccessId' as retry_success_id,
+
    
     cast(started_at as date) as date_started,
     cast({{ to_local_time('started_at') }} as time) as time_started,
