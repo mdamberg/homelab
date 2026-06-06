@@ -56,12 +56,6 @@ models:
           meta:
             dimension:
               type: number
-      - name: execution_id
-        description: ""
-        config:
-          meta:
-            dimension:
-              type: number
       - name: retry_success_id
         description: ""
         config:

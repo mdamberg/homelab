@@ -1,0 +1,199 @@
+models:
+  - name: intmdt_n8n_runs
+    description: "Enriched n8n workflow runs joined with alerts — links each workflow execution to any alerts it triggered"
+    columns:
+      - name: n8n_run_skey
+        description: "Surrogate key combining workflow_run_pk and alert_pk — uniquely identifies each run/alert pair"
+        tests:
+            - unique
+            - not_null
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: workflow_run_pk
+        description: "Primary key for the workflow runs table — unique ID per n8n execution"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: workflow_status_key
+        description: "Surrogate key combining workflow_id and status — identifies a distinct workflow + status combination"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: workflow_id
+        description: "n8n's unique identifier for the workflow definition"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: workflow_name
+        description: "Human-readable name of the workflow"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: workflow_status
+        description: "Outcome of the workflow run (error, running, success)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: mode
+        description: "How the run was initiated (manual, trigger)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: retry_of
+        description: "Execution ID of the original run this is a retry of — null if this is not a retry"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: execution_id
+        description: "n8n's internal execution identifier stored in run metadata"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: retry_success_id
+        description: "Execution ID of the successful retry — null if not retried or retry has not yet succeeded"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: date_started
+        description: "Date the workflow run was started"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: time_started
+        description: "Time the workflow run was started"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: date_finished
+        description: "Date the workflow run finished"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: time_finished
+        description: "Time the workflow run finished"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: date_inserted
+        description: "Date the workflow run record was inserted"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: time_of_insertion
+        description: "Time the workflow run record was inserted"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: alert_pk
+        description: "Primary key for the alerts table — unique ID per n8n alert (null if the run produced no alerts)"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: alert_type_key
+        description: "Surrogate key combining alert_source and alert_type — uniquely identifies a distinct alert type per source"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: alert_severity_key
+        description: "Surrogate key combining alert_source, alert_type, and severity — uniquely identifies a distinct alert type + severity per source"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: alert_type
+        description: "Type of alert fired by the workflow (no_data, failure)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: severity
+        description: "Severity level of the alert (warning, error)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: alert_source
+        description: "The workflow name in snake_case format as recorded by the alerting system"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: title
+        description: "Human-readable title of the alert"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: message
+        description: "Detailed alert message body"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: triggered_at
+        description: "UTC timestamp when the alert was triggered"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: triggered_at_local
+        description: "Alert trigger timestamp converted to local time"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: date_triggered
+        description: "Date portion of the alert trigger timestamp"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: time_triggered
+        description: "Time portion of the alert trigger timestamp"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: resolved_at
+        description: "Timestamp when the alert was resolved — null if the alert is still active"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: is_active
+        description: "True if the alert has not yet been resolved"
+        config:
+          meta:
+            dimension:
+              type: boolean
+      - name: inserted_at
+        description: "Timestamp when the alert record was inserted into the database"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: workflow_run_fk
+        description: "Foreign key referencing workflow_run_pk on stg_n8n_workflow_runs — links an alert to the execution that triggered it"
+        config:
+          meta:
+            dimension:
+              type: number
