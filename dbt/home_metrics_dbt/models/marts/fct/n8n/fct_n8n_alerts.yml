@@ -1,31 +1,6 @@
-version: 2
-
-# ================================================================================================================================== #
-# GRAIN: 1 row per alert
-#
-# Category Types
-#   1. execution    — a workflow node threw an error during execution
-#   2. data_quality — a monitored table has not received new data within the staleness threshold (no run context)
-#   3. unknown      — alert_type does not match any known category
-#
-# Alert Types:
-#   1. node_error — a node within an n8n workflow throws an error during execution
-#       - execution_id: unique ID of the workflow execution
-#       - workflow_id: n8n's unique identifier for the workflow definition
-#       - failed_node: name of the specific node that threw the error
-#
-#   2. no_data — a data quality check detected a table has not received new data within a threshold
-#       - monitored_table: the table being watched
-#       - threshold_minutes: how many minutes without new data before the alert fires
-#       - NOTE: no_data alerts have no execution context — execution_id is null
-# ================================================================================================================================== #
-
-
 models:
-  - name: stg_n8n_alerts
-    description: "Staging table for n8n alerts — workflow execution errors and data staleness checks"
-    meta:
-      hidden: true
+  - name: fct_n8n_alerts
+    description: "One row per n8n alert — workflow execution errors and data staleness checks"
     columns:
       - name: alert_pk
         description: "Unique identifier for each alert record"
@@ -48,14 +23,14 @@ models:
           meta:
             dimension:
               type: string
-      - name: alert_type
-        description: "Type of alert — 'node_error' for workflow execution failures, 'no_data' for data staleness checks"
+      - name: alert_category
+        description: "Broad category of the alert — 'execution' for node_error alerts, 'data_quality' for no_data alerts, 'unknown' otherwise"
         config:
           meta:
             dimension:
               type: string
-      - name: alert_category
-        description: "Broad category of the alert — 'execution' for node_error alerts, 'data_quality' for no_data alerts, 'unknown' otherwise"
+      - name: alert_type
+        description: "Type of alert — 'node_error' for workflow execution failures, 'no_data' for data staleness checks"
         config:
           meta:
             dimension:
@@ -126,14 +101,14 @@ models:
           meta:
             dimension:
               type: timestamp
-      - name: execution_id
-        description: "n8n execution ID parsed from alert metadata — populated for node_error alerts only, null for no_data alerts"
+      - name: workflow_run_fk
+        description: "Foreign key referencing workflow_run_pk on fct_n8n_workflow_runs — populated for node_error alerts only, null for no_data alerts"
         config:
           meta:
             dimension:
               type: number
       - name: workflow_id
-        description: "n8n workflow definition ID parsed from alert metadata — populated for node_error alerts only"
+        description: "n8n workflow definition ID — populated for node_error alerts only"
         config:
           meta:
             dimension:
@@ -156,9 +131,3 @@ models:
           meta:
             dimension:
               type: number
-      - name: metadata
-        description: "Raw JSON metadata from the alert record"
-        config:
-          meta:
-            dimension:
-              type: string

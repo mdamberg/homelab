@@ -36,7 +36,8 @@ models:
             dimension:
               type: string
       - name: workflow_status
-        description: "Outcome of the workflow run (error, running, success)"
+        description: "Outcome of the workflow run (error, running, success). NOTE: Alert type identifies an issue with the run, 
+            workflow status determine whether or not the workflow successfully completed"
         config:
           meta:
             dimension:
@@ -120,7 +121,16 @@ models:
             dimension:
               type: string
       - name: alert_type
-        description: "Type of alert fired by the workflow (no_data, failure)"
+        description:
+          "Type of alert fired by the workflow (no_data, node_error). NOTE: Alerts and workflow status failures are 2
+            different things. Alert type identifies an issue with the run, workflow status determines whether or not the
+            workflow successfully completed"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: alert_category
+        description: "Broad category of the alert — 'execution' for node_error alerts, 'data_quality' for no_data alerts, 'unknown' otherwise"
         config:
           meta:
             dimension:
