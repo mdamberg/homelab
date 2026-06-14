@@ -55,8 +55,9 @@ $Action = New-ScheduledTaskAction `
     -Execute "powershell.exe" `
     -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$StartScriptPath`" -StartLibreHardwareMonitor"
 
-# Create the trigger (at system startup)
+# Create the trigger (at system startup, delayed 90s to let Docker service initialize first)
 $Trigger = New-ScheduledTaskTrigger -AtStartup
+$Trigger.Delay = "PT90S"
 
 # Create the principal (run as SYSTEM with highest privileges)
 $Principal = New-ScheduledTaskPrincipal `
@@ -89,10 +90,15 @@ try {
     Write-Host "  Script: $StartScriptPath" -ForegroundColor Cyan
 
     Write-Host "`nYour Docker infrastructure will now automatically start:" -ForegroundColor Green
-    Write-Host "  • When the system boots" -ForegroundColor White
-    Write-Host "  • Before user login" -ForegroundColor White
+    Write-Host "  • When the system boots (90 second delay to let Docker service initialize)" -ForegroundColor White
+    Write-Host "  • Before user login, running as SYSTEM" -ForegroundColor White
     Write-Host "  • Even after power loss" -ForegroundColor White
     Write-Host "  • LibreHardwareMonitor will also start (for hardware sensors workflow)" -ForegroundColor White
+    Write-Host "`nPREREQUISITE — verify Docker service is set to auto-start:" -ForegroundColor Yellow
+    Write-Host "  1. Press Win+R, type 'services.msc', press Enter" -ForegroundColor White
+    Write-Host "  2. Find 'Docker Desktop Service' (com.docker.service)" -ForegroundColor White
+    Write-Host "  3. Set Startup type = Automatic (or Automatic Delayed Start)" -ForegroundColor White
+    Write-Host "  Without this, the daemon won't be available when this task runs." -ForegroundColor White
 
     Write-Host "`nTo verify, check Task Scheduler:" -ForegroundColor Yellow
     Write-Host "  1. Press Win+R, type 'taskschd.msc', press Enter" -ForegroundColor White

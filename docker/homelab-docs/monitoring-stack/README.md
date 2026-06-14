@@ -18,6 +18,21 @@ A self-hosted monitoring tool that tracks whether services are up and sends aler
 - Displays a status dashboard and historical uptime graphs
 - Data persisted in `./uptime-kuma-data`
 
+### Retry configuration (required to avoid false alerts after reboots)
+
+Uptime Kuma defaults to 0 retries — one missed heartbeat triggers an alert immediately. After a power outage, services take 60-120 seconds to come back, which floods the alert channel with false positives.
+
+Set these values on **each monitor** in the Uptime Kuma UI (Edit Monitor):
+
+| Setting | Recommended value |
+|---------|------------------|
+| Retries | 3 |
+| Retry interval | 20s |
+| Heartbeat interval | 60s |
+| Request timeout | 20s |
+
+This means a service must miss 3 consecutive checks (60–90 seconds of real downtime) before an alert fires.
+
 ## Glances
 
 A real-time system stats viewer running in web mode.

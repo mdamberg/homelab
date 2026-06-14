@@ -82,14 +82,11 @@
 
 ## 🟡 MEDIUM — Improve When Possible
 
-- [ ] **11. Update start-all-services.ps1**
-  - Change all `docker-compose` → `docker compose` (v2, no hyphen)
-  - Add `docker network create home-metrics 2>$null` near the top
-  - Fix startup order so Pi-hole starts first (hashtables iterate randomly):
-    ```powershell
-    $StartOrder = @('pihole', 'homeassistant', 'monitoring', 'n8n', 'backups', 'phpipam', 'mediastack', 'linkding', 'flash', 'lightdash')
-    ```
-  - Add `lightdash` to `stop-all-services.ps1` (it's missing)
+- [x] **11. Update start-all-services.ps1** *(partially done)*
+  - [x] Fixed startup order — added `$StartOrder` array, Pi-hole first, Watchtower last
+  - [x] `docker network create home-metrics 2>$null` already present
+  - [ ] `docker-compose` → `docker compose` (v2 no-hyphen) — still pending
+  - [ ] Add `lightdash` to `stop-all-services.ps1` — still pending
 
 - [ ] **12. Fix Lightdash SITE_URL**
   - Change `SITE_URL: http://localhost:8090` → `SITE_URL: http://100.82.35.70:8090`
@@ -99,24 +96,9 @@
   - Change `N8N_HOST=localhost` → `N8N_HOST=10.0.0.7`
   - Without this, any webhook URLs n8n generates point to localhost and can't be reached externally
 
-- [ ] **14. Add restart policy to flash_todo**
-  - Add `restart: unless-stopped` to `flash_todo/docker-compose.yml`
-  - Currently if it crashes, it stays dead
+- [x] **14. Add restart policy to flash_todo** — already present in compose file
 
-- [ ] **15. Fix phpipam startup race condition**
-  - Add healthcheck to `phpipam-db` so `phpipam-web` waits for the database to be truly ready:
-    ```yaml
-    phpipam-db:
-      healthcheck:
-        test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
-        interval: 10s
-        timeout: 5s
-        retries: 5
-    phpipam-web:
-      depends_on:
-        phpipam-db:
-          condition: service_healthy
-    ```
+- [x] **15. Fix phpipam startup race condition** — healthcheck + `depends_on: condition: service_healthy` already in place for both `phpipam-web` and `phpipam-cron`
 
 - [ ] **16. Fix timezone inconsistencies**
   - `pie_hole`: change `TZ=America/Chicago` → `TZ=${TZ}`

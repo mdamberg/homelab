@@ -1,6 +1,8 @@
 ﻿# Summary
 
 * [Overview](README.md)
+* Infrastructure
+  * [Boot Recovery](infrastructure/boot-recovery.md)
 * Standards
   * [Naming](standards/naming.md)
   * [Secrets Handling](standards/secrets-handling.md)

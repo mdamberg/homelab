@@ -69,10 +69,28 @@ $InfraServices = @{
     'watchtower' = 'watchtower'
 }
 
+# Ordered startup sequence: DNS first, then data layer, then dependent services, then optional/updater last
+$StartOrder = @(
+    'pihole',        # DNS — start first so other services resolve names
+    'homemetrics',   # PostgreSQL — n8n and lightdash both need this
+    'monitoring',    # Uptime Kuma — want visibility early
+    'n8n',           # Workflow automation — needs homemetrics postgres
+    'backups',       # Duplicati — independent
+    'phpipam',       # IP management — independent (has internal healthcheck)
+    'mediastack',    # Plex, *arr, qBittorrent — depends on nothing external
+    'linkding',      # Bookmarks — independent
+    'flash',         # Flask todo — independent
+    'work',          # Flask todo — independent
+    'weather',       # Weather API — independent
+    'lightdash',     # Analytics UI — needs homemetrics postgres
+    'homeassistant', # Secondary HA container (primary runs in VirtualBox)
+    'watchtower'     # Auto-updater — start last so it doesn't update mid-boot
+)
+
 # Parse which services to start
 $ServicesToStart = @()
 if ($Services -eq "all") {
-    $ServicesToStart = $InfraServices.Keys
+    $ServicesToStart = $StartOrder
 } else {
     $ServicesToStart = $Services -split ',' | ForEach-Object { $_.Trim().ToLower() }
 }
@@ -101,8 +119,9 @@ if (-not (Test-DockerUsersGroup)) {
 }
 
 # Check if Docker is running, start it if not
-Write-Host "[CHECK] Verifying Docker Desktop is running..." -ForegroundColor Yellow
+Write-Host "[CHECK] Verifying Docker is running..." -ForegroundColor Yellow
 
+$DockerServiceName = "com.docker.service"
 $DockerDesktopPath = "C:\Program Files\Docker\Docker\Docker Desktop.exe"
 $MaxWaitSeconds = 120  # Wait up to 2 minutes for Docker to start
 
@@ -116,49 +135,60 @@ function Test-DockerRunning {
 }
 
 if (-not (Test-DockerRunning)) {
-    Write-Host "[INFO] Docker Desktop is not running. Starting it now..." -ForegroundColor Yellow
+    Write-Host "[INFO] Docker is not running. Attempting to start..." -ForegroundColor Yellow
 
-    # Check if Docker Desktop executable exists
-    if (-not (Test-Path $DockerDesktopPath)) {
-        Write-Host "[ERROR] Docker Desktop not found at: $DockerDesktopPath" -ForegroundColor Red
-        Write-Host "Please install Docker Desktop or update the path in this script.`n" -ForegroundColor Yellow
-        exit 1
+    # Prefer starting the Windows service — works under SYSTEM without a user session (e.g. Task Scheduler at boot)
+    $DockerService = Get-Service -Name $DockerServiceName -ErrorAction SilentlyContinue
+    if ($DockerService) {
+        if ($DockerService.Status -ne 'Running') {
+            Write-Host "[INFO] Starting Docker Desktop service ($DockerServiceName)..." -ForegroundColor Cyan
+            try {
+                Start-Service -Name $DockerServiceName -ErrorAction Stop
+            } catch {
+                Write-Host "[WARN] Could not start Docker service: $_" -ForegroundColor Yellow
+            }
+        }
+    } else {
+        # Fallback: launch Docker Desktop GUI (requires an interactive user session)
+        Write-Host "[INFO] Docker service not found. Trying Docker Desktop GUI..." -ForegroundColor Yellow
+        if (Test-Path $DockerDesktopPath) {
+            try {
+                Start-Process -FilePath $DockerDesktopPath -WindowStyle Hidden
+                Write-Host "[INFO] Docker Desktop launched. Waiting for daemon..." -ForegroundColor Cyan
+            } catch {
+                Write-Host "[ERROR] Failed to start Docker Desktop: $_" -ForegroundColor Red
+                exit 1
+            }
+        } else {
+            Write-Host "[ERROR] Docker not found. Checked service '$DockerServiceName' and path '$DockerDesktopPath'" -ForegroundColor Red
+            exit 1
+        }
     }
 
-    # Start Docker Desktop
-    try {
-        Start-Process -FilePath $DockerDesktopPath -WindowStyle Hidden
-        Write-Host "[INFO] Docker Desktop starting..." -ForegroundColor Cyan
-    } catch {
-        Write-Host "[ERROR] Failed to start Docker Desktop: $_" -ForegroundColor Red
-        exit 1
-    }
-
-    # Wait for Docker to be ready
+    # Wait for Docker daemon to respond
     Write-Host "[WAIT] Waiting for Docker to initialize (max $MaxWaitSeconds seconds)..." -ForegroundColor Yellow
     $WaitedSeconds = 0
-    $ReadyMessageShown = $false
 
     while (-not (Test-DockerRunning) -and $WaitedSeconds -lt $MaxWaitSeconds) {
         Start-Sleep -Seconds 2
         $WaitedSeconds += 2
 
-        if ($WaitedSeconds % 10 -eq 0 -and -not $ReadyMessageShown) {
+        if ($WaitedSeconds % 10 -eq 0) {
             Write-Host "[WAIT] Still waiting... ($WaitedSeconds seconds elapsed)" -ForegroundColor Yellow
         }
     }
 
     if (Test-DockerRunning) {
         $DockerVersion = docker version --format '{{.Server.Version}}' 2>&1
-        Write-Host "[OK] Docker Desktop is ready (version: $DockerVersion)" -ForegroundColor Green
+        Write-Host "[OK] Docker is ready (version: $DockerVersion)" -ForegroundColor Green
     } else {
-        Write-Host "[ERROR] Docker Desktop failed to start within $MaxWaitSeconds seconds!" -ForegroundColor Red
-        Write-Host "Please check Docker Desktop manually and ensure it can start properly.`n" -ForegroundColor Yellow
+        Write-Host "[ERROR] Docker failed to start within $MaxWaitSeconds seconds!" -ForegroundColor Red
+        Write-Host "Verify 'com.docker.service' is set to Automatic start in Windows Services (services.msc).`n" -ForegroundColor Yellow
         exit 1
     }
 } else {
     $DockerVersion = docker version --format '{{.Server.Version}}' 2>&1
-    Write-Host "[OK] Docker Desktop is already running (version: $DockerVersion)" -ForegroundColor Green
+    Write-Host "[OK] Docker is already running (version: $DockerVersion)" -ForegroundColor Green
 }
 
 # Create required Docker networks (ignore errors if they already exist)
