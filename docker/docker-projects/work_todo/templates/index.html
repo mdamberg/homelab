@@ -27,7 +27,7 @@
             border: 1px solid #00ffff;
             border-radius: 8px;
             padding: 12px 15px;
-            margin-bottom: 10px;
+            margin-bottom: 6px;
             transition: all 0.2s;
             color: #ffffff;
         }
@@ -42,6 +42,46 @@
         .todo-item.done .task-text {
             text-decoration: line-through;
         }
+        /* Parent tasks get a purple border to distinguish them */
+        .todo-item.parent-item {
+            border-color: #9b59b6;
+            border-width: 2px;
+        }
+        .todo-item.parent-item:hover {
+            box-shadow: 0 0 15px rgba(155, 89, 182, 0.5);
+        }
+        /* Child tasks are indented and slightly subdued */
+        .child-container {
+            margin-left: 20px;
+            margin-bottom: 6px;
+        }
+        .todo-item.child-item {
+            background: #080808;
+            border-color: #444;
+            margin-bottom: 4px;
+        }
+        .todo-item.child-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 0 10px rgba(155, 89, 182, 0.3);
+        }
+        .child-indicator {
+            color: #9b59b6;
+            margin-right: 4px;
+            font-size: 13px;
+            flex-shrink: 0;
+        }
+        .parent-badge {
+            display: inline-block;
+            background: rgba(155, 89, 182, 0.2);
+            border: 1px solid #9b59b6;
+            color: #9b59b6;
+            font-size: 10px;
+            padding: 1px 6px;
+            border-radius: 10px;
+            margin-left: 6px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
         .todo-top-row {
             display: flex;
             align-items: center;
@@ -54,6 +94,19 @@
         }
         .task-text {
             word-break: break-word;
+        }
+        /* On mobile, move task text to its own full-width row above the controls */
+        @media (max-width: 576px) {
+            .todo-top-row {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .todo-task-area {
+                order: -1;
+                flex-basis: 100%;
+                min-width: 100%;
+                margin-bottom: 2px;
+            }
         }
         .add-form {
             display: flex;
@@ -100,7 +153,8 @@
             background: #ffff00;
             color: #000000;
         }
-        .btn-notes {
+        /* Notes and link toggle buttons share the same style */
+        .btn-notes, .btn-link {
             background: transparent;
             border: 1px solid #555;
             color: #888;
@@ -110,11 +164,11 @@
             cursor: pointer;
             white-space: nowrap;
         }
-        .btn-notes:hover {
+        .btn-notes:hover, .btn-link:hover {
             border-color: #9b59b6;
             color: #9b59b6;
         }
-        .btn-notes.has-notes {
+        .btn-notes.has-notes, .btn-link.has-parent {
             border-color: #9b59b6;
             color: #9b59b6;
         }
@@ -160,6 +214,7 @@
             background: #1a1a1a;
             color: #ffffff;
         }
+        /* Collapsible notes section */
         .notes-section {
             display: none;
             margin-top: 10px;
@@ -190,6 +245,31 @@
             border-left: 2px solid #9b59b6;
             white-space: pre-wrap;
             word-break: break-word;
+        }
+        /* Collapsible parent-link section */
+        .link-section {
+            display: none;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #222;
+        }
+        .link-section select {
+            background: #111;
+            border: 1px solid #9b59b6;
+            color: #cccccc;
+            border-radius: 4px;
+            font-size: 13px;
+            padding: 4px 8px;
+            width: 100%;
+            cursor: pointer;
+        }
+        .link-section select:focus {
+            outline: none;
+            border-color: #00ffff;
+        }
+        .link-section select option {
+            background: #111;
+            color: #cccccc;
         }
     </style>
 </head>
@@ -268,94 +348,217 @@
             </div>
 
             {% if grouped_todos %}
-                {% for category, category_todos in grouped_todos.items() %}
+                {% for group_name, group_items in grouped_todos.items() %}
                 <div class="category-header">
                     {% if sort == 'urgency' %}
-                        {% if category == 'High' %}🔴 High Priority
-                        {% elif category == 'Medium' %}🟡 Medium Priority
+                        {% if group_name == 'High' %}🔴 High Priority
+                        {% elif group_name == 'Medium' %}🟡 Medium Priority
                         {% else %}🟢 Low Priority
                         {% endif %}
-                    {% elif category == 'Projects' %}📁 Projects
-                    {% elif category == 'Planning' %}🗺️ Planning
-                    {% elif category == 'Meetings/Follow-ups' %}📅 Meetings/Follow-ups
-                    {% elif category == 'Documentation' %}📄 Documentation
-                    {% elif category == 'Research' %}🔍 Research
+                    {% elif group_name == 'Projects' %}📁 Projects
+                    {% elif group_name == 'Planning' %}🗺️ Planning
+                    {% elif group_name == 'Meetings/Follow-ups' %}📅 Meetings/Follow-ups
+                    {% elif group_name == 'Documentation' %}📄 Documentation
+                    {% elif group_name == 'Research' %}🔍 Research
                     {% else %}📝 General
                     {% endif %}
-                    <span style="color: #00ffff; font-size: 14px;">({{ category_todos|length }} task{{ 's' if category_todos|length > 1 else '' }})</span>
+                    <span style="color: #00ffff; font-size: 14px;">({{ group_items|length }} task{{ 's' if group_items|length > 1 else '' }})</span>
                 </div>
 
-                {% for todo in category_todos %}
-                <div class="todo-item {% if todo.done %}done{% endif %}">
+                {% for item in group_items %}
+                {# ── Parent or standalone task ── #}
+                <div class="todo-item {% if item.todo.done %}done{% endif %} {% if item.is_parent %}parent-item{% endif %}">
                     <div class="todo-top-row">
-                        <!-- Priority dropdown -->
-                        <form method="POST" action="/update_priority/{{ todo.id }}" style="display: inline-block; flex-shrink: 0;">
+                        <!-- Priority -->
+                        <form method="POST" action="/update_priority/{{ item.todo.id }}" style="display: inline-block; flex-shrink: 0;">
                             <input type="hidden" name="sort" value="{{ sort }}">
                             <select name="priority"
                                     class="priority-select"
                                     onchange="this.form.submit()"
-                                    style="border: 1px solid {% if todo.priority == 'High' %}#ffff00{% elif todo.priority == 'Medium' %}#00ffff{% else %}#9b59b6{% endif %}; color: {% if todo.priority == 'High' %}#ffff00{% elif todo.priority == 'Medium' %}#00ffff{% else %}#9b59b6{% endif %};">
-                                <option value="High" {% if todo.priority == 'High' %}selected{% endif %}>🔴</option>
-                                <option value="Medium" {% if todo.priority == 'Medium' %}selected{% endif %}>🟡</option>
-                                <option value="Low" {% if todo.priority == 'Low' %}selected{% endif %}>🟢</option>
+                                    style="border: 1px solid {% if item.todo.priority == 'High' %}#ffff00{% elif item.todo.priority == 'Medium' %}#00ffff{% else %}#9b59b6{% endif %}; color: {% if item.todo.priority == 'High' %}#ffff00{% elif item.todo.priority == 'Medium' %}#00ffff{% else %}#9b59b6{% endif %};">
+                                <option value="High" {% if item.todo.priority == 'High' %}selected{% endif %}>🔴</option>
+                                <option value="Medium" {% if item.todo.priority == 'Medium' %}selected{% endif %}>🟡</option>
+                                <option value="Low" {% if item.todo.priority == 'Low' %}selected{% endif %}>🟢</option>
                             </select>
                         </form>
-
-                        <!-- Category dropdown -->
-                        <form method="POST" action="/update_category/{{ todo.id }}" style="display: inline-block; flex-shrink: 0;">
+                        <!-- Category -->
+                        <form method="POST" action="/update_category/{{ item.todo.id }}" style="display: inline-block; flex-shrink: 0;">
                             <input type="hidden" name="sort" value="{{ sort }}">
                             <select name="category"
                                     class="priority-select"
                                     onchange="this.form.submit()"
                                     style="border: 1px solid #9b59b6; color: #9b59b6;">
-                                <option value="Projects" {% if todo.category == 'Projects' %}selected{% endif %}>📁</option>
-                                <option value="Planning" {% if todo.category == 'Planning' %}selected{% endif %}>🗺️</option>
-                                <option value="Meetings/Follow-ups" {% if todo.category == 'Meetings/Follow-ups' %}selected{% endif %}>📅</option>
-                                <option value="Documentation" {% if todo.category == 'Documentation' %}selected{% endif %}>📄</option>
-                                <option value="Research" {% if todo.category == 'Research' %}selected{% endif %}>🔍</option>
-                                <option value="General" {% if todo.category == 'General' %}selected{% endif %}>📝</option>
+                                <option value="Projects" {% if item.todo.category == 'Projects' %}selected{% endif %}>📁</option>
+                                <option value="Planning" {% if item.todo.category == 'Planning' %}selected{% endif %}>🗺️</option>
+                                <option value="Meetings/Follow-ups" {% if item.todo.category == 'Meetings/Follow-ups' %}selected{% endif %}>📅</option>
+                                <option value="Documentation" {% if item.todo.category == 'Documentation' %}selected{% endif %}>📄</option>
+                                <option value="Research" {% if item.todo.category == 'Research' %}selected{% endif %}>🔍</option>
+                                <option value="General" {% if item.todo.category == 'General' %}selected{% endif %}>📝</option>
                             </select>
                         </form>
-
                         <!-- Task text -->
                         <div class="todo-task-area">
                             <span class="task-text">
-                                {% if todo.done %}✅{% else %}⬜{% endif %} {{ todo.task }}
+                                {% if item.todo.done %}✅{% else %}⬜{% endif %} {{ item.todo.task }}
                             </span>
+                            {% if item.is_parent %}
+                                <span class="parent-badge">{{ item.children|length }} subtask{{ 's' if item.children|length != 1 else '' }}</span>
+                            {% endif %}
                         </div>
-
                         <!-- Notes toggle -->
                         <button type="button"
-                                class="btn-notes {% if todo.notes %}has-notes{% endif %}"
-                                onclick="toggleNotes({{ todo.id }})"
-                                title="{% if todo.notes %}View/edit notes{% else %}Add a note{% endif %}">
-                            📝{% if todo.notes %} ✓{% endif %}
+                                class="btn-notes {% if item.todo.notes %}has-notes{% endif %}"
+                                onclick="toggleSection('notes', {{ item.todo.id }})"
+                                title="{% if item.todo.notes %}View/edit notes{% else %}Add a note{% endif %}">
+                            📝{% if item.todo.notes %} ✓{% endif %}
                         </button>
-
+                        <!-- Parent-link toggle (only in category view, only for non-parents) -->
+                        {% if sort == 'category' and not item.is_parent %}
+                        <button type="button"
+                                class="btn-link {% if item.todo.parent_id is not none %}has-parent{% endif %}"
+                                onclick="toggleSection('link', {{ item.todo.id }})"
+                                title="{% if item.todo.parent_id is not none %}Change or remove parent{% else %}Link to a parent task{% endif %}">
+                            ⛓️{% if item.todo.parent_id is not none %} ✓{% endif %}
+                        </button>
+                        {% endif %}
                         <!-- Action buttons -->
                         <div style="display: flex; gap: 4px; flex-shrink: 0;">
-                            <a href="/toggle/{{ todo.id }}" class="btn btn-sm btn-outline-success">
-                                {% if todo.done %}Undo{% else %}Done{% endif %}
+                            <a href="/toggle/{{ item.todo.id }}" class="btn btn-sm btn-outline-success">
+                                {% if item.todo.done %}Undo{% else %}Done{% endif %}
                             </a>
-                            <a href="/delete/{{ todo.id }}" class="btn btn-sm btn-outline-danger">Del</a>
+                            <a href="/delete/{{ item.todo.id }}" class="btn btn-sm btn-outline-danger">Del</a>
                         </div>
                     </div>
 
-                    <!-- Notes section (collapsed by default, open if notes exist) -->
-                    <div class="notes-section" id="notes-{{ todo.id }}" {% if todo.notes %}style="display: block;"{% endif %}>
-                        {% if todo.notes and not todo.notes == '' %}
-                        <div class="notes-display" id="notes-display-{{ todo.id }}">{{ todo.notes }}</div>
+                    <!-- Notes section -->
+                    <div class="notes-section" id="notes-{{ item.todo.id }}" {% if item.todo.notes %}style="display: block;"{% endif %}>
+                        {% if item.todo.notes %}
+                        <div class="notes-display">{{ item.todo.notes }}</div>
                         {% endif %}
-                        <form method="POST" action="/update_notes/{{ todo.id }}" style="margin-top: 8px;">
+                        <form method="POST" action="/update_notes/{{ item.todo.id }}" style="margin-top: 8px;">
                             <input type="hidden" name="sort" value="{{ sort }}">
-                            <textarea name="notes" placeholder="Add a note...">{{ todo.notes }}</textarea>
+                            <textarea name="notes" placeholder="Add a note...">{{ item.todo.notes }}</textarea>
                             <div style="display: flex; gap: 6px; margin-top: 6px;">
                                 <button type="submit" class="btn btn-sm btn-primary">Save</button>
-                                <button type="button" class="btn btn-sm" style="color: #555; border: 1px solid #333;" onclick="toggleNotes({{ todo.id }})">Cancel</button>
+                                <button type="button" class="btn btn-sm" style="color: #555; border: 1px solid #333;" onclick="toggleSection('notes', {{ item.todo.id }})">Cancel</button>
                             </div>
                         </form>
                     </div>
+
+                    <!-- Parent-link section -->
+                    {% if sort == 'category' and not item.is_parent %}
+                    <div class="link-section" id="link-{{ item.todo.id }}">
+                        <form method="POST" action="/update_parent/{{ item.todo.id }}">
+                            <input type="hidden" name="sort" value="{{ sort }}">
+                            <select name="parent_id" onchange="this.form.submit()">
+                                <option value="">— No parent (standalone) —</option>
+                                {% for ep in item.eligible_parents %}
+                                <option value="{{ ep.id }}" {% if item.todo.parent_id == ep.id %}selected{% endif %}>
+                                    {{ ep.task }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                    {% endif %}
                 </div>
+
+                {# ── Child tasks ── #}
+                {% if item.children %}
+                <div class="child-container">
+                    {% for child_item in item.children %}
+                    <div class="todo-item child-item {% if child_item.todo.done %}done{% endif %}">
+                        <div class="todo-top-row">
+                            <!-- Priority -->
+                            <form method="POST" action="/update_priority/{{ child_item.todo.id }}" style="display: inline-block; flex-shrink: 0;">
+                                <input type="hidden" name="sort" value="{{ sort }}">
+                                <select name="priority"
+                                        class="priority-select"
+                                        onchange="this.form.submit()"
+                                        style="border: 1px solid {% if child_item.todo.priority == 'High' %}#ffff00{% elif child_item.todo.priority == 'Medium' %}#00ffff{% else %}#9b59b6{% endif %}; color: {% if child_item.todo.priority == 'High' %}#ffff00{% elif child_item.todo.priority == 'Medium' %}#00ffff{% else %}#9b59b6{% endif %};">
+                                    <option value="High" {% if child_item.todo.priority == 'High' %}selected{% endif %}>🔴</option>
+                                    <option value="Medium" {% if child_item.todo.priority == 'Medium' %}selected{% endif %}>🟡</option>
+                                    <option value="Low" {% if child_item.todo.priority == 'Low' %}selected{% endif %}>🟢</option>
+                                </select>
+                            </form>
+                            <!-- Category -->
+                            <form method="POST" action="/update_category/{{ child_item.todo.id }}" style="display: inline-block; flex-shrink: 0;">
+                                <input type="hidden" name="sort" value="{{ sort }}">
+                                <select name="category"
+                                        class="priority-select"
+                                        onchange="this.form.submit()"
+                                        style="border: 1px solid #9b59b6; color: #9b59b6;">
+                                    <option value="Projects" {% if child_item.todo.category == 'Projects' %}selected{% endif %}>📁</option>
+                                    <option value="Planning" {% if child_item.todo.category == 'Planning' %}selected{% endif %}>🗺️</option>
+                                    <option value="Meetings/Follow-ups" {% if child_item.todo.category == 'Meetings/Follow-ups' %}selected{% endif %}>📅</option>
+                                    <option value="Documentation" {% if child_item.todo.category == 'Documentation' %}selected{% endif %}>📄</option>
+                                    <option value="Research" {% if child_item.todo.category == 'Research' %}selected{% endif %}>🔍</option>
+                                    <option value="General" {% if child_item.todo.category == 'General' %}selected{% endif %}>📝</option>
+                                </select>
+                            </form>
+                            <!-- Task text with child indicator -->
+                            <div class="todo-task-area">
+                                <span class="child-indicator">↳</span>
+                                <span class="task-text">
+                                    {% if child_item.todo.done %}✅{% else %}⬜{% endif %} {{ child_item.todo.task }}
+                                </span>
+                            </div>
+                            <!-- Notes toggle -->
+                            <button type="button"
+                                    class="btn-notes {% if child_item.todo.notes %}has-notes{% endif %}"
+                                    onclick="toggleSection('notes', {{ child_item.todo.id }})"
+                                    title="{% if child_item.todo.notes %}View/edit notes{% else %}Add a note{% endif %}">
+                                📝{% if child_item.todo.notes %} ✓{% endif %}
+                            </button>
+                            <!-- Parent-link toggle (always shown for children) -->
+                            <button type="button"
+                                    class="btn-link has-parent"
+                                    onclick="toggleSection('link', {{ child_item.todo.id }})"
+                                    title="Change or remove parent">
+                                ⛓️ ✓
+                            </button>
+                            <!-- Action buttons -->
+                            <div style="display: flex; gap: 4px; flex-shrink: 0;">
+                                <a href="/toggle/{{ child_item.todo.id }}" class="btn btn-sm btn-outline-success">
+                                    {% if child_item.todo.done %}Undo{% else %}Done{% endif %}
+                                </a>
+                                <a href="/delete/{{ child_item.todo.id }}" class="btn btn-sm btn-outline-danger">Del</a>
+                            </div>
+                        </div>
+
+                        <!-- Notes section -->
+                        <div class="notes-section" id="notes-{{ child_item.todo.id }}" {% if child_item.todo.notes %}style="display: block;"{% endif %}>
+                            {% if child_item.todo.notes %}
+                            <div class="notes-display">{{ child_item.todo.notes }}</div>
+                            {% endif %}
+                            <form method="POST" action="/update_notes/{{ child_item.todo.id }}" style="margin-top: 8px;">
+                                <input type="hidden" name="sort" value="{{ sort }}">
+                                <textarea name="notes" placeholder="Add a note...">{{ child_item.todo.notes }}</textarea>
+                                <div style="display: flex; gap: 6px; margin-top: 6px;">
+                                    <button type="submit" class="btn btn-sm btn-primary">Save</button>
+                                    <button type="button" class="btn btn-sm" style="color: #555; border: 1px solid #333;" onclick="toggleSection('notes', {{ child_item.todo.id }})">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Parent-link section -->
+                        <div class="link-section" id="link-{{ child_item.todo.id }}">
+                            <form method="POST" action="/update_parent/{{ child_item.todo.id }}">
+                                <input type="hidden" name="sort" value="{{ sort }}">
+                                <select name="parent_id" onchange="this.form.submit()">
+                                    <option value="">— Unlink (make standalone) —</option>
+                                    {% for ep in child_item.eligible_parents %}
+                                    <option value="{{ ep.id }}" {% if child_item.todo.parent_id == ep.id %}selected{% endif %}>
+                                        {{ ep.task }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
                 {% endfor %}
                 {% endfor %}
             {% else %}
@@ -367,8 +570,8 @@
     </div>
 
     <script>
-        function toggleNotes(todoId) {
-            const section = document.getElementById('notes-' + todoId);
+        function toggleSection(type, todoId) {
+            const section = document.getElementById(type + '-' + todoId);
             section.style.display = section.style.display === 'none' || section.style.display === '' ? 'block' : 'none';
         }
     </script>

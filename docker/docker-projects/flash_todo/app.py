@@ -72,20 +72,61 @@ def auto_assign_category(task):
 
 
 def migrate_todos(todos):
-    """Migrate old todos to new format with category and priority"""
     migrated = False
     for todo in todos:
-        # Add category if missing
         if 'category' not in todo:
             todo['category'] = auto_assign_category(todo['task'])
             migrated = True
-
-        # Add priority if missing (default to Medium)
         if 'priority' not in todo:
             todo['priority'] = 'Medium'
             migrated = True
-
+        if 'notes' not in todo:
+            todo['notes'] = ''
+            migrated = True
+        if 'parent_id' not in todo:
+            todo['parent_id'] = None
+            migrated = True
     return todos, migrated
+
+
+def build_hierarchy(todos):
+    """Organizes a category's todos into parent/child structure for the category view."""
+    by_id              = {t['id']: t for t in todos}
+    children_by_parent = {}
+    top_level          = []
+
+    for todo in todos:
+        pid = todo.get('parent_id')
+        if pid is not None and pid in by_id:
+            children_by_parent.setdefault(pid, []).append(todo)
+        else:
+            top_level.append(todo)
+
+    result = []
+    for todo in top_level:
+        children  = children_by_parent.get(todo['id'], [])
+        is_parent = bool(children)
+
+        # Pending-first sort within children
+        children_sorted = sorted(children, key=lambda c: c['done'])
+
+        # Tasks with no children can be linked to a parent; parents cannot
+        ep = [t for t in top_level if t['id'] != todo['id']] if not is_parent else []
+
+        child_items = []
+        for c in children_sorted:
+            c_ep = [t for t in top_level if t['id'] != c['id']]
+            child_items.append({'todo': c, 'eligible_parents': c_ep})
+
+        result.append({
+            'todo':             todo,
+            'children':         child_items,
+            'eligible_parents': ep,
+            'is_parent':        is_parent,
+        })
+
+    # Sink done parent groups to the bottom
+    return sorted(result, key=lambda item: item['todo']['done'])
 
 
 def calculate_metrics(todos, stats=None):
@@ -153,17 +194,19 @@ def index():
 
     grouped_todos = {}
     if sort == 'urgency':
-        # Group by priority: High → Medium → Low
         for priority in ['High', 'Medium', 'Low']:
-            priority_todos = [todo for todo in todos if todo.get('priority') == priority]
+            priority_todos = [t for t in todos if t.get('priority') == priority]
             if priority_todos:
-                grouped_todos[priority] = priority_todos
+                # Flat items wrapped in hierarchy shape for template consistency
+                grouped_todos[priority] = [
+                    {'todo': t, 'children': [], 'eligible_parents': [], 'is_parent': False}
+                    for t in sorted(priority_todos, key=lambda t: t['done'])
+                ]
     else:
-        # Group by category (default)
         for category in categories:
-            category_todos = [todo for todo in todos if todo.get('category') == category]
+            category_todos = [t for t in todos if t.get('category') == category]
             if category_todos:
-                grouped_todos[category] = category_todos
+                grouped_todos[category] = build_hierarchy(category_todos)
 
     return render_template('index.html',
                          todos=todos,
@@ -184,12 +227,14 @@ def add_todo():
 
     if task:                                    # If they typed something
         todos = load_todos()                    # Load existing todos
-        todos.append({                          # Add new todo to list
-            'task': task,
-            'done': False,
-            'id': len(todos),                   # ID = current length
-            'category': category,
-            'priority': priority
+        todos.append({
+            'task':      task,
+            'done':      False,
+            'id':        len(todos),
+            'category':  category,
+            'priority':  priority,
+            'notes':     '',
+            'parent_id': None,
         })
         save_todos(todos)                       # Save updated list
     return redirect(url_for('index'))           # Go back to homepage
@@ -237,6 +282,36 @@ def update_category(todo_id):
     return redirect(url_for('index', sort=sort))
 
 
+@app.route('/update_notes/<int:todo_id>', methods=['POST'])
+def update_notes(todo_id):
+    notes = request.form.get('notes', '').strip()
+    sort  = request.form.get('sort', 'category')
+    todos = load_todos()
+    if 0 <= todo_id < len(todos):
+        todos[todo_id]['notes'] = notes
+        save_todos(todos)
+    return redirect(url_for('index', sort=sort))
+
+
+@app.route('/update_parent/<int:todo_id>', methods=['POST'])
+def update_parent(todo_id):
+    parent_id_str = request.form.get('parent_id', '')
+    sort          = request.form.get('sort', 'category')
+    todos         = load_todos()
+    if 0 <= todo_id < len(todos):
+        if parent_id_str == '':
+            todos[todo_id]['parent_id'] = None
+        else:
+            try:
+                pid = int(parent_id_str)
+                if 0 <= pid < len(todos) and pid != todo_id:
+                    todos[todo_id]['parent_id'] = pid
+            except ValueError:
+                todos[todo_id]['parent_id'] = None
+        save_todos(todos)
+    return redirect(url_for('index', sort=sort))
+
+
 # Click "Delete" on todo -> Goes to /delete/ -> Removes todo at index 1: todos.pop(1)
 # Reassigns IDs so they're sequential again, Saves and redirects
 @app.route('/delete/<int:todo_id>')
@@ -245,13 +320,29 @@ def delete_todo(todo_id):
     so the completed counter never drops when cleaning up finished tasks."""
     todos = load_todos()
     if 0 <= todo_id < len(todos):
-        removed = todos.pop(todo_id)                    # Remove from list
-        if removed.get('done', False):                  # Was it completed?
+        removed    = todos.pop(todo_id)
+        removed_id = removed['id']
+
+        if removed.get('done', False):
             stats = load_stats()
             stats['deleted_done_count'] = stats.get('deleted_done_count', 0) + 1
-            save_stats(stats)                           # Persist the completion
+            save_stats(stats)
+
+        # Unlink any children whose parent was just deleted
+        for todo in todos:
+            if todo.get('parent_id') == removed_id:
+                todo['parent_id'] = None
+
+        # Reassign sequential IDs and update any parent_id references
+        old_to_new = {}
         for i, todo in enumerate(todos):
-            todo['id'] = i                              # Reassign IDs (0, 1, 2...)
+            old_to_new[todo['id']] = i
+            todo['id'] = i
+        for todo in todos:
+            pid = todo.get('parent_id')
+            if pid is not None:
+                todo['parent_id'] = old_to_new.get(pid)
+
         save_todos(todos)
     return redirect(url_for('index'))
 
@@ -283,11 +374,13 @@ def api_add_todo():
 
     todos = load_todos()                    # Load existing todos
     new_todo = {
-        'task': data['task'],
-        'done': data.get('done', False),    # Default to not done
-        'id': len(todos),
-        'category': data.get('category', 'General'),    # Default to General
-        'priority': data.get('priority', 'Medium')      # Default to Medium
+        'task':      data['task'],
+        'done':      data.get('done', False),
+        'id':        len(todos),
+        'category':  data.get('category', 'General'),
+        'priority':  data.get('priority', 'Medium'),
+        'notes':     data.get('notes', ''),
+        'parent_id': data.get('parent_id', None),
     }
     todos.append(new_todo)                  # Add to list
     save_todos(todos)                       # Save
@@ -302,14 +395,9 @@ def api_update_todo(todo_id):
         return jsonify({'error': 'Todo not found'}), 404
 
     data = request.get_json()               # Get update data
-    if 'task' in data:                      # Update task if provided
-        todos[todo_id]['task'] = data['task']
-    if 'done' in data:                      # Update done status if provided
-        todos[todo_id]['done'] = data['done']
-    if 'category' in data:                  # Update category if provided
-        todos[todo_id]['category'] = data['category']
-    if 'priority' in data:                  # Update priority if provided
-        todos[todo_id]['priority'] = data['priority']
+    for field in ('task', 'done', 'category', 'priority', 'notes', 'parent_id'):
+        if field in data:
+            todos[todo_id][field] = data[field]
 
     save_todos(todos)                       # Save changes
     return jsonify(todos[todo_id]), 200     # Return updated todo
@@ -323,12 +411,26 @@ def api_delete_todo(todo_id):
         return jsonify({'error': 'Todo not found'}), 404
 
     deleted_todo = todos.pop(todo_id)
-    if deleted_todo.get('done', False):                 # Persist completion if task was done
+    removed_id   = deleted_todo['id']
+
+    if deleted_todo.get('done', False):
         stats = load_stats()
         stats['deleted_done_count'] = stats.get('deleted_done_count', 0) + 1
         save_stats(stats)
+
+    for todo in todos:
+        if todo.get('parent_id') == removed_id:
+            todo['parent_id'] = None
+
+    old_to_new = {}
     for i, todo in enumerate(todos):
+        old_to_new[todo['id']] = i
         todo['id'] = i
+    for todo in todos:
+        pid = todo.get('parent_id')
+        if pid is not None:
+            todo['parent_id'] = old_to_new.get(pid)
+
     save_todos(todos)
     return jsonify({'message': 'Todo deleted', 'todo': deleted_todo}), 200
 
