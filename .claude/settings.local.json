@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -NoProfile -Command \"Set-Content -Path dbt-schedule -Value \\(''0 6-22/2 * * * /bin/sh -c \"\"dbt run && dbt test\"\"'' + [char]10 + ''0 0 * * * /bin/sh -c \"\"dbt source freshness && dbt run --full-refresh --select path:models/staging && dbt test\"\"'' + [char]10\\) -NoNewline\")",
+      "Bash(powershell -NoProfile -Command:*)",
+      "Bash(docker run:*)",
+      "Bash(cmd /c:*)",
+      "PowerShell(git -C \"C:\\\\Users\\\\mattd\\\\repos\\\\homelab\" commit -m \"Add Healthchecks.io alerting for dbt scheduled runs\")",
+      "Bash(docker exec *)",
+      "Bash(docker compose *)",
+      "Bash(docker build *)",
+      "Bash(curl -s https://pypi.org/pypi/dbt-postgres/1.10.0/json)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(r\\) for r in d['info']['requires_dist'] if 'dbt-core' in r or 'dbt-adapters' in r]\")",
+      "Bash(curl -s https://pypi.org/pypi/dbt-postgres/1.9.1/json)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(r\\) for r in d['info']['requires_dist'] if 'dbt-core' in r]\")",
+      "Bash(set -e)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
