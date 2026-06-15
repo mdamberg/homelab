@@ -1,6 +1,7 @@
 {{ config(
     materialized = 'table',
-    schema = 'marts'
+    schema = 'marts',
+    enabled = false
 ) }}
 
 
