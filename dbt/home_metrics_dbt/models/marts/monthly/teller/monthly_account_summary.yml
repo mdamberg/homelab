@@ -1,5 +1,32 @@
 models:
   - name: monthly_account_summary
+    description: "A monthly, account level view of finances with metrics for total income, 
+                  expenses and net for each account"
+    
+    meta:
+      # -- Joins --
+      joins:
+        - join: dim_teller_accounts
+          sql_on: ${monthly_account_summary.account_key} = ${dim_teller_accounts.account_key}
+          relationship: many-to-one
+
+      # -- Metrics --
+      metrics:
+        total_expenses:
+          type: sum
+          sql: ${total_expenses}
+          description: "The total dollar amount of expenses per account for that month"
+
+        total_income:
+          type: sum
+          sql: ${total_income}
+          description: "The total dollar amount of income per account for that month"
+
+        net_income:
+          type: sum
+          sql: ${net_income}
+          description: "The overall net income dollar amount per account for that month"
+      
     columns:
       - name: monthly_account_skey
         description: ""

@@ -124,7 +124,7 @@ CREATE TABLE IF NOT EXISTS raw_pihole_metrics (
 
 CREATE INDEX IF NOT EXISTS idx_pihole_time ON raw_pihole_metrics(recorded_at DESC);
 CREATE INDEX IF NOT EXISTS idx_pihole_instance ON raw_pihole_metrics(pihole_instance, recorded_at DESC);
-maibn
+
 COMMENT ON TABLE raw_pihole_metrics IS 'DNS blocking statistics from Pi-hole';
 COMMENT ON COLUMN raw_pihole_metrics.top_blocked_domains IS 'Array of most blocked domains with counts';
 COMMENT ON COLUMN raw_pihole_metrics.top_queries IS 'Array of most queried domains';
@@ -331,3 +331,70 @@ CREATE TABLE IF NOT EXISTS raw.raw_transactions (                               
 
   GRANT SELECT, INSERT, UPDATE, DELETE ON raw.raw_transactions TO metrics_user;
   GRANT USAGE, SELECT ON raw.raw_transactions_id_seq TO metrics_user;
+
+
+-- ============================================================================
+-- Teller (Financial Data)
+-- Must create accounts first — transactions and balances FK to it
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS raw.raw_teller_accounts (
+    id SERIAL PRIMARY KEY,
+    teller_account_id VARCHAR(255) NOT NULL UNIQUE,
+    enrollment_id VARCHAR(255),
+    institution_name VARCHAR(255),
+    institution_id VARCHAR(255),
+    account_name VARCHAR(255),
+    account_type VARCHAR(50),
+    account_subtype VARCHAR(50),
+    account_status VARCHAR(50),
+    currency VARCHAR(10),
+    last_four VARCHAR(10),
+    inserted_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE raw.raw_teller_accounts IS 'Bank accounts connected via Teller API';
+
+CREATE TABLE IF NOT EXISTS raw.raw_teller_transactions (
+    id SERIAL PRIMARY KEY,
+    teller_transaction_id VARCHAR(255) NOT NULL UNIQUE,
+    teller_account_id VARCHAR(255) NOT NULL REFERENCES raw.raw_teller_accounts(teller_account_id) ON DELETE CASCADE,
+    transaction_date DATE NOT NULL,
+    description VARCHAR(500),
+    amount NUMERIC(12, 2) NOT NULL,
+    status VARCHAR(50),
+    type VARCHAR(50),
+    category VARCHAR(100),
+    merchant_name VARCHAR(255),
+    merchant_category VARCHAR(100),
+    running_balance NUMERIC(12, 2),
+    inserted_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_teller_transactions_account ON raw.raw_teller_transactions(teller_account_id);
+CREATE INDEX IF NOT EXISTS idx_teller_transactions_date ON raw.raw_teller_transactions(transaction_date DESC);
+
+COMMENT ON TABLE raw.raw_teller_transactions IS 'Financial transactions from Teller API';
+
+CREATE TABLE IF NOT EXISTS raw.raw_teller_balances (
+    id SERIAL PRIMARY KEY,
+    teller_account_id VARCHAR(255) NOT NULL REFERENCES raw.raw_teller_accounts(teller_account_id) ON DELETE CASCADE,
+    ledger_balance NUMERIC(12, 2),
+    available_balance NUMERIC(12, 2),
+    recorded_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    inserted_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_teller_balances_account ON raw.raw_teller_balances(teller_account_id);
+CREATE INDEX IF NOT EXISTS idx_teller_balances_recorded ON raw.raw_teller_balances(recorded_at DESC);
+
+COMMENT ON TABLE raw.raw_teller_balances IS 'Daily account balance snapshots from Teller';
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON raw.raw_teller_accounts TO metrics_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON raw.raw_teller_transactions TO metrics_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON raw.raw_teller_balances TO metrics_user;
+GRANT USAGE, SELECT ON raw.raw_teller_accounts_id_seq TO metrics_user;
+GRANT USAGE, SELECT ON raw.raw_teller_transactions_id_seq TO metrics_user;
+GRANT USAGE, SELECT ON raw.raw_teller_balances_id_seq TO metrics_user;
