@@ -4,8 +4,11 @@ FROM python:3.11-slim
 # curl is needed for Healthchecks.io pings in run-dbt.sh
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/*
 
-# Install dbt with the Postgres adapter
-RUN pip install --no-cache-dir "dbt-postgres~=1.8.0"
+# Install dbt with the Postgres adapter.
+# dbt-postgres only pins dbt-core>=1.8.0rc1 (no upper bound), which now resolves
+# to the Fusion 2.0 alpha (no Postgres support). Pin dbt-core explicitly to the
+# 1.10 line — one minor behind latest (1.11) for stability.
+RUN pip install --no-cache-dir "dbt-postgres==1.10.0" "dbt-core>=1.10,<1.11"
 
 # Install supercronic (a cron implementation designed for containers)
 ARG SUPERCRONIC_VERSION=v0.2.33
