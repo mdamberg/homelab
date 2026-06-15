@@ -82,12 +82,6 @@ models:
           meta:
             dimension:
               type: string
-      - name: teller_vendor_category
-        description: "Merchant category assigned by Teller"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: running_balance
         description: "Account balance after transaction"
         config:

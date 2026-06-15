@@ -51,8 +51,7 @@ with transactions as (
         vendor_key,
         vendor,
         teller_vendor_name,
-        teller_vendor_category,
-        
+
         -- Flags
         is_recurring,
         is_mapped,

@@ -132,7 +132,6 @@ enriched as (
         -- Vendor fields (mapped with fallback)
         coalesce(vendor_normalized, teller_vendor_name, transaction_description) as vendor,
         teller_vendor_name,
-        teller_vendor_category,
 
         -- Flags
         coalesce(is_recurring, false) as is_recurring,

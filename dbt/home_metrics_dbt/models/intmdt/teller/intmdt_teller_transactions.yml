@@ -208,12 +208,6 @@ models:
           meta:
             dimension:
               type: string
-      - name: teller_vendor_category
-        description: "Original merchant category from Teller"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: is_recurring
         description: "Whether the transaction is recurring per seed mapping"
         config:

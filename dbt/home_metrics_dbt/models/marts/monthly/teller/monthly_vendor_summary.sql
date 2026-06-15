@@ -23,7 +23,6 @@ transactions as (
         ft.account_holder,
         ft.vendor_key,
         ft.vendor,
-        ft.teller_vendor_category,
         ft.vendor_transaction_num,
         ft.category,
         ft.subcategory,
@@ -46,7 +45,6 @@ select
     account_holder,
     vendor_key,
     vendor,
-    max(teller_vendor_category) as teller_vendor_category,
     category,
     subcategory,
 

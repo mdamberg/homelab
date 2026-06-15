@@ -42,12 +42,6 @@ models:
           meta:
             dimension:
               type: string
-      - name: teller_vendor_category
-        description: "Merchant category from Teller"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: category
         description: "Resolved category — custom mapping with fallback to Teller category"
         config:

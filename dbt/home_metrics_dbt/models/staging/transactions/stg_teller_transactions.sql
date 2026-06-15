@@ -16,7 +16,6 @@ select
     type as transaction_type,
     category as teller_category,
     merchant_name as teller_vendor_name,
-    merchant_category as teller_vendor_category,
     running_balance,
     inserted_at,
     updated_at

@@ -172,12 +172,6 @@ models:
           meta:
             dimension:
               type: string
-      - name: teller_vendor_category
-        description: "Category of the vendor in the Teller system"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: is_recurring
         description: "Indicates if the transaction is recurring"
         config:

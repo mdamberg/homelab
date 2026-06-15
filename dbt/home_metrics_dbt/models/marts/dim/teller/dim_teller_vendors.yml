@@ -13,12 +13,6 @@ models:
           meta:
             dimension:
               type: string
-      - name: vendor_category
-        description: ""
-        config:
-          meta:
-            dimension:
-              type: string
       - name: is_recurring_vendor
         description: ""
         config:
