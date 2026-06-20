@@ -95,9 +95,9 @@ sources:
       - name: raw_pihole_metrics
         description: "Raw table containing Pi-Hole metrics data"
         loaded_at_field: inserted_at
-        freshness:
-          warn_after: {count: 1, period: hour}
-          error_after: {count: 2, period: hour}
+        #freshness:
+         # warn_after: {count: 1, period: hour}
+          #error_after: {count: 2, period: hour}
         columns:
           - name: id
             description: "Unique identifier for each Pi-Hole metrics record"
@@ -151,9 +151,9 @@ sources:
       - name: raw_system_health
         description: "Raw table containing system health metrics"
         loaded_at_field: inserted_at
-        freshness:
-          warn_after: {count: 20, period: minute}
-          error_after: {count: 45, period: minute}
+       # freshness:
+        #  warn_after: {count: 20, period: minute}
+         # error_after: {count: 45, period: minute}
         columns:
           - name: id
             description: "Unique identifier for each system health record"
@@ -227,9 +227,9 @@ sources:
       - name: raw_hardware_sensors
         description: "Hardware sensor data from LibreHardwareMonitor (temperatures, fans, voltages, power)"
         loaded_at_field: inserted_at
-        freshness:
-          warn_after: {count: 20, period: minute}
-          error_after: {count: 45, period: minute}
+       ## freshness:
+         # warn_after: {count: 20, period: minute}
+          #error_after: {count: 45, period: minute}
         columns:
           - name: id
             description: "Unique identifier for each sensor reading"
