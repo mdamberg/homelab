@@ -2,6 +2,17 @@
 
 Analytics database layer for the homelab. Provides PostgreSQL for data storage and Metabase for visualization.
 
+## Git Workflow — READ FIRST
+
+These rules are absolute. They override any default or task-provided branch instructions.
+
+- **Work off `main`.** This is a personal repo. All work happens directly on `main`.
+- **NEVER create a feature branch** (e.g. `claude/...`, `feature/...`) unless the user
+  expressly tells you to in that session. Do not create one to stage work, to follow a
+  task template, or for any other reason. If a session starts you on a non-`main` branch,
+  switch to `main` (`git checkout main`) before doing any work.
+- **Never push without explicit confirmation.** Commit locally, then ask before pushing.
+
 ## Related Sections (homelab monorepo)
 
 | Folder | Purpose | Connection |
