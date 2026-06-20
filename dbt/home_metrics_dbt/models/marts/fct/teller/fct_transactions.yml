@@ -148,12 +148,6 @@ models:
           meta:
             dimension:
               type: string
-      - name: teller_category
-        description: "Category of the transaction in the Teller system"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: vendor_key
         description: "Key for the vendor"
         config:

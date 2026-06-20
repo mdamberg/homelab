@@ -45,7 +45,6 @@ with transactions as (
         category_key,
         category,
         subcategory,
-        teller_category,
         
         -- Vendor fields (mapped with fallback)
         vendor_key,
