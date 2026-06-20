@@ -190,12 +190,6 @@ models:
           meta:
             dimension:
               type: string
-      - name: teller_category
-        description: "Original transaction category from Teller"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: vendor
         description: "Resolved vendor — custom mapping with fallback to Teller vendor name then description"
         config:

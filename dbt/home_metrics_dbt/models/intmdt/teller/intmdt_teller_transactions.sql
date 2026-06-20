@@ -127,7 +127,6 @@ enriched as (
         -- Category fields (mapped with fallback to original)
         coalesce(custom_category, teller_category) as category,
         custom_subcategory as subcategory,
-        teller_category,
 
         -- Vendor fields (mapped with fallback)
         coalesce(vendor_normalized, teller_vendor_name, transaction_description) as vendor,
