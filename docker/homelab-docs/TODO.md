@@ -191,6 +191,25 @@
   - Fits naturally into your analytics pipeline
   - n8n can pull transactions → Postgres → dbt → Lightdash
 
+- [ ] **A7. Secrets vault for app/automation credentials**
+  - **Issue**: Secrets currently live as plaintext in two places: scattered `.env` files across 15+ `docker-projects/` folders (gitignored, but still unencrypted on disk), and — newer problem — Claude Code on the web's per-environment "environment variables," which never touch git but also aren't a vault: no encryption at rest, no rotation, no audit trail, just plaintext config tied to your Claude account. Anything long-lived and high-value (a Tailscale auth key, a DB password) shouldn't sit in either place long-term.
+  - **What a secrets vault is**: a dedicated system for storing credentials — encrypted at rest, access-controlled, ideally issuing short-lived/scoped tokens instead of one permanent password. Distinct from A5 (Vaultwarden): Vaultwarden is a personal password manager for human logins (browser/app autofill); this is for machine-to-machine secrets that scripts, compose files, and automated tools read programmatically.
+  - **What needs to happen**:
+    - Stand up a self-hosted secrets manager — [Infisical](https://infisical.com/) (open source, web UI + CLI + REST API, easy Docker deploy) is the best fit for homelab scale; HashiCorp Vault is the more powerful but heavier alternative
+    - Migrate existing `.env` secrets into it over time (start with the items already flagged in CRITICAL #4)
+    - For any credential a Claude Code cloud session needs (see A8), issue a scoped/short-lived token from the vault rather than pasting a long-lived secret into the session's environment variables
+  - **Note**: even with a vault, the cloud session still needs one bootstrap credential to authenticate *to* the vault — that one stays in plaintext env config. The win is that it's the only one, and it can be scoped/rotated/revoked instead of being your actual DB password or Tailscale key.
+
+- [ ] **A8. Scoped read-only query access for Claude Code (DBeaver-style)**
+  - **Issue**: Wanted Claude Code cloud sessions to query the home-metrics Postgres DB directly (like DBeaver) instead of manual copy/paste. Cloud sessions run in ephemeral, isolated containers with no route to the home network by default — even the most permissive network tier only allows outbound HTTP/HTTPS through a security proxy (no raw UDP), so joining the Tailscale mesh isn't reliable and would expose every other tailnet service (Plex, Home Assistant, Portainer, etc.), not just the DB.
+  - **What needs to happen**:
+    - Build a small read-only HTTP(S) API in front of just Postgres — [PostgREST](https://postgrest.org/) (auto-generates a REST API from a Postgres schema) is the fastest path; a thin custom Flask/FastAPI wrapper is the alternative if finer control over allowed queries is wanted
+    - Create a dedicated read-only Postgres role (`GRANT SELECT` only, no write/DDL) for the API to use — don't point it at an admin credential
+    - Expose the API at one stable domain (e.g. via Tailscale Funnel or a small reverse proxy with TLS) — only that single domain needs to be reachable, not the whole tailnet
+    - On the Claude Code side: add that domain to the environment's Custom network allowlist, and store the API key as an environment variable (ideally a vault-issued token once A7 exists)
+    - Optional: a SessionStart hook so future sessions pick up the endpoint/key automatically without manual setup each time
+  - **Note**: this Postgres instance also holds Teller financial transaction data (see `dbt/home_metrics_dbt/models/.../teller/`) — scope the read-only role/views carefully before exposing anything externally, even read-only.
+
 ---
 
 ## Notes
