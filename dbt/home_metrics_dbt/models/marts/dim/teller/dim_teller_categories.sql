@@ -1,12 +1,10 @@
 {{ config(
     materialized = 'table',
     schema = 'marts',
-    enabled = false
 ) }}
 
 select
-    category_key,
+    distinct category_key,
     category,
-    subcategory,
-    teller_category,
+    subcategory
 from {{ ref('intmdt_teller_transactions') }}
