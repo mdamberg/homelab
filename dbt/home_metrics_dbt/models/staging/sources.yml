@@ -261,11 +261,9 @@ sources:
             description: "Additional metadata in JSON format"
 
       - name: raw_transactions
-        description: "Raw table containing financial transaction data imported from budgeting app CSV exports (legacy - being replaced by Teller)"
+        description: "Raw table containing financial transaction data imported from budgeting app CSV exports (legacy - replaced by Teller, no longer loaded)"
         loaded_at_field: inserted_at
-        freshness:
-          warn_after: {count: 30, period: day}
-          error_after: {count: 60, period: day}
+        # freshness disabled: legacy source, replaced by raw_teller_transactions (teller_financial_sync.json)
         columns:
           - name: id
             description: "Unique identifier for each transaction record"
