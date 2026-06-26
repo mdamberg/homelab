@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS raw_media_library_metrics (
     recorded_at TIMESTAMP NOT NULL,
     inserted_at TIMESTAMP NOT NULL DEFAULT NOW(),
     metadata JSONB,
-    CONSTRAINT uq_metrics_source_time UNIQUE (source, recorded_at)
+    CONSTRAINT uq_metrics_source_library_time UNIQUE (source, library_name, recorded_at)
 );
 
 CREATE INDEX IF NOT EXISTS idx_media_metrics_source_time ON raw_media_library_metrics(source, recorded_at DESC);
