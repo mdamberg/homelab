@@ -9,9 +9,7 @@ sources:
       - name: raw_media_activity
         description: "Raw table containing media activity data (Prowlarr, Sonarr, Radarr)"
         loaded_at_field: inserted_at
-        freshness:
-          warn_after: {count: 12, period: hour}
-          error_after: {count: 24, period: hour}
+        # freshness disabled: no active feeder (only _legacy/plex_media_workflow*.json, both inactive); table is empty
         columns:
           - name: id
             description: "Unique identifier for each media activity record"
@@ -151,9 +149,9 @@ sources:
       - name: raw_system_health
         description: "Raw table containing system health metrics"
         loaded_at_field: inserted_at
-       # freshness:
-        #  warn_after: {count: 20, period: minute}
-         # error_after: {count: 45, period: minute}
+        freshness:
+          warn_after: {count: 1, period: hour}
+          error_after: {count: 3, period: hour}
         columns:
           - name: id
             description: "Unique identifier for each system health record"
@@ -227,9 +225,9 @@ sources:
       - name: raw_hardware_sensors
         description: "Hardware sensor data from LibreHardwareMonitor (temperatures, fans, voltages, power)"
         loaded_at_field: inserted_at
-       ## freshness:
-         # warn_after: {count: 20, period: minute}
-          #error_after: {count: 45, period: minute}
+        freshness:
+          warn_after: {count: 1, period: hour}
+          error_after: {count: 3, period: hour}
         columns:
           - name: id
             description: "Unique identifier for each sensor reading"

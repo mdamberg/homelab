@@ -21,10 +21,14 @@ ping_hc "${HC_URL}/start"
 
 EXIT=0
 
+# Freshness runs every invocation but never blocks transforms — a stale
+# source should raise an alert, not stop dbt run/test from executing.
+dbt source freshness || EXIT=$?
+
 if [ "$MODE" = "regular" ]; then
-    dbt run && dbt test || EXIT=$?
+    { dbt run && dbt test; } || EXIT=$?
 else
-    dbt source freshness && dbt run --full-refresh --select path:models/staging && dbt test || EXIT=$?
+    { dbt run --full-refresh --select path:models/staging && dbt test; } || EXIT=$?
 fi
 
 if [ "$EXIT" -eq 0 ]; then
