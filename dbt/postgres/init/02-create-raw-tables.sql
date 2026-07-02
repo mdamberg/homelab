@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS raw_media_library_metrics (
     CONSTRAINT uq_metrics_source_library_time UNIQUE (source, library_name, recorded_at)
 );
 
+
 CREATE INDEX IF NOT EXISTS idx_media_metrics_source_time ON raw_media_library_metrics(source, recorded_at DESC);
 
 COMMENT ON TABLE raw_media_library_metrics IS 'Aggregated media library metrics (counts, sizes) per source';
