@@ -35,6 +35,7 @@ services:
       DBT_PROFILES_DIR: /root/.dbt
       HC_DBT_REGULAR: ${HC_DBT_REGULAR:-}
       HC_DBT_REFRESH: ${HC_DBT_REFRESH:-}
+      HC_DBT_FRESHNESS: ${HC_DBT_FRESHNESS:-}
     volumes:
       - ./home_metrics_dbt:/usr/app/dbt
       - ./profiles:/root/.dbt:ro

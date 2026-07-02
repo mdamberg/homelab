@@ -4,19 +4,9 @@ This file documents the granularity for each intermediate model. Intermediate mo
 
 ---
 
-## System Monitoring
-
-1. **int_desktop_metrics**
-   - Grain: 1 row per 15-minute interval per hostname
-   - Primary key: `system_health_id` + `interval_ts`
-   - Joins: `stg_system_health` + `stg_hardware_sensors` (on 15-min interval)
-   - Purpose: Aligns system health and hardware sensor data to same time grain for downstream fact table
-
----
-
 ## Financial
 
-2. **intmdt_transactions**
+1. **intmdt_transactions**
    - Grain: 1 row per transaction
    - Primary key: `transaction_pk`
    - Surrogate key: `transaction_skey`
