@@ -26,9 +26,11 @@ with n8n_runs as (
         max(case when workflow_status = 'error' then 1 else 0 end) as is_failed_run,
         max(case when alert_type = 'no_data' then 1 else 0 end) as is_no_data_alert,
         max(case when alert_type = 'node_error' then 1 else 0 end) as is_node_error_alert
-
     from {{ ref('intmdt_n8n_runs') }}
     group by workflow_run_pk
 )
 
-select * from n8n_runs
+select 
+    *,
+    row_number() over (partition by workflow_id, date_started order by time_started) as daily_run_num
+from n8n_runs

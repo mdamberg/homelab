@@ -1,0 +1,120 @@
+models:
+  - name: fct_n8n_workflow_runs
+    description: >-
+      Historical fact table of n8n workflow runs, one row per workflow run.
+      Collapses the run-per-alert grain of intmdt_n8n_runs down to a single row
+      per run and carries success/failure and alert flags used across this
+      homelab project.
+
+    columns:
+      - name: workflow_run_pk
+        description: "Unique identifier for each workflow run — the grain of this model"
+        tests:
+          - unique
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: workflow_status_key
+        description: "Surrogate key representing the workflow run's execution status"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: workflow_id
+        description: "n8n workflow definition ID"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: workflow_name
+        description: "Human-readable name of the n8n workflow"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: workflow_status
+        description: "Execution status of the run — 'success' or 'error'"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: date_started
+        description: "Date the run started"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: time_started
+        description: "Timestamp the run started"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: date_finished
+        description: "Date the run finished"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: time_finished
+        description: "Timestamp the run finished"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: date_inserted
+        description: "Date the run record was inserted into the database"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: time_of_insertion
+        description: "Timestamp the run record was inserted into the database"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: mode
+        description: "How the run was triggered (e.g. trigger, manual, webhook)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: execution_id
+        description: "n8n execution ID for the run"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: is_successful_run
+        description: "1 if the run completed successfully with no alerts, else 0"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: is_failed_run
+        description: "1 if the run ended in error, else 0"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: is_no_data_alert
+        description: "1 if the run raised a no_data (data staleness) alert, else 0"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: is_node_error_alert
+        description: "1 if the run raised a node_error alert, else 0"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: daily_run_num
+        description: "Sequential run number for the workflow within its start date, ordered by start time"
+        config:
+          meta:
+            dimension:
+              type: number

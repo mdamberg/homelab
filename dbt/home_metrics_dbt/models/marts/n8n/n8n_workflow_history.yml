@@ -1,0 +1,149 @@
+models:
+  - name: n8n_workflow_history
+    description: >-
+      Presentation view of n8n workflow runs for BI, one row per workflow run.
+      Renames the run start/end date and time columns from
+      fct_n8n_workflow_runs into BI-friendly labels.
+
+    metrics:
+      total_successful_runs:
+        type: count
+        label: "Total Successful Workflow Runs"
+        description: "The total number of n8n workflow runs that completed successfully"
+        sql: ${workflow_run_pk}
+        filters:
+          - is_successful_run: 1
+
+      total_failed_runs:
+        type: count
+        label: "Total Failed Workflow Runs"
+        description: "The total number of n8n workflow runs that failed and did not complete"
+        sql: ${workflow_run_pk}
+        filters:
+          - is_failed_run: 1
+
+      total_no_data_alerts:
+        type: count
+        label: "Total No Data Alert Runs"
+        description: "The total number of n8n workflow runs that failed to produce data"
+        sql: ${workflow_run_pk}
+        filters:
+          - is_no_data_alert: 1
+
+      total_node_error_alerts:
+        type: count
+        label: "Total Node Error Alert Runs"
+        description: "The total number of n8n workflow runs where a specific node produced an error"
+        sql: ${workflow_run_pk}
+        filters:
+          - is_node_error_alert: 1
+
+    columns:
+      - name: workflow_run_pk
+        description: "Unique identifier for each workflow run — the grain of this model"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: workflow_name
+        description: "Human-readable name of the n8n workflow"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: workflow_id
+        description: "n8n workflow definition ID"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: execution_id
+        description: "n8n execution ID for the run"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: mode
+        description: "How the run was triggered (e.g. trigger, manual, webhook)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: workflow_status
+        description: "Execution status of the run — 'success' or 'error'"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: workflow_status_key
+        description: "Surrogate key representing the workflow run's execution status"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: daily_run_num
+        description: "Sequential run number for the workflow within its start date, ordered by start time"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: run_date_start
+        description: "Date the run started"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: run_time_start
+        description: "Timestamp the run started"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: run_date_end
+        description: "Date the run finished"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: run_time_end
+        description: "Timestamp the run finished"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: date_inserted
+        description: "Date the run record was inserted into the database"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: time_of_insertion
+        description: "Timestamp the run record was inserted into the database"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: is_successful_run
+        description: "1 if the run completed successfully with no alerts, else 0"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: is_failed_run
+        description: "1 if the run ended in error, else 0"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: is_no_data_alert
+        description: "1 if the run raised a no_data (data staleness) alert, else 0"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: is_node_error_alert
+        description: "1 if the run raised a node_error alert, else 0"
+        config:
+          meta:
+            dimension:
+              type: number
