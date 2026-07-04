@@ -19,7 +19,8 @@ transactions as (
 		transaction_flow,
 		transaction_amount_normalized,
 		category,
-		running_balance
+		running_balance,
+		is_large_transaction
 	from date_spine ds 
 	left join {{ ref('fct_transactions') }} ft
 		on ft.transaction_date between ds.month_start_date and ds.month_end_date 
@@ -38,6 +39,7 @@ select
 		else 0 end) as total_income,
 	sum(transaction_amount_normalized) as net_income,
 	max(running_balance) as max_monthly_balance,
-	min(running_balance) as min_running_balance
+	min(running_balance) as min_running_balance,
+	max(is_large_transaction) as large_transaction_occurred
 from transactions
 group by month_start_date, month_end_date, account_key, category

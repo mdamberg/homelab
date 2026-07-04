@@ -9,7 +9,7 @@
 .PARAMETER Services
     Optional. Specify which services to stop (comma-separated). If not provided, stops all.
     Valid values: pihole, homeassistant, mediastack, linkding, monitoring, flash, weather,
-                  wireguard, n8n, backups, phpipam, homemetrics, all
+                  n8n, backups, phpipam, homemetrics, all
     Example: .\stop-all-services.ps1 -Services "pihole,homeassistant"
 
 .EXAMPLE

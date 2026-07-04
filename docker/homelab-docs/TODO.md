@@ -137,9 +137,6 @@
   - Currently lives in `media_stack` — if you stop media stack, nothing gets auto-updated
   - Create `docker-projects/watchtower/docker-compose.yml`
 
-- [ ] **19. Remove deprecated `version:` key from wireguard compose**
-  - Delete the `version: "3.8"` line from `docker-projects/wireguard/docker-compose.yml`
-
 - [ ] **20. Fix MCP filesystem server placeholder path**
   - `mcp_server/docker-compose.yml` still has `/home/your-user:/host`
   - Replace with your actual path (e.g., `C:\Users\mattd:/host`)

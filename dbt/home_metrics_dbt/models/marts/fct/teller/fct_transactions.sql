@@ -54,6 +54,7 @@ with transactions as (
         -- Flags
         is_recurring,
         is_mapped,
+        case when transaction_amount_normalized < -5000 then 1 else 0 end as is_large_transaction,
         running_balance,
         
         -- Timestamps

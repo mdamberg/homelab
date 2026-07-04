@@ -196,3 +196,9 @@ models:
           meta:
             dimension:
               type: string
+      - name: transaction_updais_large_transactionted_at
+        description: "A flag indicating if a transaction is < -5000$ and not a normal expenditure"
+        config:
+          meta:
+            dimension:
+              type: boolean

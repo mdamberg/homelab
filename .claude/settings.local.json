@@ -15,7 +15,28 @@
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(r\\) for r in d['info']['requires_dist'] if 'dbt-core' in r]\")",
       "Bash(set -e)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "WebSearch",
+      "Bash(curl -s -D - -m 15 -X POST http://10.0.0.7:5678/mcp-server/http -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4ZDIxMzgwZS0zYTRmLTRhOTktYjVkZi1jMWJiNjRjNmNkN2YiLCJpc3MiOiJuOG4iLCJhdWQiOiJtY3Atc2VydmVyLWFwaSIsImp0aSI6IjA5YzAzMWIxLWYxZWEtNGM5OS1iYjUwLTBiODBhODhkNDViNCIsImlhdCI6MTc4MjQ0MzMyN30.3GU230xIuOyeujtg1grjZrH_Oo-nS_llZT8B4Or6Cro' -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2024-11-05\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"1\"}}}')",
+      "Bash(tee /tmp/init.txt)",
+      "PowerShell(docker exec tautulli sh -c \"wget -qO- -T 6 http://plex:32400/identity 2>&1 | head -c 200 || echo 'FAILED name'\")",
+      "PowerShell(docker exec tautulli sh -c \"wget -qO- -T 6 http://172.18.0.5:32400/identity 2>&1 | head -c 200 || echo 'FAILED ip'\")",
+      "PowerShell(docker exec tautulli sh -c \"wget -qO- -T 6 http://172.18.0.12:32400/identity 2>&1 | head -c 120 || echo 'FAILED stale \\(expected\\)'\")",
+      "PowerShell(docker run --rm --network home-metrics -e PGPASSWORD=CHANGE_ME_TO_SECURE_PASSWORD postgres:16-alpine psql -h postgres -p 5432 -U metrics_user -d home_metrics -c \"SELECT 'tcp+scram OK' AS result;\" 2>&1)",
+      "PowerShell(docker restart home-metrics-postgres)",
+      "Bash(docker port *)",
+      "Bash(python -m json.tool)",
+      "PowerShell(Get-NetUDPEndpoint -LocalPort 51820 -ErrorAction SilentlyContinue)",
+      "PowerShell(if \\(-not $?\\) { \"no UDP listener found on 51820\" })",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec n8n find /home/node/.n8n -maxdepth 1 -name \"*.sqlite*\")",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec n8n node -e ' *)",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec n8n sh -c \"find / -maxdepth 6 -iname 'sqlite3' -path '*node_modules*' 2>/dev/null | head -5\")",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec n8n sh -c \"find / -maxdepth 8 -iname '*.node' -path '*better-sqlite3*' 2>/dev/null | head -3; find / -maxdepth 8 -type d -iname 'better-sqlite3' 2>/dev/null\")",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec n8n sh -c \"find / -maxdepth 8 -type d -iname '*sqlite*' 2>/dev/null\")",
+      "Bash(MSYS_NO_PATHCONV=1 docker exec n8n sh -c 'cd /home/node/.n8n && node -e \" *)",
+      "Bash(docker restart *)",
+      "Bash(curl -s -o /dev/null -w \"Plex HTTP status: %{http_code}\\\\n\" --max-time 5 http://10.0.0.7:32400/identity)"
     ]
   }
 }

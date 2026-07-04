@@ -26,7 +26,7 @@ A separate VPN is used to route torrent traffic through a privacy VPN provider. 
 
 ---
 
-## Legacy: WireGuard wg-easy (Deprecated)
+## Removed: WireGuard wg-easy
 
 Previously, a self-hosted WireGuard VPN was used for remote access:
 
@@ -35,13 +35,13 @@ Previously, a self-hosted WireGuard VPN was used for remote access:
 - **VPN Network**: `10.8.0.0/24`
 - **Clients configured**: Remote_access, Phone, Laptop, Tablet
 
-This was replaced by Tailscale because CGNAT made WireGuard port forwarding unreliable. The config files are still in `docker-projects/wireguard/` but the service is no longer running. See `docker-projects/wireguard/DEPRECATED.md` for details.
+This was replaced by Tailscale because CGNAT made WireGuard port forwarding unreliable. The container and `docker-projects/wireguard/` directory were fully removed on 2026-07-03.
 
 ---
 
-## Legacy: homevpn WireGuard (Deprecated)
+## Removed: homevpn WireGuard
 
-An earlier WireGuard setup also exists at `docker-projects/vpn/homevpn/` with 3 peers (peer1, peer2, peer3) and a CoreDNS config. This predates wg-easy and is also no longer active.
+An earlier WireGuard setup also existed at `docker-projects/vpn/homevpn/` with 3 peers (peer1, peer2, peer3) and a CoreDNS config. This predated wg-easy and was already inactive. The container and `docker-projects/vpn/` directory were fully removed on 2026-07-03.
 
 ---
 
@@ -51,5 +51,5 @@ An earlier WireGuard setup also exists at `docker-projects/vpn/homevpn/` with 3 
 |-------|--------|----------|
 | Tailscale | ✅ Active | Remote access to all homelab services |
 | Gluetun | ✅ Active | Privacy VPN tunnel for torrent traffic |
-| wg-easy WireGuard | ❌ Deprecated | Former remote access (replaced by Tailscale) |
-| homevpn WireGuard | ❌ Deprecated | Even older remote access setup |
+| wg-easy WireGuard | 🗑️ Removed 2026-07-03 | Former remote access (replaced by Tailscale) |
+| homevpn WireGuard | 🗑️ Removed 2026-07-03 | Even older remote access setup |

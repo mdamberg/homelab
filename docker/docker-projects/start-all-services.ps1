@@ -11,7 +11,7 @@
 .PARAMETER Services
     Optional. Specify which services to start (comma-separated). If not provided, starts all.
     Valid values: pihole, homeassistant, mediastack, linkding, monitoring, flash, work, weather,
-                  wireguard, n8n, backups, phpipam, homemetrics, all
+                  n8n, backups, phpipam, homemetrics, all
     Example: .\start-all-services.ps1 -Services "pihole,homeassistant"
 
 .PARAMETER StartDBeaver

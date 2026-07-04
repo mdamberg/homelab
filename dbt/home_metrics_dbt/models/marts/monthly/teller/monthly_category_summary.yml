@@ -104,3 +104,11 @@ models:
           meta:
             dimension:
               type: number
+      - name: large_transaction_occurred
+        description: >- 
+          "Indicates whether or not a large transaction occurred during this 
+          month, for this account."
+        config:
+          meta:
+            dimension:
+              type: boolean
