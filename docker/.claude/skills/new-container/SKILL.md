@@ -17,7 +17,7 @@ Complete workflow for adding a new Docker container to the homelab, including co
 
 Before starting, clarify:
 1. What service/image are you deploying?
-2. Does it need persistent data? (volumes)
+2. Does it need persistent data? (volumes — default to a **bind mount** under `docker-projects/` so it's auto-backed-up by Duplicati; see Phase 5 for the bind-mount vs named-volume decision)
 3. Does it need external access? (ports)
 4. Does it require secrets? (API keys, passwords)
 5. Does it depend on other containers? (networks, depends_on)
@@ -117,19 +117,58 @@ Before starting, clarify:
 
 ### Phase 5: Set Up Volumes and Persistence
 
-11. **Create required directories**
+> **Both bind mounts and named volumes persist across container restarts/recreation** — the
+> data lives outside the container either way, so a container going down is a non-event and
+> needs no restore. The difference is *where* the data sits, which decides whether the existing
+> **Duplicati backup catches it**.
+
+#### Choosing the mount type (DEFAULT: bind mount)
+
+| Mount type | Looks like | Data lives in | Caught by Duplicati? |
+|------------|-----------|---------------|----------------------|
+| **Bind mount** (preferred) | `./data:/data` | A folder you chose, inside `docker-projects/` | ✅ Yes — Duplicati already backs up the whole `docker-projects/` folder |
+| **Named volume** | `mydata:/data` + top-level `volumes:` | A folder Docker hides in the WSL2 VM | ❌ No — outside Duplicati's source, needs extra work |
+
+**Rule of thumb — default to bind mounts under `docker-projects/`** so persistence and backup
+line up automatically with zero extra machinery. This is the homelab standard (see `jelu`,
+`flash_todo`). Reserve named volumes for cases where the upstream image strongly expects one, or
+performance matters (heavy DB write throughput on Windows) — and if you use one, you MUST also add
+it to Duplicati (see below) or its data is unprotected.
+
+**If you inherit an image that uses a named volume** (e.g. `linkding`, `lightdash`), add the volume
+to Duplicati read-only so it still gets backed up — remember Docker prefixes the real volume name
+with the compose project (folder) name; verify with `docker volume ls`:
+```yaml
+# in backups/docker-compose.yml
+    volumes:
+      - "mydata:/source/mydata:ro"
+volumes:
+  mydata:
+    external: true
+    name: <project>_mydata   # confirm exact name via `docker volume ls`
+```
+
+#### Steps
+
+11. **Create required directories** (for bind mounts; add a `.gitkeep` so the folder survives a clone)
     ```powershell
     mkdir config
-    mkdir data  # If needed
+    mkdir data
     ```
 
-12. **Map volumes appropriately**
+12. **Map volumes appropriately, and gitignore the runtime data**
     ```yaml
     volumes:
-      - ./config:/config        # Service config
-      - ./data:/data            # Service data
+      - ./config:/config        # Service config (bind mount — backed up)
+      - ./data:/data            # Service data  (bind mount — backed up)
       - C:/media/downloads:/downloads  # Shared media paths
     ```
+    Then gitignore the live data but keep the folder structure:
+    ```gitignore
+    data/*
+    !data/.gitkeep
+    ```
+    (Never commit live databases/binaries — Duplicati is the backup, git just holds the structure.)
 
 ### Phase 6: Test the Container
 
