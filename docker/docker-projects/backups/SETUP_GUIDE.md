@@ -166,9 +166,81 @@ To run the healthcheck script after each backup:
 
 Now healthchecks.io will monitor your backups and alert you if they fail or don't run!
 
+## Step 7: Off-Site Backup with Backblaze B2 (Recommended)
+
+The local job above writes to `C:\backups` — on the **same PC** as your data. If that
+machine dies, is stolen, or gets ransomwared, the live data *and* the backup are lost together.
+Off-site backup is the missing layer. This follows the **3-2-1 rule**: keep the existing local
+backup, and add a second copy in the cloud.
+
+### Why B2
+
+Backblaze B2 is **metered/pay-as-you-go**: **$6/TB/month = $0.006/GB/month, first 10 GB free**.
+Billed for what you actually store (prorated), so a config+database backup (tens of GB) costs
+**pennies per month**. Restores are free up to 3× your stored size. Purpose-built for backups and
+very reliable with Duplicati.
+
+> Alternative: if you already pay for Microsoft 365, OneDrive's 1 TB is $0 extra — use Duplicati's
+> native OneDrive connector (NOT the OneDrive sync client on `C:\backups`, which doubles disk use).
+> B2 is preferred here for reliability and near-zero metered cost.
+
+### Step 7a: Create the B2 bucket and key
+
+1. Sign up at https://www.backblaze.com/cloud-storage and enable B2.
+2. Create a **private** bucket, e.g. `homelab-duplicati-offsite`.
+3. Create an **Application Key** scoped to that bucket. Save the **keyID** and **applicationKey**
+   somewhere secure (a password manager) — the applicationKey is shown only once.
+
+### Step 7b: Add a second Duplicati backup job for off-site
+
+Keep the local job as-is; add a **new** job so you have both local (fast restore) and cloud (disaster).
+
+1. Duplicati → **Add backup** → **Configure a new backup**.
+2. **General**: Name "Homelab Off-Site (B2)". Use **AES-256 encryption** with a passphrase and
+   **SAVE THE PASSPHRASE** — without it the cloud copy is unrecoverable.
+3. **Destination**: Storage Type **"B2 Cloud Storage"**. Fill in:
+   - Bucket: `homelab-duplicati-offsite`
+   - Folder path: `docker-homelab`
+   - Application Key ID / Application Key: from Step 7a
+   - Click **"Test connection"**.
+4. **Source Data**: select the **same sources as the local job** so everything is protected:
+   - `/source/docker-configs`
+   - `/source/media-configs`
+   - `/source/linkding-data`, `/source/lightdash-pgdata`, `/source/minio-data`
+5. **Schedule**: Daily, staggered after the local job (e.g. 2:30 AM).
+6. **Options → retention**: e.g. "Smart backup retention" (keeps a tapering history) to cap growth.
+7. Reuse the ntfy and Healthchecks options (Steps 4 & 6) if you want alerts for this job too
+   — use a **separate** Healthchecks check so a local-vs-cloud failure is distinguishable.
+
+### Step 7c: Keep the cloud set small — exclude Plex's regenerable caches
+
+`C:\media\config` (Plex) is usually the largest source, and much of it is **thumbnails/transcodes
+that Plex regenerates on its own** — no need to pay to store them off-site. In the job's
+**Filters**, add these excludes:
+
+```
+-*/Plex Media Server/Cache/
+-*/Plex Media Server/Media/
+-*/Plex Media Server/Metadata/
+-*/Plex Media Server/Transcode/
+-*/Plex Media Server/Logs/
+```
+
+This protects the databases/settings (the part you can't regenerate) while keeping the off-site
+set — and therefore the bill — tiny. Measure first with:
+
+```powershell
+"{0:N2} GB" -f ((gci "C:\media\config" -Recurse -File -EA SilentlyContinue | Measure Length -Sum).Sum/1GB)
+```
+
+### Step 7d: Verify
+
+1. **Run now** on the B2 job; confirm it completes and files appear in the B2 bucket.
+2. Do a **test restore** of a single file from B2 to a temp folder — a backup you haven't restored
+   from is only a hypothesis.
+
 ## Next Steps
 
 - Consider setting up retention policies (how long to keep old backups)
-- Set up additional backup destinations (cloud storage, network drive)
-- Test restoration process to ensure backups are working correctly
-- Document your encryption passphrase in a secure location
+- Test restoration process from **both** local and B2 to ensure backups work
+- Document your encryption passphrase(s) in a secure location (e.g. password manager)
