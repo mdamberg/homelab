@@ -1,0 +1,23 @@
+services:
+  jelu:
+    image: wabayang/jelu:0.84.2   # Pinned release (holds your reading data — avoid :latest)
+    container_name: jelu
+    ports:
+      - "5072:11111"              # host:container — groups with list apps (flash 5070, work 5071)
+    volumes:
+      # Bind mounts under docker-projects/ so data persists AND is caught by the
+      # existing Duplicati backup of the docker-projects folder. SQLite lives in ./database.
+      - ./config:/config
+      - ./database:/database
+      - ./files/images:/files/images
+      - ./files/imports:/files/imports
+    environment:
+      - TZ=${TZ}
+    restart: unless-stopped
+    networks:
+      - homarr_net
+
+networks:
+  homarr_net:
+    external: true
+    name: media_stack_default

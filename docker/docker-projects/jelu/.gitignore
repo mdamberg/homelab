@@ -1,0 +1,13 @@
+# Keep the folder structure in git, but never commit Jelu's runtime data.
+# Real backups are handled by Duplicati (which sweeps this folder); git only
+# needs the empty directories to exist so the bind mounts have somewhere to land.
+config/*
+database/*
+files/images/*
+files/imports/*
+
+# ...but keep the placeholder so the directories survive a fresh clone.
+!config/.gitkeep
+!database/.gitkeep
+!files/images/.gitkeep
+!files/imports/.gitkeep

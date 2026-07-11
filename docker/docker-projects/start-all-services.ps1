@@ -10,7 +10,7 @@
 
 .PARAMETER Services
     Optional. Specify which services to start (comma-separated). If not provided, starts all.
-    Valid values: pihole, homeassistant, mediastack, linkding, monitoring, flash, work, weather,
+    Valid values: pihole, homeassistant, mediastack, linkding, monitoring, flash, work, jelu, weather,
                   n8n, backups, phpipam, homemetrics, all
     Example: .\start-all-services.ps1 -Services "pihole,homeassistant"
 
@@ -60,6 +60,7 @@ $InfraServices = @{
     'monitoring' = 'monitoring'
     'flash' = 'flash_todo'
     'work' = 'work_todo'
+    'jelu' = 'jelu'
     'weather' = 'weather_api_project'
     'n8n' = 'n8n'
     'backups' = 'backups'

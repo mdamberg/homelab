@@ -15,6 +15,27 @@ services:
       # Source paths for backup
       - "C:/Users/mattd/repos/homelab/docker/docker-projects:/source/docker-configs:ro"
       - "C:/media/config:/source/media-configs:ro"
+      # Named-volume apps whose data lives outside docker-projects. Mounted read-only
+      # so Duplicati can back them up without ever touching the live data.
+      # NOTE: after this change, tick these folders in the Duplicati UI backup job.
+      - "linkding-data:/source/linkding-data:ro"
+      - "lightdash-pgdata:/source/lightdash-pgdata:ro"
+      - "minio-data:/source/minio-data:ro"
     ports:
       - 8200:8200
     restart: unless-stopped
+
+# Existing named volumes owned by other stacks (linkding, lightdash), declared external
+# so Duplicati attaches to them read-only without recreating them. The real Docker volume
+# names are prefixed with each stack's compose project (folder) name.
+# VERIFY on the host with `docker volume ls` before first run, and correct `name:` if different.
+volumes:
+  linkding-data:
+    external: true
+    name: linkding_linkding-data
+  lightdash-pgdata:
+    external: true
+    name: lightdash_lightdash_pgdata
+  minio-data:
+    external: true
+    name: lightdash_minio_data
