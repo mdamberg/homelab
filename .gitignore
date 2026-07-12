@@ -1,6 +1,8 @@
-# Environment files
+# Environment files (secrets — never commit; .env.example templates are allowed)
 .env
+**/.env
 *.env.local
+**/*.env.local
 
 # Migration backup artifacts
 *.before-migration/
