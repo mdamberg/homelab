@@ -49,6 +49,12 @@ models:
           meta:
             dimension:
               type: date
+      - name: account_name_friendly
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
       - name: account_key
         description: ""
         config:

@@ -14,6 +14,7 @@ transactions as (
 	select
 		ds.month_start_date,
 		ds.month_end_date,
+		account_name_friendly,
 		account_key,
 		transaction_flow,
 		transaction_amount_normalized,
@@ -28,6 +29,7 @@ select
 	{{ dbt_utils.generate_surrogate_key(['month_start_date', 'month_end_date', 'account_key']) }} as monthly_account_skey,
 	month_start_date,
 	month_end_date,
+	account_name_friendly,
 	account_key,
 	sum(case when transaction_flow = 'expense' then transaction_amount_normalized
 		else 0 end) as total_expenses,
@@ -37,4 +39,4 @@ select
 	max(running_balance) as max_monthly_balance,
 	min(running_balance) as min_running_balance
 from transactions
-group by month_start_date, month_end_date, account_key
+group by month_start_date, month_end_date, account_key, account_name_friendly
