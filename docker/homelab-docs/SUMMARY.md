@@ -58,7 +58,6 @@
   * [Flash Todo](productivity/flash-todo.md)
   * [Work Todo](productivity/work-todo.md)
   * [Linkding](productivity/linkding.md)
-  * [phpIPAM](productivity/phpipam.md)
 * Weather
   * [Weather Widget](weather/README.md)
 * Utilities

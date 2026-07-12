@@ -95,7 +95,6 @@ C:\Users\mattd\repos\homelab\docker\docker-projects\stop-all-services.ps1
 | Flash Todo | 5070 | To-do app |
 | Jelu | 5072 | "To be read" book tracker (SQLite) |
 | Linkding | 8282 | Bookmarks |
-| phpIPAM | 8081 | IP management |
 | Duplicati | 8200 | Backups |
 | Pi-hole | 8082 | DNS (not active) |
 

@@ -73,13 +73,6 @@ Write-EnvFile "$projectsRoot\linkding" @(
     "LD_SUPERUSER_NAME", "LD_SUPERUSER_PASSWORD"
 )
 
-Write-Host "`n[phpipam]"
-Write-EnvFile "$projectsRoot\phpipam" @(
-    "TZ",
-    "IPAM_DATABASE_NAME",
-    "MYSQL_USER", "MYSQL_PASSWORD", "MYSQL_ROOT_PASSWORD"
-)
-
 Write-Host "`n[n8n]"
 Write-EnvFile "$projectsRoot\n8n" @(
     "TELLER_APPLICATION_ID", "TELLER_CERTS_HOST_PATH", "TELLER_TOKENS"
