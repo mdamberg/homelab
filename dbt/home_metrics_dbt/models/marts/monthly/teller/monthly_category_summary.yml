@@ -7,7 +7,7 @@ models:
       # -- Joins --
       joins:
         - join: dim_teller_accounts
-          sql_on: ${monthly_account_summary.account_key} = ${dim_teller_accounts.account_key}
+          sql_on: ${monthly_category_summary.account_key} = ${dim_teller_accounts.account_key}
           relationship: many-to-one
 
       # -- Metrics --
