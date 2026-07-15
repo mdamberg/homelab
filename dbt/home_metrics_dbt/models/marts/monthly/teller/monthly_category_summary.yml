@@ -17,27 +17,27 @@ models:
       metrics:
         total_expenses:
           type: sum
-          sql: ${total_expenses}
+          sql: ${TABLE}.total_expenses
           description: "The total dollar amount of expenses per account for that month"
 
         total_income:
           type: sum
-          sql: ${total_income}
+          sql: ${TABLE}.total_income
           description: "The total dollar amount of income per account for that month"
 
         net_income:
           type: sum
-          sql: ${net_income}
+          sql: ${TABLE}.net_income
           description: "The overall net income dollar amount per account for that month"
 
         max_monthly_balance:
           type: max
-          sql: ${max_monthly_balance}
+          sql: ${TABLE}.max_monthly_balance
           description: The highest balance for that account for that month
 
           min_ruinning_balance:
             type: min 
-            sql: ${min_ruinning_balance}
+            sql: ${TABLE}.min_ruinning_balance
             description: "The lowest balance for that account for that month"
 
     columns:
