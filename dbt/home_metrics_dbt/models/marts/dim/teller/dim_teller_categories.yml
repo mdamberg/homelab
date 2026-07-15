@@ -1,0 +1,21 @@
+models:
+  - name: dim_teller_categories
+    columns:
+      - name: category_key
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: category
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: subcategory
+        description: ""
+        config:
+          meta:
+            dimension:
+              type: string

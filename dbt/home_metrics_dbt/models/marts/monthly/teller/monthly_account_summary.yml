@@ -12,17 +12,17 @@ models:
 
       # -- Metrics --
       metrics:
-        total_expenses:
+        total_monthly_expenses:
           type: sum
           sql: ${TABLE}.total_expenses
           description: "The total dollar amount of expenses per account for that month"
 
-        total_income:
+        total_monthly_income:
           type: sum
           sql: ${TABLE}.total_income
           description: "The total dollar amount of income per account for that month"
 
-        net_income:
+        monthly_net_income:
           type: sum
           sql: ${TABLE}.net_income
           description: "The overall net income dollar amount per account for that month"
