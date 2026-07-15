@@ -34,11 +34,11 @@ qBittorrent doesn't have native Telegram support, but we can use its "Run extern
 
 1. **Create a scripts folder**:
    ```powershell
-   mkdir "C:\Users\mattd\OneDrive\Matts Documents\Docker\scripts"
+   mkdir "C:\Users\mattd\repos\homelab\docker\scripts"
    ```
 
 2. **Create the notification script**:
-   Save this as `C:\Users\mattd\OneDrive\Matts Documents\Docker\scripts\telegram-notify.ps1`:
+   Save this as `C:\Users\mattd\repos\homelab\docker\scripts\telegram-notify.ps1`:
 
    ```powershell
    # qBittorrent Telegram Notification Script
@@ -105,7 +105,7 @@ qBittorrent doesn't have native Telegram support, but we can use its "Run extern
 
 2. **Create a Windows scheduled task** that polls for completed torrents:
 
-   Save this as `C:\Users\mattd\OneDrive\Matts Documents\Docker\scripts\qbit-monitor.ps1`:
+   Save this as `C:\Users\mattd\repos\homelab\docker\scripts\qbit-monitor.ps1`:
 
    ```powershell
    # qBittorrent Monitor Script
@@ -114,7 +114,7 @@ qBittorrent doesn't have native Telegram support, but we can use its "Run extern
    $qbitUrl = "http://localhost:8080"
 
    # Track completed torrents (store in file to avoid duplicates)
-   $trackedFile = "C:\Users\mattd\OneDrive\Matts Documents\Docker\scripts\qbit-tracked.txt"
+   $trackedFile = "C:\Users\mattd\repos\homelab\docker\scripts\qbit-tracked.txt"
 
    if (!(Test-Path $trackedFile)) {
        New-Item -Path $trackedFile -ItemType File
@@ -175,7 +175,7 @@ qBittorrent doesn't have native Telegram support, but we can use its "Run extern
 
    ```powershell
    # Run this in PowerShell as Administrator
-   $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File 'C:\Users\mattd\OneDrive\Matts Documents\Docker\scripts\qbit-monitor.ps1'"
+   $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-ExecutionPolicy Bypass -File 'C:\Users\mattd\repos\homelab\docker\scripts\qbit-monitor.ps1'"
    $trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 5) -RepetitionDuration ([TimeSpan]::MaxValue)
    $principal = New-ScheduledTaskPrincipal -UserId "$env:USERDOMAIN\$env:USERNAME" -LogonType S4U
    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
@@ -219,7 +219,7 @@ Ratio: 0.0
 
 1. **Test the monitor script manually**:
    ```powershell
-   powershell -ExecutionPolicy Bypass -File "C:\Users\mattd\OneDrive\Matts Documents\Docker\scripts\qbit-monitor.ps1"
+   powershell -ExecutionPolicy Bypass -File "C:\Users\mattd\repos\homelab\docker\scripts\qbit-monitor.ps1"
    ```
 
 2. **Add a small test torrent** in qBittorrent

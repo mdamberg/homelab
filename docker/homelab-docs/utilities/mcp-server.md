@@ -45,7 +45,7 @@ Exposes filesystem access as an MCP tool.
 ## Starting On-Demand
 
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\mcp_server"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\mcp_server"
 
 # Start servers
 docker-compose up -d

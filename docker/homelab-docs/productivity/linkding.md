@@ -29,7 +29,7 @@ docker-projects/linkding/docker-compose.yml
 ## Management
 
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\linkding"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\linkding"
 
 docker-compose up -d     # Start
 docker-compose down      # Stop
@@ -52,7 +52,7 @@ docker run --rm -v linkding-data:/data -v C:\backups:/backup alpine tar czf /bac
 ## Updating
 
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\linkding"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\linkding"
 docker-compose pull
 docker-compose up -d
 ```

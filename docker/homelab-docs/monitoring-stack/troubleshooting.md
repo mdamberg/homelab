@@ -69,7 +69,7 @@ netstat -ano | findstr ":61208"
 ### Restart the whole stack
 
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\monitoring"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\monitoring"
 docker-compose down
 docker-compose up -d
 ```

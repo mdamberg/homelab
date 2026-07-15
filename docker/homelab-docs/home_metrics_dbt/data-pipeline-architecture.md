@@ -181,7 +181,7 @@ Located in: `docker-projects/home_metrics_dbt/models/`
 
 ### Run all dbt models
 ```bash
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\home_metrics_dbt"
+cd "C:\Users\mattd\repos\homelab\dbt\home_metrics_dbt"
 dbt build
 ```
 

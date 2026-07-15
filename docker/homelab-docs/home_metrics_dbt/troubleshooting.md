@@ -77,7 +77,7 @@ Run dbt in a Linux environment within Windows:
 pip install dbt-core dbt-postgres
 
 # Profile location in WSL: ~/.dbt/profiles.yml
-# Project location: /mnt/c/Users/mattd/OneDrive/Matts Documents/Docker/docker-projects/home_metrics_dbt
+# Project location: /mnt/c/Users/mattd/repos/homelab/dbt/home_metrics_dbt
 ```
 
 #### Option 4: Run dbt in Docker
@@ -100,7 +100,7 @@ docker run -v "./home_metrics_dbt:/usr/app/dbt" --network host dbt-runner dbt de
 **Verification**:
 After applying any solution, verify with:
 ```bash
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\home_metrics_dbt"
+cd "C:\Users\mattd\repos\homelab\dbt\home_metrics_dbt"
 dbt debug
 ```
 

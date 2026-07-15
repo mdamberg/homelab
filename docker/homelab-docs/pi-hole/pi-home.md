@@ -149,7 +149,7 @@ If something breaks and you want to revert:
 - **Host OS**: Windows 11
 - **Deployment Method**: Docker container
 - **Container Image**: `pihole/pihole:latest`
-- **Working Directory**: `C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\pie_hole`
+- **Working Directory**: `C:\Users\mattd\repos\homelab\docker\docker-projects\pie_hole`
 
 ### Port Configuration
 - **DNS Port**: `53` (TCP/UDP) - Standard DNS port
@@ -367,7 +367,7 @@ If router doesn't support custom DNS configuration:
 ### Starting/Stopping Pi-hole
 ```powershell
 # Navigate to project directory
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\pie_hole"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\pie_hole"
 
 # Stop Pi-hole
 docker-compose down
@@ -526,7 +526,7 @@ docker exec pihole pihole -a -t
 
 **Update Pi-hole**:
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\pie_hole"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\pie_hole"
 docker-compose pull
 docker-compose down
 docker-compose up -d

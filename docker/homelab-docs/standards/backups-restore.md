@@ -46,7 +46,7 @@ See [Backups README](../backups/README.md) for full Duplicati details.
 1. Install Docker Desktop on the new machine
 2. Install Duplicati via Docker:
    ```powershell
-   cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\backups"
+   cd "C:\Users\mattd\repos\homelab\docker\docker-projects\backups"
    docker-compose up -d
    ```
 3. Open http://localhost:8200 → Import existing backup job
@@ -68,7 +68,7 @@ If Duplicati itself is unavailable:
 
 ```powershell
 # Stop a low-risk service
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\linkding"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\linkding"
 docker-compose down
 Remove-Item -Recurse .\linkding-data  # Simulate data loss
 

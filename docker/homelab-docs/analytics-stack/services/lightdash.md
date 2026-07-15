@@ -57,7 +57,7 @@ docker network create home-metrics
 ## Management
 
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\lightdash"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\lightdash"
 
 docker-compose up -d     # Start (waits for db and minio health checks)
 docker-compose down      # Stop

@@ -28,7 +28,7 @@ homelab/
 
 **The only paths we use are `C:\Users\mattd\repos\homelab\docker\...` and `C:\Users\mattd\repos\homelab\dbt\...`.**
 
-A legacy copy of the whole tree still exists at `C:\Users\mattd\OneDrive\Matts Documents\Docker\`. It is **retired**. Never `cd` into it, never run `docker compose` from it, and never write a path containing `OneDrive` into a compose file, script, or doc. Data written there is invisible to the Duplicati backup, which only sources the repo path.
+The legacy tree was retired on 2026-07-15 and renamed to `C:\Users\mattd\OneDrive\Matts Documents\Docker-RETIRED-20260715\`. The old `...\Docker\` path no longer exists, so compose files there cannot resolve. The retired tree is kept only as a rollback snapshot; it will be deleted once a Duplicati restore test passes. Never `cd` into it, never run `docker compose` from it, and never write a path containing `OneDrive` into a compose file, script, or doc. Data written there is invisible to the Duplicati backup, which only sources the repo path.
 
 **A committed config change does nothing until the container is recreated from the repo.** Containers keep the bind-mount paths they were *created* with, and `restart: unless-stopped` resurrects them from those old definitions after every Docker Desktop restart. So a container created long ago from the OneDrive tree keeps mounting OneDrive no matter what the repo says. Editing the compose file in git is not the fix — recreating the container is:
 
@@ -93,7 +93,11 @@ C:\Users\mattd\repos\homelab\docker\docker-projects\stop-all-services.ps1
 
 ## Key Architecture Notes
 
-- **Home Assistant**: Runs in VirtualBox VM (10.0.0.46), NOT Docker. Required for LAN access to IoT devices (Tapo, Reolink). See `homelab-docs/home-assistant/README.md`
+- **Home Assistant**: Runs in **Docker** (`docker-projects/home_assist`) on port 8123. A VirtualBox VM named `HomeAssistant` is still registered but is **powered off**, and 10.0.0.46 does not respond — the container is the live instance. Verify before acting on any claim about which one is real:
+  ```powershell
+  & 'C:\Program Files\Oracle\VirtualBox\VBoxManage.exe' list runningvms   # empty = VM is off
+  docker inspect homeassistant --format '{{.State.Status}}'
+  ```
 - **VPN**: qBittorrent routes through Gluetun container (PIA VPN)
 - **Media paths**: `C:\media\` for downloads, movies, tv, config
   - The C:\Media\downloads path is most used
@@ -112,7 +116,7 @@ C:\Users\mattd\repos\homelab\docker\docker-projects\stop-all-services.ps1
 | Tautulli | 8181 | Plex stats |
 | LazyLibrarian | 5299 | Books |
 | Audiobookshelf | 13378 | Audiobooks/podcasts |
-| Home Assistant | 8123 | VirtualBox VM, not Docker |
+| Home Assistant | 8123 | Docker (`home_assist`); the VirtualBox VM is powered off |
 | n8n | 5678 | Workflow automation |
 | Uptime Kuma | 3001 | Monitoring |
 | Glances | 61208 | System stats |
@@ -125,7 +129,7 @@ C:\Users\mattd\repos\homelab\docker\docker-projects\stop-all-services.ps1
 | Linkding | 8282 | Bookmarks |
 | phpIPAM | 8081 | IP management |
 | Duplicati | 8200 | Backups |
-| Pi-hole | 8082 | DNS (not active) |
+| Pi-hole | 8082 | Admin UI; actively serving DNS on port 53 |
 
 ## Code Style
 
@@ -174,13 +178,13 @@ Delete through Radarr/Sonarr UI, not filesystem. See `docs/media-stack/ops/delet
 - Docker Desktop on Windows runs in WSL2 VM - containers can't directly access LAN devices
 - If Docker hangs on "starting": `wsl --shutdown` then restart Docker Desktop
 - Lightdash requires: `docker network create home-metrics`
-- n8n workflows referencing Home Assistant use IP (10.0.0.46), not container name
+- n8n workflows reference Home Assistant at `10.0.0.46` (the old VirtualBox VM). **That VM is powered off, so those workflows are broken** — they need repointing at the Docker container before they will run again.
 
 ## Documentation
 
 Always check `docs/SUMMARY.md` for existing docs before creating new ones. Key references:
 - `docs/TODO.md` - Prioritized security/config fixes
 - `docs/homelab-docker-review.md` - Full infrastructure audit
-- `docs/home-assistant/README.md` - VirtualBox HA setup
+- `homelab-docs/home-assistant/README.md` - Home Assistant setup
 
 When creating new containers or infrastructure, always update docs with either a new entry if what's getting added is new or update existing docs.

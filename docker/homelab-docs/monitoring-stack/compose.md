@@ -57,7 +57,7 @@ No custom network — both services use the default bridge. They don't communica
 ## Updating
 
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\monitoring"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\monitoring"
 docker-compose pull
 docker-compose up -d
 ```

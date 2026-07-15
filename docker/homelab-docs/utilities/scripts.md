@@ -126,7 +126,7 @@ docker ps
 docker logs -f uptime-kuma
 
 # Restart a stuck service
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\<service>"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\<service>"
 docker-compose restart
 
 # Full rebuild of a service

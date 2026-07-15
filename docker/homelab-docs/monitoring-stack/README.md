@@ -36,7 +36,7 @@ docker-projects/monitoring/docker-compose.yml
 ## Management
 
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\monitoring"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\monitoring"
 
 docker-compose up -d      # Start
 docker-compose down       # Stop

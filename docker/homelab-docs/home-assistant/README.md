@@ -1,8 +1,33 @@
 # Home Assistant
 
-Home Assistant runs in a VirtualBox VM with bridged networking for full LAN access to IoT devices.
+> ## ⚠️ Current state (verified 2026-07-15)
+>
+> **Home Assistant runs in Docker, not VirtualBox.**
+>
+> | | |
+> |---|---|
+> | **Live instance** | Docker container `homeassistant` — `docker-projects/home_assist` |
+> | **Access** | `http://localhost:8123` (serving, HTTP 200) |
+> | **Config on disk** | `C:\Users\mattd\repos\homelab\docker\docker-projects\home_assist\configuration\config` |
+> | **VirtualBox VM** | Registered as `HomeAssistant` but **powered off**; `10.0.0.46` does not respond |
+>
+> The VirtualBox migration described below was **planned but never completed**. Everything from
+> "Why VirtualBox" onward is retained as reference for a possible future migration — it does
+> **not** describe how Home Assistant runs today. Confirm before relying on it:
+>
+> ```powershell
+> & 'C:\Program Files\Oracle\VirtualBox\VBoxManage.exe' list runningvms   # empty = VM is off
+> docker inspect homeassistant --format '{{.State.Status}}'               # running = Docker is live
+> ```
+>
+> **Known issue:** n8n workflows still point at `http://10.0.0.46:8123` (the dead VM), so those
+> workflows are broken until repointed at the container.
+
+---
 
 ## Why VirtualBox (Not Docker)?
+
+> **Note:** this is the rationale for the *planned* migration; it was never carried out.
 
 Docker Desktop on Windows runs containers inside a Linux VM that cannot directly access the physical LAN. This breaks integrations with local IoT devices (Tapo, Reolink, etc.).
 
@@ -135,9 +160,9 @@ If you had Home Assistant running in Docker, you can migrate your configuration:
 4. Restore
 
 ### Option 2: Manual Config Copy
-Your old config is at:
+Your current (live) config is at:
 ```
-C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\home_assist\configuration\config
+C:\Users\mattd\repos\homelab\docker\docker-projects\home_assist\configuration\config
 ```
 
 Copy these files/folders to the new HA via Samba share or File Editor add-on:
@@ -148,10 +173,10 @@ Copy these files/folders to the new HA via Samba share or File Editor add-on:
 - `secrets.yaml`
 - `custom_components/` (if any)
 
-### Stop Old Docker HA
-Once migration is complete:
-```bash
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\home_assist"
+### Stop the Docker HA
+Only once a VirtualBox migration is actually complete — **this is the live instance today**:
+```powershell
+cd C:\Users\mattd\repos\homelab\docker\docker-projects\home_assist
 docker compose down
 ```
 
@@ -236,4 +261,4 @@ Increase resources:
 | VM Files | `C:\VirtualBox VMs\HomeAssistant\` |
 | VM Config | `C:\VirtualBox VMs\HomeAssistant\HomeAssistant.vbox` |
 | Disk Image | `C:\VirtualBox VMs\HomeAssistant\haos_ova-17.2.vdi` |
-| Old Docker Config | `C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\home_assist\configuration\config` |
+| **Live** Docker Config | `C:\Users\mattd\repos\homelab\docker\docker-projects\home_assist\configuration\config` |

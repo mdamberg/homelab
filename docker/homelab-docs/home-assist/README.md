@@ -41,7 +41,7 @@ Home Assistant is a data source for the analytics pipeline:
 ## Management
 
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\home_assist"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\home_assist"
 
 docker-compose up -d     # Start
 docker-compose down      # Stop
@@ -58,7 +58,7 @@ Or via scripts:
 Home Assistant updates frequently. To update:
 
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\home_assist"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\home_assist"
 docker-compose pull
 docker-compose up -d
 ```

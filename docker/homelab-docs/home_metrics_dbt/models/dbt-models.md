@@ -225,7 +225,7 @@ SELECT * FROM {{ source('home_metrics_raw', 'raw_media_library') }}
 
 ### Development
 ```bash
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\home_metrics_dbt"
+cd "C:\Users\mattd\repos\homelab\dbt\home_metrics_dbt"
 
 # Test connection
 dbt debug

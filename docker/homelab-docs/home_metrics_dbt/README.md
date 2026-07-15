@@ -105,7 +105,7 @@ Current models:
 ### Development
 ```bash
 # Navigate to project
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\home_metrics_dbt"
+cd "C:\Users\mattd\repos\homelab\dbt\home_metrics_dbt"
 
 # Test connection
 dbt debug
@@ -295,7 +295,7 @@ dbt run --select my_model --log-level debug
 
 ## Project Info
 
-- **Location**: `C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\home_metrics_dbt`
+- **Location**: `C:\Users\mattd\repos\homelab\dbt\home_metrics_dbt`
 - **Profile**: `home_metrics_dbt`
 - **Target Database**: PostgreSQL (localhost:5432)
 - **dbt Version**: dbt-fusion 2.0.0-preview.92

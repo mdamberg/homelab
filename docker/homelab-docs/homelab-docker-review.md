@@ -385,7 +385,9 @@ volumes:
   - C:\backups:/backups
 ```
 
-The `C:\docker-projects` path points to the root of your Docker projects on C:\, but your actual files are in `C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects`. Verify the Duplicati source actually captures your real files, not an empty or different directory.
+The `C:\docker-projects` path points to the root of your Docker projects on C:\, but your actual files were in `C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects`. Verify the Duplicati source actually captures your real files, not an empty or different directory.
+
+> **Resolved 2026-07-15.** All services were migrated onto `C:\Users\mattd\repos\homelab\docker\`, and Duplicati now sources that path directly (`C:/Users/mattd/repos/homelab/docker/docker-projects -> /source/docker-configs`). The OneDrive tree was retired to `Docker-RETIRED-20260715`. This finding is kept for the record.
 
 ---
 
@@ -455,7 +457,7 @@ In `home_metrics_dbt/dbt_project.yml`, the `intmdt` layer has no `+materialized`
     - `./etc-pihole` (Pi-hole blocklists, custom DNS)
     - phpipam's `./mysql_data` directory
     - linkding and lightdash named volumes (via volume backup scripts)
-17. **Verify Duplicati source path**: Confirm `C:\docker-projects` in Duplicati actually matches your real path `C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects`.
+17. ~~**Verify Duplicati source path**~~ — **Done 2026-07-15.** Everything runs from `C:\Users\mattd\repos\homelab\docker\` and Duplicati sources that path; the OneDrive tree is retired.
 18. **Watchtower scope control**: Add `WATCHTOWER_LABEL_ENABLE=true` and label critical containers with `com.centurylinklabs.watchtower.enable=false` — especially n8n, phpipam-db, lightdash-db.
 19. **Move Watchtower to its own compose file** so it runs independently of media_stack.
 20. **dashdot**: Replace `privileged: true` and `/:mnt/host:ro` with specific mounts for `/proc`, `/sys`, and your actual mount points.

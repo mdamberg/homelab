@@ -51,7 +51,7 @@ phpIPAM lets you:
 ## Management
 
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\phpipam"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\phpipam"
 
 docker-compose up -d     # Start
 docker-compose down      # Stop

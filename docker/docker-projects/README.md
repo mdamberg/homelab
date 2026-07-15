@@ -38,7 +38,7 @@ docker-projects/
 
 ### Start All Infrastructure Services
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects"
 .\start-all-services.ps1
 ```
 
@@ -180,7 +180,7 @@ If you prefer to configure manually:
    - Trigger: "When the computer starts"
    - Action: "Start a program"
    - Program: `powershell.exe`
-   - Arguments: `-ExecutionPolicy Bypass -File "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\start-all-services.ps1"`
+   - Arguments: `-ExecutionPolicy Bypass -File "C:\Users\mattd\repos\homelab\docker\docker-projects\start-all-services.ps1"`
 3. Check "Run with highest privileges"
 4. Check "Run whether user is logged on or not"
 

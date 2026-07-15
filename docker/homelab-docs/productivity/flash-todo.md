@@ -28,7 +28,7 @@ docker-projects/flash_todo/docker-compose.yml
 ## Management
 
 ```powershell
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\flash_todo"
+cd "C:\Users\mattd\repos\homelab\docker\docker-projects\flash_todo"
 
 docker-compose up -d        # Start (builds image if not built)
 docker-compose up -d --build  # Rebuild after code changes

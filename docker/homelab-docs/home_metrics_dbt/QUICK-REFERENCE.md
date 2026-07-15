@@ -35,7 +35,7 @@
 
 ### dbt
 ```bash
-cd "C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\home_metrics_dbt"
+cd "C:\Users\mattd\repos\homelab\dbt\home_metrics_dbt"
 
 dbt debug              # Test connection
 dbt deps               # Install packages

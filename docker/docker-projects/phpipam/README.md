@@ -13,7 +13,7 @@ phpIPAM is an open-source IP address management (IPAM) tool that helps you track
 ### 1. Start the containers
 
 ```bash
-cd C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects\phpipam
+cd C:\Users\mattd\repos\homelab\docker\docker-projects\phpipam
 docker-compose up -d
 ```
 

@@ -25,7 +25,7 @@ You'll have **THREE** repos:
 
 ### Clone it locally:
 ```bash
-cd "C:\Users\mattd\OneDrive\Matts Documents"
+cd C:\Users\mattd\repos
 git clone https://github.com/YOUR_USERNAME/home-metrics-infrastructure.git
 cd home-metrics-infrastructure
 ```
@@ -48,11 +48,14 @@ I'll provide all the files you need. Copy them to your new repo:
 After infrastructure is running:
 ```bash
 pip install dbt-postgres
-cd "C:\Users\mattd\OneDrive\Matts Documents"
+cd C:\Users\mattd\repos
 git clone https://github.com/YOUR_USERNAME/home-metrics-dbt.git  # Create this repo
 cd home-metrics-dbt
 dbt init home_metrics
 ```
+
+> **Note:** this describes the original standalone-repo setup. The dbt project now lives in the
+> homelab monorepo at `C:\Users\mattd\repos\homelab\dbt\home_metrics_dbt` — no separate clone needed.
 
 ## Step 4: Update n8n Workflows
 

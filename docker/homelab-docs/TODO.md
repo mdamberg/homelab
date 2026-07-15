@@ -12,7 +12,7 @@
 
 - [ ] **2. Verify Duplicati backup source path is correct**
   - Compose has `C:\docker-projects:/source/docker-configs:ro`
-  - Your actual files are at `C:\Users\mattd\OneDrive\Matts Documents\Docker\docker-projects`
+  - Your actual files are at `C:\Users\mattd\repos\homelab\docker\docker-projects`
   - Open Duplicati at http://10.0.0.7:8200 → check the backup job source path is pointing to the right place
   - If wrong, this means backups have never captured your actual files
 
