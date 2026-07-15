@@ -30,15 +30,15 @@ models:
           description: "The overall net income dollar amount per account for that month"
           sql: ${TABLE}.net_income
 
-        max_monthly_balance:
+        highest_monthly_balance:
           type: max
-          label: "Max Monthly Balance"
+          label: "Highest Monthly Balance"
           description: The highest balance for that account for that month
           sql: ${TABLE}.max_monthly_balance
 
-        min_ruinning_balance:
+        lowest_ruinning_balance:
           type: min 
-          label: "Min Monthly Balance"
+          label: "Lowest Monthly Balance"
           description: "The lowest balance for that account for that month"
           sql: ${TABLE}.min_ruinning_balance
 
