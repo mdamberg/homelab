@@ -22,10 +22,14 @@ docker-projects/pie_hole/etc-pihole/versions
 docker-projects/pie_hole/etc-pihole/gravity_backups/
 docker-projects/pie_hole/etc-pihole/listsCache/
 
-# Duplicati - Exclude database and lock files
-docker-projects/backups/duplicati/config/*.sqlite
-docker-projects/backups/duplicati/config/*.sqlite-*
-docker-projects/backups/duplicati/config/control_dir_v2/
+# Duplicati - Exclude databases, keys, and lock files.
+# The config*/ glob also covers config-backup-* snapshots: Duplicati-server.sqlite
+# holds destination credentials, so a snapshot of the config folder must never be committed.
+docker-projects/backups/duplicati/config*/*.sqlite
+docker-projects/backups/duplicati/config*/*.sqlite-*
+docker-projects/backups/duplicati/config*/control_dir_v2/
+docker-projects/backups/duplicati/config*/.dotnet/
+docker-projects/backups/duplicati/config*/.aspnet/
 
 # General Docker runtime files
 **/data/*.db
@@ -78,5 +82,6 @@ teller-certs/
 .mcp.json
 
 # Runtime data
+# Todo app data is personal/work task content, and this repo is public.
 docker-projects/flash_todo/data/
-docker-projects/backups/duplicati/config/.dotnet/
+docker-projects/work_todo/data/

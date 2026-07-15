@@ -24,6 +24,34 @@ homelab/
 └── docs/                          # Homelab documentation (markdown)
 ```
 
+### Canonical Paths — Never OneDrive
+
+**The only paths we use are `C:\Users\mattd\repos\homelab\docker\...` and `C:\Users\mattd\repos\homelab\dbt\...`.**
+
+A legacy copy of the whole tree still exists at `C:\Users\mattd\OneDrive\Matts Documents\Docker\`. It is **retired**. Never `cd` into it, never run `docker compose` from it, and never write a path containing `OneDrive` into a compose file, script, or doc. Data written there is invisible to the Duplicati backup, which only sources the repo path.
+
+**A committed config change does nothing until the container is recreated from the repo.** Containers keep the bind-mount paths they were *created* with, and `restart: unless-stopped` resurrects them from those old definitions after every Docker Desktop restart. So a container created long ago from the OneDrive tree keeps mounting OneDrive no matter what the repo says. Editing the compose file in git is not the fix — recreating the container is:
+
+```powershell
+cd C:\Users\mattd\repos\homelab\docker\docker-projects\<service>
+docker compose up -d --force-recreate
+```
+
+Verify which tree a container actually runs from — trust this, not the compose file:
+
+```powershell
+docker inspect <container> --format '{{index .Config.Labels "com.docker.compose.project.working_dir"}}'
+docker inspect <container> --format '{{range .Mounts}}{{.Source}} -> {{.Destination}}{{println}}{{end}}'
+```
+
+This split is the known cause of the flat-JSON to-do apps' data loss: the app silently reads whichever `data/` folder its container was created against, so a container recreated from the wrong tree serves stale data and writes new data somewhere that is never backed up.
+
+### Persistence and Backup
+
+**Default to a bind mount under `docker-projects/`** (`./data:/app/data`). Duplicati's source is the repo's `docker-projects/` folder, so a bind mount there is persistent *and* automatically backed up with no extra machinery.
+
+Named volumes are **not** covered by Duplicati automatically. If an image requires one, it must also be mounted read-only into `backups/docker-compose.yml` or its data is unprotected. Full decision table and examples: `.claude/skills/new-container/SKILL.md` (Phase 5).
+
 ### Container Distribution
 
 | Folder | Count | Contains |
