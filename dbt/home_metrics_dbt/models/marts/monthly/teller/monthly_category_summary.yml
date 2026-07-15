@@ -10,35 +10,37 @@ models:
           sql_on: ${monthly_account_summary.account_key} = ${dim_teller_accounts.account_key}
           relationship: many-to-one
 
-        - join: dim_teller_vendors
-       #   sql_on: ${monthly_account_summary. dim_teller_vendors.vendor_key} = ${}
-
       # -- Metrics --
       metrics:
-        total_expenses:
+        total_monthly_expenses:
           type: sum
-          sql: ${TABLE}.total_expenses
+          label: "Monthly Expenses"
           description: "The total dollar amount of expenses per account for that month"
+          sql: ${TABLE}.total_expenses
 
-        total_income:
+        total_monthly_income:
           type: sum
-          sql: ${TABLE}.total_income
+          label: "Monthly Income"
           description: "The total dollar amount of income per account for that month"
+          sql: ${TABLE}.total_income
 
-        net_income:
+        monthly_net_income:
           type: sum
-          sql: ${TABLE}.net_income
+          label: "Monthly Net Income"
           description: "The overall net income dollar amount per account for that month"
+          sql: ${TABLE}.net_income
 
         max_monthly_balance:
           type: max
-          sql: ${TABLE}.max_monthly_balance
+          label: "Max Monthly Balance"
           description: The highest balance for that account for that month
+          sql: ${TABLE}.max_monthly_balance
 
-          min_ruinning_balance:
-            type: min 
-            sql: ${TABLE}.min_ruinning_balance
-            description: "The lowest balance for that account for that month"
+        min_ruinning_balance:
+          type: min 
+          label: "Min Monthly Balance"
+          description: "The lowest balance for that account for that month"
+          sql: ${TABLE}.min_ruinning_balance
 
     columns:
       - name: monthly_transaction_skey
