@@ -1,0 +1,39 @@
+version: 2
+
+sources:
+    - name: home_metrics_raw
+      schema: raw
+      description: "Raw data tables for Home Metrics project"
+
+      tables: 
+        - name: raw_hardware_sensors
+          description: "Raw table housing systems data for server computer (temp, voltage, load)."
+          loaded_at_field: inserted_at
+
+          columns:
+            - name: id
+              description: Unique ID assigned to the sensor/recorded_at 
+            - name: host_name
+              description: Name given to desktop computer
+            - name: sensor_type
+              description: Indicates what type of data the sensor records (Voltage, Temp etc).
+            - name: sensor_name
+              description: Name of the sensor.
+            - name: sensor_id
+              description: Identifier given to each sensor type.
+            - name: value
+              description: The value of that sensor at the time of that run
+            - name: value_min
+              description: The minimum value of that sensor in the span between runs.
+            - name: max_value
+              description: The maximum value of that sensor in the span between runs.
+            - name: unit
+              description: The unit of measurement for that sensor
+            - name: hardware_name
+              description: The name of the piece of hardware the sensor is monitoring
+            - name: hardware_type
+              description: the type of hardware the sensor is recording for
+            - name: inserted_at
+              description: the time that the row was inserted at by N8N.
+            - name: recorded_at
+              description: The time that the values were recorded at.
