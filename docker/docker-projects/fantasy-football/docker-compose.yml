@@ -1,0 +1,9 @@
+services:
+  call-sheet:
+    image: nginx:alpine
+    container_name: call-sheet
+    ports:
+      - "8899:80"
+    volumes:
+      - ./site:/usr/share/nginx/html:ro
+    restart: unless-stopped

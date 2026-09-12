@@ -399,3 +399,36 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON raw.raw_teller_balances TO metrics_user;
 GRANT USAGE, SELECT ON raw.raw_teller_accounts_id_seq TO metrics_user;
 GRANT USAGE, SELECT ON raw.raw_teller_transactions_id_seq TO metrics_user;
 GRANT USAGE, SELECT ON raw.raw_teller_balances_id_seq TO metrics_user;
+
+
+
+
+-- ============================================================================
+-- HWiNFO -- system health monitoring
+-- ============================================================================
+
+CREATE TABLE IF NOT exists raw.raw_hwinfo_monitoring (
+	recorded_at_date DATE,        -- parse from "11.9.2026"  -> to_date(x,'DD.MM.YYYY')
+    recorded_at_time TIME(3),
+	virtual_memory_comitted NUMERIC(12, 2),
+	virtual_memory_available NUMERIC(12, 2),
+	physical_memory_used NUMERIC(12, 2),
+	physical_memory_available NUMERIC(12, 2),
+	physical_memory_load NUMERIC(12, 2),
+	cpu_die NUMERIC(12, 2),
+	core_temperatures NUMERIC(12, 2),
+	total_cpu_usage NUMERIC(12, 2),
+	max_cpu_usage NUMERIC(12, 2)
+);
+
+CREATE INDEX IF NOT EXISTS idx_hwinfo_recorded_at_date
+    ON raw.raw_hwinfo_monitoring (recorded_at_date DESC);
+CREATE INDEX IF NOT EXISTS idx_hwinfo_recorded_at_time
+    ON raw.raw_hwinfo_monitoring (recorded_at_time DESC);   -- was recorded_at_date
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON raw.raw_hwinfo_monitoring TO metrics_user;
+GRANT USAGE ON SCHEMA raw TO metrics_user;
+	
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON raw.raw_hwinfo_monitoring TO metrics_user;
+GRANT USAGE, SELECT ON raw.raw_hwinfo_monitoring TO metrics_user;

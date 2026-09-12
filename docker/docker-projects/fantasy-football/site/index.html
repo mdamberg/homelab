@@ -1,0 +1,468 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --paper:#E7EBEE; --card:#FFFFFF; --ink:#141D26; --muted:#5C6B7A;
+    --rule:#B9C5CE; --field:#14603D; --brick:#9E2B18; --marker:#E0A62B;
+    --data: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+    --disp: system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--disp);
+       -webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:14px 12px 60px}
+  .mast{display:flex;align-items:flex-end;justify-content:space-between;
+        border-bottom:3px solid var(--ink);padding-bottom:6px;margin-bottom:14px;gap:10px}
+  .mast h1{margin:0;font-size:26px;font-weight:800;letter-spacing:-.04em;
+           text-transform:uppercase;line-height:.9}
+  .mast .sub{font-family:var(--data);font-size:10px;color:var(--muted);
+             text-transform:uppercase;letter-spacing:.14em;margin-top:4px}
+  .wk{font-family:var(--data);font-size:11px;text-align:right;line-height:1.5;white-space:nowrap}
+  .wk b{display:block;font-size:22px;letter-spacing:-.03em}
+  .setup{background:var(--card);border:1px solid var(--rule);padding:10px;margin-bottom:14px}
+  .setup label{display:block;font-family:var(--data);font-size:9px;letter-spacing:.14em;
+               text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .setup input,.setup select{width:100%;padding:7px 8px;border:1px solid var(--rule);
+    background:#fff;font-family:var(--data);font-size:13px;color:var(--ink);border-radius:0}
+  .row2{display:flex;gap:8px;margin-bottom:8px}.row2>div{flex:1;min-width:0}
+  summary{font-family:var(--data);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+          color:var(--muted);cursor:pointer;list-style:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:'\25B8 ';}
+  details[open] summary::before{content:'\25BE ';}
+  details[open] summary{margin-bottom:10px}
+  button{font-family:var(--data);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--ink);color:var(--paper);border:0;padding:9px 14px;cursor:pointer;border-radius:0}
+  button:disabled{opacity:.4;cursor:default}
+  button.ghost{background:none;color:var(--muted);border:1px solid var(--rule);padding:7px 10px}
+  :focus-visible{outline:2px solid var(--marker);outline-offset:2px}
+  h2{font-family:var(--data);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+     color:var(--muted);margin:22px 0 7px;display:flex;justify-content:space-between;align-items:baseline}
+  h2 span{color:var(--ink);font-weight:400}
+  .slot{display:flex;background:var(--card);border:1px solid var(--rule);
+        border-top:0;align-items:stretch;min-height:46px}
+  .slot:first-of-type{border-top:1px solid var(--rule)}
+  .slot.tap{cursor:pointer}
+  .slot.tap:hover{background:#F4F7F9}
+  .tab{background:var(--ink);color:var(--paper);font-family:var(--data);font-size:10px;
+       font-weight:700;letter-spacing:.06em;width:46px;flex:0 0 46px;display:flex;
+       align-items:center;justify-content:center}
+  .tab.flex{background:var(--marker);color:var(--ink)}
+  .tab.bn{background:none;color:var(--muted);border-right:1px solid var(--rule)}
+  .who{flex:1;padding:7px 10px;min-width:0;display:flex;flex-direction:column;justify-content:center}
+  .nm{font-size:14px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;
+      overflow:hidden;text-overflow:ellipsis}
+  .meta{font-family:var(--data);font-size:10px;color:var(--muted);letter-spacing:.03em;margin-top:1px}
+  .inj{color:var(--brick);font-weight:700}
+  .good{color:var(--field);font-weight:700}
+  .pt{font-family:var(--data);font-size:17px;font-weight:600;padding:7px 10px;
+      display:flex;align-items:center;letter-spacing:-.02em}
+  .swap{background:#FBEDEA;border:1px solid var(--brick);border-top:0;
+        padding:8px 10px 8px 46px;font-family:var(--data);font-size:11px;line-height:1.6}
+  .swap b{color:var(--brick);letter-spacing:.08em}
+  .swap .delta{float:right;font-weight:700;color:var(--brick)}
+  .swap .why{color:var(--muted);display:block;margin-top:3px}
+  .move{background:#EDF5F0;border:1px solid var(--field);border-top:0;
+        padding:8px 10px;font-family:var(--data);font-size:11px;line-height:1.6}
+  .move b{color:var(--field);letter-spacing:.08em}
+  .move .bid{float:right;font-weight:700;color:var(--field)}
+  .move .why{color:var(--muted);display:block;margin-top:3px}
+  .tot{display:flex;background:var(--ink);color:var(--paper);font-family:var(--data);
+       font-size:12px;padding:9px 10px;justify-content:space-between;letter-spacing:.06em}
+  .tot b{font-size:16px}
+  .tabs{display:flex;flex-wrap:wrap}
+  .tabs button{background:none;color:var(--muted);border:1px solid var(--rule);
+               border-right:0;padding:7px 11px;font-size:10px}
+  .tabs button:last-child{border-right:1px solid var(--rule)}
+  .tabs button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .chat{background:var(--card);border:1px solid var(--rule);padding:10px;margin-top:8px}
+  .bub{font-size:13px;line-height:1.55;margin-bottom:9px;padding:8px 10px;white-space:pre-wrap}
+  .bub.a{background:#F1F5F7;border-left:3px solid var(--marker)}
+  .chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:9px}
+  .chips button{background:none;border:1px solid var(--rule);color:var(--muted);
+                padding:5px 8px;font-size:9px;text-transform:none;letter-spacing:.02em}
+  .veil{position:fixed;inset:0;background:rgba(20,29,38,.55);display:flex;
+        align-items:flex-end;justify-content:center;z-index:50;padding:0}
+  .sheet{background:var(--card);width:100%;max-width:560px;max-height:82vh;overflow-y:auto;
+         border-top:4px solid var(--ink)}
+  .sheet .hd{padding:14px 14px 10px;border-bottom:1px solid var(--rule);
+             display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .sheet h3{margin:0;font-size:20px;font-weight:800;letter-spacing:-.03em}
+  .statgrid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+  .statgrid div{padding:8px 14px;border-bottom:1px solid var(--rule);
+                font-family:var(--data);font-size:12px;display:flex;justify-content:space-between}
+  .statgrid div:nth-child(odd){border-right:1px solid var(--rule)}
+  .statgrid span{color:var(--muted)}
+  .note{font-family:var(--data);font-size:10px;color:var(--muted);line-height:1.7;
+        margin-top:26px;border-top:1px solid var(--rule);padding-top:10px}
+  .err{background:#FBEDEA;border:1px solid var(--brick);padding:12px;margin-bottom:14px;
+       font-size:13px;line-height:1.55}
+  .err b{display:block;font-family:var(--data);font-size:10px;letter-spacing:.14em;
+         text-transform:uppercase;color:var(--brick);margin-bottom:5px}
+  .err code{font-family:var(--data);font-size:11px;background:#fff;padding:1px 4px}
+  .load{font-family:var(--data);font-size:11px;color:var(--muted);letter-spacing:.1em;
+        text-transform:uppercase;padding:20px 0}
+</style>
+
+<div class="wrap">
+  <div class="mast">
+    <div>
+      <h1>Call&nbsp;Sheet</h1>
+      <div class="sub" id="lgname">not connected</div>
+    </div>
+    <div class="wk"><b id="wknum">\u2014</b><span id="wkseason"></span></div>
+  </div>
+
+  <details class="setup" id="cfgbox">
+    <summary>League setup</summary>
+    <div class="row2">
+      <div><label for="lid">Sleeper league ID</label>
+        <input id="lid" inputmode="numeric" value="1389736503239802880"></div>
+    </div>
+    <div class="row2">
+      <div><label for="proxy">CORS proxy</label>
+        <input id="proxy" value="https://sleeper-proxy.mattdamberg.workers.dev/?url="></div>
+    </div>
+    <div class="row2">
+      <div><label for="team">Your team</label>
+        <select id="team"><option value="">\u2014 load a league first \u2014</option></select></div>
+    </div>
+    <div class="row2" style="align-items:flex-end;margin-bottom:0">
+      <div style="flex:0 0 auto"><button id="go">Load week</button></div>
+      <div style="flex:0 0 auto"><button class="ghost" id="clear">Clear cache</button></div>
+    </div>
+  </details>
+
+  <div id="msg"></div>
+  <div id="out"></div>
+  <div class="note" id="foot"></div>
+</div>
+<div id="modal"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const S = { proxy:'', players:{}, proj:{}, ros:{}, league:null, rosters:[], users:[],
+            week:null, season:null, rosterId:null, wpos:'RB', ctx:null };
+
+const mem = {};
+async function kvGet(k){ try{ const v = localStorage.getItem('cs_'+k); return v?JSON.parse(v):null; }catch(e){ return mem[k] ?? null; } }
+async function kvSet(k,v){ try{ localStorage.setItem('cs_'+k, JSON.stringify(v)); }catch(e){ mem[k]=v; } }
+async function kvDel(k){ try{ localStorage.removeItem('cs_'+k); }catch(e){ delete mem[k]; } }
+
+async function j(url){
+  const r = await fetch(S.proxy ? S.proxy + encodeURIComponent(url) : url);
+  if(!r.ok) throw new Error(r.status + ' \u2014 ' + url);
+  return r.json();
+}
+async function jSoft(url){ try { return await j(url); } catch(e){ return null; } }
+
+const POS = ['QB','RB','WR','TE','K'];
+async function loadPlayers(){
+  const today = new Date().toISOString().slice(0,10);
+  const c = await kvGet('players');
+  if(c && c.date === today && Object.keys(c.map||{}).length) return c.map;
+  const map = {};
+  const keep = o => ({
+    n: o.full_name || ((o.first_name||'')+' '+(o.last_name||'')).trim() || o.player_id,
+    t: o.team || 'FA', p: o.position || '', i: o.injury_status || '',
+    d: o.depth_chart_order ?? null, a: o.age ?? null, y: o.years_exp ?? null,
+    nb: o.number ?? null, no: o.injury_notes || ''
+  });
+  for(const p of POS){
+    const d = await j('https://api.sleeper.app/v1/players/nfl?position='+p+'&active=true');
+    for(const id in d) map[id] = keep(d[id]);
+  }
+  const def = await j('https://api.sleeper.app/v1/players/nfl?position=DEF');
+  for(const id in def) map[id] = keep(def[id]);
+  await kvSet('players', {date:today, map});
+  return map;
+}
+
+function score(stats, pos, scoring){
+  if(!stats) return 0;
+  if(pos === 'DEF' && stats.pts_ppr != null) return stats.pts_ppr;
+  let t=0, hits=0;
+  for(const k in scoring){
+    const v = stats[k];
+    if(typeof v === 'number'){ t += scoring[k]*v; hits++; }
+  }
+  if(hits < 2) return stats.pts_ppr ?? stats.pts_half_ppr ?? stats.pts_std ?? 0;
+  return t;
+}
+const FLEXMAP = { FLEX:['RB','WR','TE'], WRRB_FLEX:['RB','WR'], REC_FLEX:['WR','TE'],
+                  SUPER_FLEX:['QB','RB','WR','TE'] };
+const eligible = (slot,pos) => FLEXMAP[slot] ? FLEXMAP[slot].includes(pos) : slot === pos;
+
+function bestLineup(slots, pool){
+  const order = slots.map((s,i)=>({s,i,w:FLEXMAP[s]?FLEXMAP[s].length:1})).sort((a,b)=>a.w-b.w);
+  const used = new Set(), out = new Array(slots.length).fill(null);
+  for(const {s,i} of order){
+    for(const p of pool){
+      if(used.has(p.id) || !eligible(s,p.pos)) continue;
+      used.add(p.id); out[i] = p; break;
+    }
+  }
+  return out;
+}
+const fmt = n => (Math.round(n*10)/10).toFixed(1);
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+async function run(){
+  const lid = $('#lid').value.trim();
+  S.proxy = $('#proxy').value.trim();
+  if(!lid) return err('No league ID','Paste your Sleeper league ID. It is the long number in your league URL on sleeper.app.');
+  $('#msg').innerHTML=''; $('#out').innerHTML='<div class="load">Pulling league\u2026</div>';
+  $('#go').disabled = true;
+  try{
+    const st = await j('https://api.sleeper.app/v1/state/nfl');
+    S.week = st.display_week || st.week; S.season = st.season;
+    $('#wknum').textContent = 'WK ' + S.week;
+    $('#wkseason').textContent = S.season + ' ' + (st.season_type||'').toUpperCase();
+    S.league  = await j('https://api.sleeper.app/v1/league/'+lid);
+    S.rosters = await j('https://api.sleeper.app/v1/league/'+lid+'/rosters');
+    S.users   = await j('https://api.sleeper.app/v1/league/'+lid+'/users');
+    $('#lgname').textContent = S.league.name;
+    fillTeams();
+    $('#out').innerHTML='<div class="load">Pulling players and projections\u2026</div>';
+    S.players = await loadPlayers();
+    const q = ['QB','RB','WR','TE','K','DEF'].map(p=>'position[]='+p).join('&');
+    const pr = await j('https://api.sleeper.com/projections/nfl/'+S.season+'/'+S.week+'?season_type=regular&'+q);
+    S.proj = {};
+    (Array.isArray(pr)?pr:Object.values(pr)).forEach(o=>{ if(o&&o.player_id) S.proj[o.player_id]=o.stats||{}; });
+    const ros = await jSoft('https://api.sleeper.com/projections/nfl/'+S.season+'?season_type=regular&'+q);
+    S.ros = {};
+    if(ros) (Array.isArray(ros)?ros:Object.values(ros)).forEach(o=>{ if(o&&o.player_id) S.ros[o.player_id]=o.stats||{}; });
+    await kvSet('cfg', {lid, rosterId:S.rosterId, proxy:S.proxy});
+    $('#cfgbox').open = false;
+    render();
+  }catch(e){ fail(e); }
+  finally{ $('#go').disabled = false; }
+}
+
+function fillTeams(){
+  const u={}; S.users.forEach(x=>u[x.user_id]=x);
+  const sel=$('#team'); sel.innerHTML='';
+  S.rosters.forEach(r=>{
+    const o=document.createElement('option'); o.value=r.roster_id;
+    o.textContent=(u[r.owner_id]&&(u[r.owner_id].metadata?.team_name||u[r.owner_id].display_name))||('Roster '+r.roster_id);
+    sel.appendChild(o);
+  });
+  if(S.rosterId) sel.value=S.rosterId; else S.rosterId=+sel.value;
+}
+
+function render(){
+  const R = S.rosters.find(r=>r.roster_id === +S.rosterId); if(!R) return;
+  const sc = S.league.scoring_settings;
+  const slots = (S.league.roster_positions||[]).filter(p=>!['BN','IR','TAXI'].includes(p));
+  const mk = id => {
+    const m = S.players[id] || {n:id,t:'?',p:'?',i:''};
+    return { id, name:m.n, team:m.t, pos:m.p, inj:m.i, dc:m.d,
+             pts: score(S.proj[id], m.p, sc), ros: score(S.ros[id], m.p, sc) };
+  };
+  const pool = (R.players||[]).map(mk).sort((a,b)=>b.pts-a.pts);
+  const best = bestLineup(slots, pool);
+  const bestIds = new Set(best.filter(Boolean).map(p=>p.id));
+  const cur = (R.starters||[]).filter(x=>x && x!=='0');
+  const curP = cur.map(id=>pool.find(p=>p.id===id)).filter(Boolean);
+  const sum = a => a.reduce((t,p)=>t+(p?p.pts:0),0);
+  const bTot = sum(best), cTot = sum(curP);
+  let h='';
+  h += '<h2>Optimal lineup <span>'+fmt(bTot)+' proj</span></h2>';
+  slots.forEach((s,i)=>{
+    const p = best[i], fx = !!FLEXMAP[s];
+    h += row(p, s.replace('SUPER_FLEX','SFLX').replace('WRRB_FLEX','W/R').replace('REC_FLEX','W/T').replace('FLEX','FLX'), fx?'flex':'');
+  });
+  const curSlots = bestLineup(slots, curP.sort((a,b)=>b.pts-a.pts));
+  const swaps = [];
+  slots.forEach((s,i)=>{
+    const inP = best[i], outP = curSlots[i];
+    if(inP && (!outP || outP.id !== inP.id)) swaps.push({slot:s, inP, outP});
+  });
+  h += '<h2>Changes to make <span>'+(swaps.length? '+'+fmt(bTot-cTot)+' pts' : 'lineup is optimal')+'</span></h2>';
+  if(!swaps.length){
+    h += '<div class="slot"><div class="tab">OK</div><div class="who">'+
+         '<div class="nm">Nothing to change</div><div class="meta">Your set lineup already scores the max</div></div></div>';
+  } else {
+    swaps.forEach(w=>{
+      const d = w.outP ? w.inP.pts - w.outP.pts : w.inP.pts;
+      let why = [];
+      if(w.outP && w.outP.inj) why.push(w.outP.name.split(' ').pop()+' is '+w.outP.inj);
+      if(w.inP.inj) why.push('note: '+w.inP.name.split(' ').pop()+' listed '+w.inP.inj);
+      if(!why.length) why.push('projection gap of '+fmt(Math.abs(d))+' pts in the '+w.slot+' slot');
+      h += '<div class="swap"><span class="delta">+'+fmt(d)+'</span>'+
+           '<b>START</b> '+esc(w.inP.name)+' ('+w.inP.pos+' \u00b7 '+w.inP.team+')'+
+           (w.outP? '<br><b>&nbsp;&nbsp;SIT</b> '+esc(w.outP.name)+' ('+w.outP.pos+' \u00b7 '+w.outP.team+')':'')+
+           '<span class="why">'+esc(why.join(' \u00b7 '))+'</span></div>';
+    });
+  }
+  const rostered = new Set(); S.rosters.forEach(r=>(r.players||[]).forEach(x=>rostered.add(x)));
+  const budget = S.league.settings?.waiver_budget ?? 100;
+  const spent  = R.settings?.waiver_budget_used ?? 0;
+  const left   = budget - spent;
+  const posCount = {}; pool.forEach(p=>posCount[p.pos]=(posCount[p.pos]||0)+1);
+  const required = {}; slots.forEach(s=>{ if(!FLEXMAP[s]) required[s]=(required[s]||0)+1; });
+  const free = Object.keys(S.ros).length ? Object.keys(S.ros) : Object.keys(S.proj);
+  const fa = free.filter(id=>!rostered.has(id)).map(mk)
+    .filter(p=>['QB','RB','WR','TE','DEF','K'].includes(p.pos) && (p.ros>0 || p.pts>0))
+    .sort((a,b)=>(b.ros||b.pts*17)-(a.ros||a.pts*17));
+  const droppable = pool.filter(p=>!bestIds.has(p.id))
+    .filter(p=>(posCount[p.pos]||0) > (required[p.pos]||0))
+    .sort((a,b)=>(a.ros||a.pts*17)-(b.ros||b.pts*17));
+  const worstStarter = {};
+  best.filter(Boolean).forEach(p=>{ if(worstStarter[p.pos]==null || p.ros < worstStarter[p.pos]) worstStarter[p.pos]=p.ros; });
+  const moves = [];
+  const usedDrop = new Set();
+  fa.slice(0,25).forEach(p=>{
+    const d = droppable.find(x=>!usedDrop.has(x.id));
+    if(!d) return;
+    const gain = (p.ros||0) - (d.ros||0);
+    if(gain <= 0 || moves.length >= 4) return;
+    usedDrop.add(d.id);
+    const upgrade = worstStarter[p.pos]!=null && p.ros > worstStarter[p.pos];
+    const pct = upgrade ? .20 : (gain > 30 ? .08 : .02);
+    moves.push({p, d, gain, upgrade, bid: Math.max(1, Math.round(left*pct))});
+  });
+  h += '<h2>Add / drop <span>$'+left+' of $'+budget+' FAAB</span></h2>';
+  if(!moves.length){
+    h += '<div class="slot"><div class="tab">\u2014</div><div class="who">'+
+         '<div class="nm">No clear upgrade available</div>'+
+         '<div class="meta">Nobody on waivers out-projects your droppable bench</div></div></div>';
+  }
+  moves.forEach(m=>{
+    h += '<div class="move"><span class="bid">bid $'+m.bid+'</span>'+
+         '<b>ADD</b> '+esc(m.p.name)+' ('+m.p.pos+' \u00b7 '+m.p.team+')<br>'+
+         '<b>DROP</b> '+esc(m.d.name)+' ('+m.d.pos+' \u00b7 '+m.d.team+')'+
+         '<span class="why">'+fmt(m.gain)+' more projected points rest-of-season'+
+         (m.upgrade? ' \u00b7 would start over your current '+m.p.pos : ' \u00b7 bench depth only')+'</span></div>';
+  });
+  const bench = pool.filter(p=>!bestIds.has(p.id));
+  h += '<h2>Bench <span>'+bench.length+'</span></h2>';
+  bench.forEach(p=> h += row(p, p.pos, 'bn'));
+  h += '<h2>Waiver board <span>ranked rest-of-season</span></h2>';
+  h += '<div class="tabs">'+['RB','WR','TE','QB','DEF','K'].map(p=>
+        '<button data-w="'+p+'" class="'+(p===S.wpos?'on':'')+'">'+p+'</button>').join('')+'</div>';
+  const wlist = fa.filter(p=>p.pos===S.wpos).slice(0,10);
+  if(!wlist.length) h += '<div class="slot"><div class="tab bn">'+S.wpos+'</div><div class="who">'+
+       '<div class="nm">Nobody available</div><div class="meta">Every projected '+S.wpos+' is rostered</div></div></div>';
+  wlist.forEach(p=>{
+    const up = worstStarter[p.pos]!=null && p.ros > worstStarter[p.pos];
+    h += row(p, p.pos, 'bn', up?'<span class="good">beats your '+p.pos+' starter</span>':'');
+  });
+  h += '<div class="tot"><span>Projected total</span><b>'+fmt(bTot)+'</b></div>';
+  h += '<h2>Ask Claude about this team</h2>'+
+       '<div class="chat"><div class="bub a" style="margin:0 0 10px">'+
+       'Copy the snapshot below, paste it into a chat, and ask whatever you want. '+
+       'It contains your lineup, bench, free agents and FAAB \u2014 everything this page computed.</div>'+
+       '<div class="chips">'+
+         ['Who is my riskiest start this week?','Which bench player is worth stashing?','Explain the FLEX call','Should I trade for a WR1?'].map(q=>'<button data-copyq="'+esc(q)+'">'+esc(q)+'</button>').join('')+
+       '</div><button id="copy">Copy team snapshot</button> <span id="copied" class="meta"></span></div>';
+  $('#out').innerHTML = h;
+  const line = p => p.name+' ('+p.pos+', '+p.team+(p.inj?', '+p.inj:'')+') wk '+fmt(p.pts)+' / ros '+fmt(p.ros);
+  S.ctx = {
+    league: S.league.name, week: S.week, season: S.season,
+    scoring: 'rec='+(sc.rec??0)+', pass_td='+(sc.pass_td??0)+', no kicker slot: '+(!slots.includes('K')),
+    slots, faab_left: left, faab_total: budget,
+    optimal: best.filter(Boolean).map(line),
+    currently_started: curP.map(line),
+    bench: bench.map(line),
+    top_free_agents: fa.slice(0,20).map(line)
+  };
+  $('#out').querySelectorAll('[data-w]').forEach(b=> b.onclick = ()=>{ S.wpos=b.dataset.w; render(); });
+  $('#out').querySelectorAll('[data-id]').forEach(el=> el.onclick = ()=> showPlayer(el.dataset.id));
+  $('#copy').onclick = ()=> copySnap('');
+  $('#out').querySelectorAll('[data-copyq]').forEach(b=> b.onclick = ()=> copySnap(b.dataset.copyq));
+  $('#foot').innerHTML =
+    'Projections come from Sleeper and are scored against this league\u2019s own settings, so format changes '+
+    'carry through automatically. Team defenses use Sleeper\u2019s PPR total because points-allowed rules are '+
+    'bucketed. Add/drop never suggests dropping your last body at a required position. Player list refreshes '+
+    'daily; projections refresh every load.';
+}
+
+function row(p, tabTxt, cls, extra){
+  if(!p) return '<div class="slot"><div class="tab '+(cls||'')+'">'+tabTxt+'</div>'+
+    '<div class="who"><div class="nm">\u2014</div><div class="meta">no eligible player</div></div>'+
+    '<div class="pt">\u2014</div></div>';
+  return '<div class="slot tap" data-id="'+p.id+'"><div class="tab '+(cls||'')+'">'+tabTxt+'</div>'+
+    '<div class="who"><div class="nm">'+esc(p.name)+'</div><div class="meta">'+p.pos+' \u00b7 '+p.team+
+    (p.inj?' \u00b7 <span class="inj">'+esc(p.inj)+'</span>':'')+(extra?' \u00b7 '+extra:'')+'</div></div>'+
+    '<div class="pt">'+fmt(p.pts)+'</div></div>';
+}
+
+const LAB = {pass_att:'Pass att',pass_cmp:'Completions',pass_yd:'Pass yds',pass_td:'Pass TD',
+  pass_int:'INT',rush_att:'Carries',rush_yd:'Rush yds',rush_td:'Rush TD',rec_tgt:'Targets',
+  rec:'Receptions',rec_yd:'Rec yds',rec_td:'Rec TD',fum_lost:'Fumbles lost',
+  gp:'Games',pts_ppr:'Sleeper PPR',sack:'Sacks',def_td:'Def TD',pts_allow:'Pts allowed'};
+
+function showPlayer(id){
+  const m = S.players[id]; if(!m) return;
+  const sc = S.league.scoring_settings;
+  const w = S.proj[id]||{}, r = S.ros[id]||{};
+  const rows = Object.keys(LAB).filter(k=>w[k]!=null||r[k]!=null).map(k=>
+    '<div><span>'+LAB[k]+'</span><b>'+(w[k]!=null?fmt(w[k]):'\u2014')+
+    (r[k]!=null?' / '+fmt(r[k]):'')+'</b></div>').join('');
+  const bio = [m.p, m.t, m.nb?'#'+m.nb:'', m.a?m.a+' yrs old':'',
+               m.y!=null?(m.y===0?'rookie':m.y+' yr exp'):'',
+               m.d?'depth '+m.d:''].filter(Boolean).join(' \u00b7 ');
+  $('#modal').innerHTML =
+    '<div class="veil" id="veil"><div class="sheet">'+
+      '<div class="hd"><div><h3>'+esc(m.n)+'</h3>'+
+        '<div class="meta" style="margin-top:4px">'+esc(bio)+'</div>'+
+        (m.i?'<div class="meta inj" style="margin-top:3px">'+esc(m.i)+(m.no?' \u2014 '+esc(m.no):'')+'</div>':'')+
+        '</div><button class="ghost" id="x">Close</button></div>'+
+      '<div class="statgrid"><div><span>Week '+S.week+'</span><b>'+fmt(score(w,m.p,sc))+' pts</b></div>'+
+        '<div><span>Rest of season</span><b>'+fmt(score(r,m.p,sc))+' pts</b></div>'+rows+'</div>'+
+      '<div class="note" style="margin:0;padding:12px 14px;border-top:0">Two numbers per row: '+
+      'this week / full season. Both are Sleeper projections scored to your league.</div>'+
+    '</div></div>';
+  $('#x').onclick = closeM; $('#veil').onclick = e => { if(e.target.id==='veil') closeM(); };
+}
+const closeM = () => $('#modal').innerHTML='';
+
+function snapText(q){
+  const c = S.ctx, L = a => a.map(x=>'  - '+x).join('\n');
+  return (q? q+'\n\n' : '')+
+    'My fantasy team, week '+c.week+' of '+c.season+' ('+c.league+').\n'+
+    'Scoring: '+c.scoring+'. Starting slots: '+c.slots.join(', ')+'.\n'+
+    'FAAB: $'+c.faab_left+' left of $'+c.faab_total+'.\n'+
+    'Numbers are Sleeper projections scored to my league: week / rest-of-season.\n\n'+
+    'OPTIMAL LINEUP\n'+L(c.optimal)+'\n\n'+
+    'CURRENTLY STARTED\n'+L(c.currently_started)+'\n\n'+
+    'BENCH\n'+L(c.bench)+'\n\n'+
+    'TOP FREE AGENTS\n'+L(c.top_free_agents);
+}
+async function copySnap(q){
+  const t = snapText(q);
+  try{ await navigator.clipboard.writeText(t); flash('Copied \u2014 paste it into a chat'); }
+  catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = t; ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); flash('Copied \u2014 paste it into a chat'); }
+    catch(_){ flash('Copy blocked \u2014 select the text manually'); }
+    ta.remove();
+  }
+}
+function flash(m){
+  const el = $('#copied'); if(!el) return;
+  el.textContent = ' '+m;
+  setTimeout(()=>{ if($('#copied')) $('#copied').textContent=''; }, 3000);
+}
+
+function err(t,b){ $('#msg').innerHTML='<div class="err"><b>'+t+'</b>'+b+'</div>'; $('#out').innerHTML=''; }
+function fail(e){
+  const blocked = /Failed to fetch|NetworkError|Load failed/i.test(e.message);
+  if(blocked && !S.proxy) err('Proxy is empty','Sleeper does not let browsers read its API directly. Paste your Worker URL \u2014 it must end with <code>/?url=</code>.');
+  else if(blocked) err('Could not reach the proxy','The Worker did not respond. Check it is deployed and that the URL ends with <code>/?url=</code>.');
+  else err('Could not load', esc(e.message)+'<br><br>403 = Worker allowlist missing a host. 404 = bad league ID. 429 = too many calls, wait a minute.');
+}
+
+$('#go').onclick = run;
+$('#team').onchange = e => { S.rosterId=+e.target.value;
+  kvSet('cfg',{lid:$('#lid').value.trim(), rosterId:S.rosterId, proxy:S.proxy}); render(); };
+$('#clear').onclick = async () => { await kvDel('players'); err('Cache cleared','Player list will be pulled fresh on the next load.'); };
+
+(async ()=>{
+  const c = await kvGet('cfg');
+  if(c){ if(c.lid) $('#lid').value=c.lid; if(c.proxy) $('#proxy').value=c.proxy; S.rosterId=c.rosterId; }
+  if($('#lid').value.trim()) run(); else $('#cfgbox').open = true;
+})();
+</script>

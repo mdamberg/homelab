@@ -53,7 +53,7 @@ models:
             dimension:
               type: number 
       - name: transaction_flow
-        description: "Flags transactions as crdits if > 0 and debits if < 0"
+        description: "Flags transactions as credit if > 0 and debits if < 0"
         config:
           meta:
             dimension:
