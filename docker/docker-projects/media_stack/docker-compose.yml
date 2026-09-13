@@ -100,7 +100,9 @@ services:
     container_name: flaresolverr
     environment:
       - LOG_LEVEL=info
+      - BROWSER_TIMEOUT=60000        # give headless Chrome longer to solve a Cloudflare challenge (default 40000ms)
       - TZ=${TZ}
+    mem_limit: 1g                    # guarantee memory so Chrome doesn't OOM-throttle and silently time out challenges
     # No external port needed - Prowlarr accesses via internal network
     restart: unless-stopped
 
