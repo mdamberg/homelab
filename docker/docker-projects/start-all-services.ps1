@@ -11,7 +11,7 @@
 .PARAMETER Services
     Optional. Specify which services to start (comma-separated). If not provided, starts all.
     Valid values: pihole, homeassistant, mediastack, linkding, monitoring, flash, work, jelu, weather,
-                  n8n, backups, phpipam, homemetrics, all
+                  n8n, backups, homemetrics, all
     Example: .\start-all-services.ps1 -Services "pihole,homeassistant"
 
 .PARAMETER StartDBeaver
@@ -26,8 +26,8 @@
     Starts all infrastructure services
 
 .EXAMPLE
-    .\start-all-services.ps1 -Services "pihole,phpipam"
-    Starts only Pi-hole and phpIPAM
+    .\start-all-services.ps1 -Services "pihole,jelu"
+    Starts only Pi-hole and Jelu
 
 .EXAMPLE
     .\start-all-services.ps1 -StartDBeaver
@@ -64,7 +64,6 @@ $InfraServices = @{
     'weather' = 'weather_api_project'
     'n8n' = 'n8n'
     'backups' = 'backups'
-    'phpipam' = 'phpipam'
     'homemetrics' = '..\..\dbt'
     'lightdash' = 'lightdash'
     'watchtower' = 'watchtower'
