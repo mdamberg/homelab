@@ -277,6 +277,7 @@ Write-Host "They will automatically restart on system reboot once started.`n" -F
 if ($StartLibreHardwareMonitor) {
     # Common installation paths for LibreHardwareMonitor
     $LHMPaths = @(
+        "$env:USERPROFILE\LibreHardwareMonitor\LibreHardwareMonitor\LibreHardwareMonitor.exe",
         "C:\Program Files\LibreHardwareMonitor\LibreHardwareMonitor.exe",
         "C:\Program Files (x86)\LibreHardwareMonitor\LibreHardwareMonitor.exe",
         "$env:LOCALAPPDATA\Programs\LibreHardwareMonitor\LibreHardwareMonitor.exe",
