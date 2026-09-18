@@ -116,9 +116,10 @@ function Test-DockerRunning {
     }
 }
 
-if (-not (Test-DockerRunning)) {
-    Write-Host "[INFO] Docker Desktop is not running. Starting it now..." -ForegroundColor Yellow
-
+if (Test-DockerRunning) {
+    $DockerVersion = docker version --format '{{.Server.Version}}' 2>&1
+    Write-Host "[OK] Docker Desktop is already running (version: $DockerVersion)" -ForegroundColor Green
+} else {
     # Check if Docker Desktop executable exists
     if (-not (Test-Path $DockerDesktopPath)) {
         Write-Host "[ERROR] Docker Desktop not found at: $DockerDesktopPath" -ForegroundColor Red
@@ -126,40 +127,52 @@ if (-not (Test-DockerRunning)) {
         exit 1
     }
 
-    # Start Docker Desktop
-    try {
-        Start-Process -FilePath $DockerDesktopPath -WindowStyle Hidden
-        Write-Host "[INFO] Docker Desktop starting..." -ForegroundColor Cyan
-    } catch {
-        Write-Host "[ERROR] Failed to start Docker Desktop: $_" -ForegroundColor Red
-        exit 1
-    }
+    # Docker Desktop on Windows frequently wedges at boot: its processes launch but the
+    # WSL2 engine never becomes ready, so containers stay down. Attempt 1 waits for a normal
+    # (possibly slow) start; if that fails, attempt 2 clears the half-started state by killing
+    # Docker and resetting WSL2, then starts clean - the documented fix for a hung Docker.
+    $DockerReady = $false
+    for ($Attempt = 1; $Attempt -le 2 -and -not $DockerReady; $Attempt++) {
+        if ($Attempt -eq 1) {
+            # Only launch if nothing is already coming up, to avoid double-launching Docker
+            # Desktop when its own auto-start already fired at login.
+            if (-not (Get-Process 'Docker Desktop' -ErrorAction SilentlyContinue)) {
+                Write-Host "[INFO] Docker Desktop is not running. Starting it now..." -ForegroundColor Yellow
+                Start-Process -FilePath $DockerDesktopPath -WindowStyle Hidden
+            } else {
+                Write-Host "[INFO] Docker Desktop is already launching. Waiting for it to be ready..." -ForegroundColor Yellow
+            }
+        } else {
+            Write-Host "[WARN] Docker did not become ready. Clearing WSL2 state and restarting Docker Desktop..." -ForegroundColor Yellow
+            Get-Process 'Docker Desktop', 'com.docker.backend', 'com.docker.build' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+            wsl --shutdown 2>$null
+            Start-Sleep -Seconds 5
+            Start-Process -FilePath $DockerDesktopPath -WindowStyle Hidden
+        }
 
-    # Wait for Docker to be ready
-    Write-Host "[WAIT] Waiting for Docker to initialize (max $MaxWaitSeconds seconds)..." -ForegroundColor Yellow
-    $WaitedSeconds = 0
-    $ReadyMessageShown = $false
+        Write-Host "[WAIT] Waiting for Docker to initialize (max $MaxWaitSeconds seconds)..." -ForegroundColor Yellow
+        $WaitedSeconds = 0
+        while (-not (Test-DockerRunning) -and $WaitedSeconds -lt $MaxWaitSeconds) {
+            Start-Sleep -Seconds 2
+            $WaitedSeconds += 2
 
-    while (-not (Test-DockerRunning) -and $WaitedSeconds -lt $MaxWaitSeconds) {
-        Start-Sleep -Seconds 2
-        $WaitedSeconds += 2
+            if ($WaitedSeconds % 10 -eq 0) {
+                Write-Host "[WAIT] Still waiting... ($WaitedSeconds seconds elapsed)" -ForegroundColor Yellow
+            }
+        }
 
-        if ($WaitedSeconds % 10 -eq 0 -and -not $ReadyMessageShown) {
-            Write-Host "[WAIT] Still waiting... ($WaitedSeconds seconds elapsed)" -ForegroundColor Yellow
+        if (Test-DockerRunning) {
+            $DockerReady = $true
+            $DockerVersion = docker version --format '{{.Server.Version}}' 2>&1
+            Write-Host "[OK] Docker Desktop is ready (version: $DockerVersion)" -ForegroundColor Green
         }
     }
 
-    if (Test-DockerRunning) {
-        $DockerVersion = docker version --format '{{.Server.Version}}' 2>&1
-        Write-Host "[OK] Docker Desktop is ready (version: $DockerVersion)" -ForegroundColor Green
-    } else {
-        Write-Host "[ERROR] Docker Desktop failed to start within $MaxWaitSeconds seconds!" -ForegroundColor Red
+    if (-not $DockerReady) {
+        Write-Host "[ERROR] Docker Desktop failed to start after 2 attempts (including a WSL2 reset)!" -ForegroundColor Red
         Write-Host "Please check Docker Desktop manually and ensure it can start properly.`n" -ForegroundColor Yellow
         exit 1
     }
-} else {
-    $DockerVersion = docker version --format '{{.Server.Version}}' 2>&1
-    Write-Host "[OK] Docker Desktop is already running (version: $DockerVersion)" -ForegroundColor Green
 }
 
 # Create required Docker networks (ignore errors if they already exist)
