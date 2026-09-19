@@ -2,7 +2,9 @@ models:
   - name: monthly_category_summary
     description: "A monthly, account level view of finances with metrics for total income, 
                   expenses and net for each account"
-    
+    config:
+      tags: ['lightdash']  
+      
     meta:
       # -- Joins --
       joins:

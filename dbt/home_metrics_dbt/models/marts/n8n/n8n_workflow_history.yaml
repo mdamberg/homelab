@@ -5,6 +5,9 @@ models:
       Renames the run start/end date and time columns from
       fct_n8n_workflow_runs into BI-friendly labels.
 
+    config:
+      tags: ['lightdash']
+    
     metrics:
       total_successful_runs:
         type: count

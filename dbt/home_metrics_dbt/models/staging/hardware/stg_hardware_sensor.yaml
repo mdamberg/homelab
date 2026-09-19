@@ -1,7 +1,7 @@
 models: 
     - name: raw_hardware_sensors
       description: "Raw table housing systems data for server computer (temp, voltage, load)."
-      
+
       columns:
         - name: id
           description: Unique ID assigned to the sensor/recorded_at 

@@ -1,6 +1,8 @@
 models:
   - name: homelab_hardware_sensor
     description: Mart level wrapper containing systems health data for the PC which runs the HomeLab.
+    config:
+      tags: ['lightdash']
 
     columns:
       - name: recorded_date

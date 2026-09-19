@@ -1,6 +1,10 @@
 models:
   - name: monthly_vendor_summary
     description: "Monthly spend aggregated by account and vendor, with category context"
+  
+    config:
+      tags: ['lightdash']
+    
     columns:
       - name: monthly_vendor_skey
         description: "Surrogate key for month + account + vendor"
