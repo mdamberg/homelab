@@ -129,6 +129,7 @@ C:\Users\mattd\repos\homelab\docker\docker-projects\stop-all-services.ps1
 | Linkding | 8282 | Bookmarks |
 | Duplicati | 8200 | Backups |
 | Pi-hole | 8082 | Admin UI; actively serving DNS on port 53 |
+| FantasyFootball | 8899 | AI Web-app integrated with FF league
 
 ## Code Style
 
