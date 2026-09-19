@@ -1,0 +1,28 @@
+
+models:
+  - name: fct_hardware_sensor
+    description: >-
+      "Historical component values for the HomeLab PC such as temperature, clock speed, memory and more that 
+      are collected during that time window (runs every 15 min)."
+      
+    columns:
+      - name: recorded_date
+        description: Date the sensor values were recorded.
+      - name: recorded_datetime
+        description: The timestamp of when the sensor value were recorded.
+      - name: hardware_type
+        description: The type of hardware the sensor is providing values for (ie CPU, GPU, Memory).
+      - name: hardware_name 
+        description: The brand name of the piece of hardware (ie. AMD Ryzen 5800x).
+      - name: sensor_name 
+        description: The name of the sensor and what it measures.
+      - name: sensor_id
+        description: unique identifier for each sensor type.
+      - name: sensor_value
+        description: The numeric value associated with that piece of hardware.
+      - name: sensor_value_min
+        description: The minimum value recorded during the recording window (15 min).
+      - name: sensor_value_max
+        description: The minimum value recorded during the recording window (15 min).
+      - name: units
+        description: The units of measurement the sesors values are reported in. 

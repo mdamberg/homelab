@@ -10,7 +10,7 @@ models:
         type: count
         label: "Total Successful Workflow Runs"
         description: "The total number of n8n workflow runs that completed successfully"
-        sql: ${workflow_run_pk}
+        sql: ${TABLE}.workflow_run_pk
         filters:
           - is_successful_run: 1
 
@@ -18,7 +18,7 @@ models:
         type: count
         label: "Total Failed Workflow Runs"
         description: "The total number of n8n workflow runs that failed and did not complete"
-        sql: ${workflow_run_pk}
+        sql: ${TABLE}.workflow_run_pk
         filters:
           - is_failed_run: 1
 
@@ -26,7 +26,7 @@ models:
         type: count
         label: "Total No Data Alert Runs"
         description: "The total number of n8n workflow runs that failed to produce data"
-        sql: ${workflow_run_pk}
+        sql: ${TABLE}.workflow_run_pk
         filters:
           - is_no_data_alert: 1
 
@@ -34,7 +34,7 @@ models:
         type: count
         label: "Total Node Error Alert Runs"
         description: "The total number of n8n workflow runs where a specific node produced an error"
-        sql: ${workflow_run_pk}
+        sql: ${TABLE}.workflow_run_pk
         filters:
           - is_node_error_alert: 1
 

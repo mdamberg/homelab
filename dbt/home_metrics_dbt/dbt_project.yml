@@ -29,5 +29,9 @@ models:
       +schema: intmdt
       +meta:
         hidden: true
+    dim:
+      +materialized: table
+    fct:
+      +materialized: table
     marts:
       +materialized: table
