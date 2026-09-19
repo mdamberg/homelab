@@ -1,3 +1,9 @@
+/*
+    Model showing the values and health of the PC
+    components for the homelab PC. Includes usage, 
+    memory, clock, 
+*/
+
 with sensor_data as (
 	select
 		recorded_at::date as recorded_date,
