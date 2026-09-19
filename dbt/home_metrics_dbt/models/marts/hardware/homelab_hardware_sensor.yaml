@@ -27,3 +27,7 @@ models:
         description: The minimum value recorded during the recording window (15 min).
       - name: units
         description: The units of measurement the sesors values are reported in. 
+      - name: is_current_month
+        description: flag indicating if the month of the recorded data is in the current month.
+      - name: is_temp_sensor
+        description: flag indicating if a sensor is a temp sensor. 
