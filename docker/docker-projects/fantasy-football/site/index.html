@@ -96,6 +96,15 @@
   .tabs button:last-child{border-right:1px solid var(--rule)}
   .tabs button.on{background:var(--purple);color:#0B0910;border-color:var(--purple);
                   box-shadow:0 0 14px rgba(178,59,255,.45)}
+  /* waiver-area sub-tab switch (Waiver | Trades) */
+  .secttabs{display:flex;margin:22px 0 7px}
+  .secttabs button{flex:1;background:var(--card);color:var(--muted);border:1px solid var(--rule);
+    border-right:0;padding:9px 10px;font-family:var(--data);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;cursor:pointer;box-shadow:none;border-radius:0}
+  .secttabs button:last-child{border-right:1px solid var(--rule)}
+  .secttabs button.on{background:var(--purple);color:#0B0910;border-color:var(--purple);font-weight:700;
+    box-shadow:0 0 12px rgba(178,59,255,.4)}
+  .move .tap{cursor:pointer;border-bottom:1px dotted var(--rule)}
   /* matchup head-to-head */
   .vhead{display:flex;align-items:center;justify-content:space-between;gap:8px;
          background:var(--card);border:1px solid var(--rule);padding:12px 12px}
@@ -201,14 +210,15 @@
 <script>
 const $ = s => document.querySelector(s);
 const S = { proxy:'', players:{}, proj:{}, ros:{}, league:null, rosters:[], users:[],
-            week:null, season:null, rosterId:null, wpos:'RB', ctx:null,
+            week:null, season:null, rosterId:null, wpos:'RB', wtab:'waiver', ctx:null,
             matchups:null, live:{}, liveOn:false, view:'sheet' };
 
 const mem = {};
 async function kvGet(k){ try{ const v = localStorage.getItem('cs_'+k); return v?JSON.parse(v):null; }catch(e){ return mem[k] ?? null; } }
 async function kvSet(k,v){ try{ localStorage.setItem('cs_'+k, JSON.stringify(v)); }catch(e){ mem[k]=v; } }
 async function kvDel(k){ try{ localStorage.removeItem('cs_'+k); }catch(e){ delete mem[k]; } }
-function cfgObj(){ return {lid:$('#lid').value.trim(), rosterId:S.rosterId, proxy:S.proxy, view:S.view}; }
+function cfgObj(){ return {lid:$('#lid').value.trim(), rosterId:S.rosterId, proxy:S.proxy,
+                          view:S.view, wtab:S.wtab}; }
 
 async function j(url){
   const r = await fetch(S.proxy ? S.proxy + encodeURIComponent(url) : url);
@@ -436,16 +446,22 @@ function renderSheet(){
   const bench = pool.filter(p=>!bestIds.has(p.id));
   h += '<h2>Bench <span>'+bench.length+'</span></h2>';
   bench.forEach(p=> h += row(p, p.pos, 'bn'));
-  h += '<h2>Waiver board <span>ranked rest-of-season</span></h2>';
-  h += '<div class="tabs">'+['RB','WR','TE','QB','DEF','K'].map(p=>
-        '<button data-w="'+p+'" class="'+(p===S.wpos?'on':'')+'">'+p+'</button>').join('')+'</div>';
-  const wlist = fa.filter(p=>p.pos===S.wpos).slice(0,10);
-  if(!wlist.length) h += '<div class="slot"><div class="tab bn">'+S.wpos+'</div><div class="who">'+
-       '<div class="nm">Nobody available</div><div class="meta">Every projected '+S.wpos+' is rostered</div></div></div>';
-  wlist.forEach(p=>{
-    const up = worstStarter[p.pos]!=null && p.ros > worstStarter[p.pos];
-    h += row(p, p.pos, 'bn', up?'<span class="good">beats your '+p.pos+' starter</span>':'');
-  });
+  // waiver / trades sub-tab switch, both anchored to the same league data
+  h += '<div class="secttabs">'+[['waiver','Waiver'],['trades','Trades']].map(([v,lab])=>
+        '<button data-st="'+v+'" class="'+(v===S.wtab?'on':'')+'">'+lab+'</button>').join('')+'</div>';
+  if(S.wtab === 'trades'){
+    h += tradesHtml();
+  } else {
+    h += '<div class="tabs">'+['RB','WR','TE','QB','DEF','K'].map(p=>
+          '<button data-w="'+p+'" class="'+(p===S.wpos?'on':'')+'">'+p+'</button>').join('')+'</div>';
+    const wlist = fa.filter(p=>p.pos===S.wpos).slice(0,10);
+    if(!wlist.length) h += '<div class="slot"><div class="tab bn">'+S.wpos+'</div><div class="who">'+
+         '<div class="nm">Nobody available</div><div class="meta">Every projected '+S.wpos+' is rostered</div></div></div>';
+    wlist.forEach(p=>{
+      const up = worstStarter[p.pos]!=null && p.ros > worstStarter[p.pos];
+      h += row(p, p.pos, 'bn', up?'<span class="good">beats your '+p.pos+' starter</span>':'');
+    });
+  }
   h += '<div class="tot"><span>Your starters</span><span>proj '+fmt(cTot)+
        ' · <b>'+(S.liveOn?'live '+fmt(liveTot):'live —')+'</b></span></div>';
   h += '<h2>Ask Claude about this team</h2>'+
@@ -468,6 +484,7 @@ function renderSheet(){
     bench: bench.map(line),
     top_free_agents: fa.slice(0,20).map(line)
   };
+  $('#out').querySelectorAll('[data-st]').forEach(b=> b.onclick = ()=>{ S.wtab=b.dataset.st; kvSet('cfg', cfgObj()); render(); });
   $('#out').querySelectorAll('[data-w]').forEach(b=> b.onclick = ()=>{ S.wpos=b.dataset.w; render(); });
   $('#out').querySelectorAll('[data-id]').forEach(el=> el.onclick = ()=> showPlayer(el.dataset.id));
   $('#copy').onclick = ()=> copySnap('');
@@ -477,6 +494,81 @@ function renderSheet(){
     'the small line under it is the projection scored to this league. Recommendations still run off '+
     'projections. Team defenses use Sleeper’s PPR total. Player list refreshes daily; scores and '+
     'projections refresh every load.';
+}
+
+// ---- Suggested trades (rest-of-season value, all client-side) ----
+// Rest-of-season value with the same weekly-projection fallback the add/drop logic uses.
+const valROS = p => p.ros > 0 ? p.ros : (p.pts||0)*17;
+
+// Score a roster by the total rest-of-season value of the best lineup it can field.
+function lineupVal(recs, slots){
+  const pool = recs.slice().sort((a,b)=>valROS(b)-valROS(a));
+  return bestLineup(slots, pool).reduce((t,p)=>t+(p?valROS(p):0),0);
+}
+
+// Find fair 1-for-1 trades across the league that improve my starting lineup.
+function computeTrades(){
+  const slots = (S.league.roster_positions||[]).filter(p=>!['BN','IR','TAXI'].includes(p));
+  const mine = S.rosters.find(r=>r.roster_id === +S.rosterId);
+  if(!mine) return [];
+  const myRecs = (mine.players||[]).map(mk);
+  const myVal  = lineupVal(myRecs, slots);
+  const cand = [];
+  S.rosters.forEach(opp=>{
+    if(opp.roster_id === +S.rosterId) return;
+    const oppRecs = (opp.players||[]).map(mk);
+    const oppVal  = lineupVal(oppRecs, slots);
+    myRecs.forEach(give=>{
+      oppRecs.forEach(get=>{
+        const gv = valROS(give), tv = valROS(get);
+        if(gv <= 0 || tv <= 0) return;
+        // only pitch roughly balanced value so the other manager might say yes
+        const ratio = gv / tv;
+        if(ratio < 0.7 || ratio > 1.45) return;
+        // re-field both lineups after the swap and require it helps both sides
+        const myGain  = lineupVal(myRecs.filter(p=>p.id!==give.id).concat(get), slots) - myVal;
+        if(myGain < 5) return;
+        const oppGain = lineupVal(oppRecs.filter(p=>p.id!==get.id).concat(give), slots) - oppVal;
+        if(oppGain <= 0) return;
+        cand.push({opp, give, get, myGain, oppGain});
+      });
+    });
+  });
+  cand.sort((a,b)=> b.myGain - a.myGain);
+  // spread suggestions: at most 2 per opponent, 6 total, no duplicate give>get pair
+  const seen = new Set(), perOpp = {}, res = [];
+  for(const t of cand){
+    const k = t.give.id+'>'+t.get.id;
+    if(seen.has(k)) continue; seen.add(k);
+    perOpp[t.opp.roster_id] = perOpp[t.opp.roster_id] || 0;
+    if(perOpp[t.opp.roster_id] >= 2) continue;
+    perOpp[t.opp.roster_id]++;
+    res.push(t);
+    if(res.length >= 6) break;
+  }
+  return res;
+}
+
+function tradesHtml(){
+  const list = computeTrades();
+  let h = '';
+  if(!list.length){
+    return '<div class="slot"><div class="tab">—</div><div class="who">'+
+      '<div class="nm">No clear trade upgrades</div>'+
+      '<div class="meta">No fair 1-for-1 across the league improves your starting lineup right now</div></div></div>';
+  }
+  const nm = p => '<span class="tap" data-id="'+p.id+'">'+esc(p.name)+'</span>';
+  list.forEach(t=>{
+    h += '<div class="move"><span class="bid">+'+fmt(t.myGain)+'</span>'+
+         '<b>GET</b> '+nm(t.get)+' ('+t.get.pos+' · '+t.get.team+')<br>'+
+         '<b>GIVE</b> '+nm(t.give)+' ('+t.give.pos+' · '+t.give.team+')'+
+         '<span class="why">from '+esc(teamName(t.opp.roster_id))+' · adds '+fmt(t.myGain)+
+         ' ros to your starters · they gain '+fmt(t.oppGain)+' (fair enough to pitch)</span></div>';
+  });
+  h += '<div class="note" style="margin-top:10px">Trades weigh rest-of-season projections and re-run '+
+       'both lineups after the swap. “They gain” is why the other manager might say yes. '+
+       'One-for-one only — sanity-check byes and injuries before offering.</div>';
+  return h;
 }
 
 // dual-metric points cell: live actual (neon) over projection (muted)
@@ -658,7 +750,7 @@ $('#clear').onclick = async () => { await kvDel('players'); err('Cache cleared',
 (async ()=>{
   const c = await kvGet('cfg');
   if(c){ if(c.lid) $('#lid').value=c.lid; if(c.proxy) $('#proxy').value=c.proxy;
-         S.rosterId=c.rosterId; if(c.view) S.view=c.view; }
+         S.rosterId=c.rosterId; if(c.view) S.view=c.view; if(c.wtab) S.wtab=c.wtab; }
   if($('#lid').value.trim()) run(); else $('#cfgbox').open = true;
 })();
 </script>
