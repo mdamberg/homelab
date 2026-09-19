@@ -17,24 +17,31 @@ CREATE SCHEMA IF NOT EXISTS intermediate;
 -- Marts layer for analytics-ready tables
 CREATE SCHEMA IF NOT EXISTS marts;
 
+-- Production ready logic that does not include BI facing 
+--CREATE SCHEMA IF NOT EXISTS prod;
+
 -- Grant permissions to the metrics_user
 GRANT USAGE ON SCHEMA raw TO metrics_user;
 GRANT USAGE ON SCHEMA staging TO metrics_user;
 GRANT USAGE ON SCHEMA intermediate TO metrics_user;
 GRANT USAGE ON SCHEMA marts TO metrics_user;
+--GRANT USAGE ON SCHEMA prod TO metrics_user;
 
 GRANT CREATE ON SCHEMA raw TO metrics_user;
 GRANT CREATE ON SCHEMA staging TO metrics_user;
 GRANT CREATE ON SCHEMA intermediate TO metrics_user;
 GRANT CREATE ON SCHEMA marts TO metrics_user;
+--GRANT CREATE ON SCHEMA prod TO metrics_user;
 
 -- Set default privileges for future tables
 ALTER DEFAULT PRIVILEGES IN SCHEMA raw GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO metrics_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA staging GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO metrics_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA intermediate GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO metrics_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA marts GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO metrics_user;
+--ALTER DEFAULT PRIVILEGES IN SCHEMA prod GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO metrics_user;
 
 COMMENT ON SCHEMA raw IS 'Raw data ingested from n8n workflows';
 COMMENT ON SCHEMA staging IS 'Cleaned and standardized data from raw sources';
 COMMENT ON SCHEMA intermediate IS 'Aggregated and enriched data';
 COMMENT ON SCHEMA marts IS 'Analytics-ready dimensional models';
+--COMMENT ON SCHEMA prod IS 'Production Data that does not include BI facing models';
