@@ -5,6 +5,8 @@ models:
       tags: ['lightdash']
 
     columns:
+      - name: hardware_skey
+        description: tables unique identifier and is created using each rows recorded_at_datetime and the sensor_id"
       - name: recorded_date
         description: Date the sensor values were recorded.
       - name: recorded_datetime
