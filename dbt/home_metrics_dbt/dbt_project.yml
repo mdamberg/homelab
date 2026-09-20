@@ -35,3 +35,11 @@ models:
       +materialized: table
     marts:
       +materialized: table
+  dbt_artifacts:
+    +schema: monitoring
+
+
+
+# Add an on run end hook for dbt_artifacts
+on-run-end:
+  - "{% if target.name == 'prod' %}{{ dbt_artifacts.upload_results(results) }}{% endif %}"
