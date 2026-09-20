@@ -3,6 +3,24 @@ models:
     description: Mart level wrapper containing systems health data for the PC which runs the HomeLab.
     config:
       tags: ['lightdash']
+      
+      meta:
+        metrics:
+          max_sensor_value:
+            type: max
+            sql: ${TABLE}.sensor_value_max
+            label: "Max Sensor Value"
+            description: "The max value for that sensor in the given timeframe"
+          min_sensor_value:
+            type: min
+            sql: ${TABLE}.sensor_value_min
+            label: "Min Sensor Value"
+            description: "The min value for that sensor in the given timeframe"
+          avg_sensor_value:
+            type: avg
+            sql: ${TABLE}.sensor_value
+            label: "Average Sensor Value"
+            description: "The average value for that sensor"
 
     columns:
       - name: hardware_skey
