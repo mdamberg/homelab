@@ -27,6 +27,11 @@ models:
         description: tables unique identifier and is created using each rows recorded_at_datetime and the sensor_id"
       - name: recorded_date
         description: Date the sensor values were recorded.
+        meta:
+          additional_dimensions:
+            is_current_month:
+              type: boolean
+              sql: "date_trunc('month', ${TABLE}.recorded_date) = date_trunc('month', current_date)"
       - name: recorded_datetime
         description: The timestamp of when the sensor value were recorded.
       - name: hardware_type
@@ -45,7 +50,5 @@ models:
         description: The minimum value recorded during the recording window (15 min).
       - name: unit
         description: The units of measurement the sesors values are reported in. 
-      - name: is_current_month
-        description: flag indicating if the month of the recorded data is in the current month.
       - name: is_temp_sensor
         description: flag indicating if a sensor is a temp sensor. 
