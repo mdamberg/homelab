@@ -17,7 +17,7 @@ seeds:
 models:
   home_metrics_dbt:
     # Default schema for any layer not overridden below (marts, etc.)
-    +schema: mart
+    +schema: marts
     # Materialize staging models as views, and marts as tables
     staging:
       +materialized: view
