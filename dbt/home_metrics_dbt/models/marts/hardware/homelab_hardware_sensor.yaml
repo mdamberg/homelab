@@ -17,7 +17,7 @@ models:
             label: "Min Sensor Value"
             description: "The min value for that sensor in the given timeframe"
           avg_sensor_value:
-            type: avg
+            type: average
             sql: ${TABLE}.sensor_value
             label: "Average Sensor Value"
             description: "The average value for that sensor"
@@ -43,7 +43,7 @@ models:
         description: The minimum value recorded during the recording window (15 min).
       - name: sensor_value_max
         description: The minimum value recorded during the recording window (15 min).
-      - name: units
+      - name: unit
         description: The units of measurement the sesors values are reported in. 
       - name: is_current_month
         description: flag indicating if the month of the recorded data is in the current month.
