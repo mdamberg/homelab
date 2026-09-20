@@ -1,5 +1,5 @@
 models: 
-    - name: raw_hardware_sensors
+    - name: stg_hardware_sensor
       description: "Raw table housing systems data for server computer (temp, voltage, load)."
 
       columns:
