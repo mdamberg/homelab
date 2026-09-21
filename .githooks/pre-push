@@ -1,0 +1,11 @@
+#!/bin/sh
+# Deploy the dbt project to Lightdash when pushing the main branch.
+# pre-push receives "<local_ref> <local_sha> <remote_ref> <remote_sha>" lines on stdin.
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = "refs/heads/main" ]; then
+    echo "[pre-push] main detected -> running lightdash deploy"
+    ( cd "$(git rev-parse --show-toplevel)/dbt/home_metrics_dbt" && lightdash deploy ) \
+      || echo "[pre-push] WARNING: lightdash deploy failed (push continues)"
+  fi
+done
+exit 0

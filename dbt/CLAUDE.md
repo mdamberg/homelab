@@ -105,3 +105,4 @@ Uses `home-metrics` Docker network. Other containers can connect to Postgres at:
 - Metabase depends on Postgres healthcheck - if Postgres isn't healthy, Metabase won't start
 - The `home-metrics` network must exist for Lightdash (in docker/docker-projects/lightdash) to connect
 - Database files in `postgres/data/` should be gitignored
+- `lightdash deploy` fails with `InvalidConfig (dbt1005): 'postgres' adapter is not yet supported by dbt Fusion` when a dbt Fusion binary exists at `C:\Users\mattd\.local\bin\dbt.exe`. Lightdash auto-detects and prefers Fusion over dbt-core, and Fusion has no Postgres adapter. The dbt VS Code extension installs Fusion there and may reinstall it on update. Fix: rename it (`mv C:\Users\mattd\.local\bin\dbt.exe C:\Users\mattd\.local\bin\dbt-fusion.exe`) so Lightdash falls back to dbt-core (Python, has the Postgres adapter). Real dbt runs use the `home-metrics-dbt-runner` container and are unaffected either way.
