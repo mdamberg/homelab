@@ -42,7 +42,7 @@ select
     media_type,
     library_name,
     item_count,
-    metadata ->> 'is_active' as is_active,
+    cast(metadata ->> 'is_active' as numeric) as is_active,
     total_size_bytes,
     date_recorded,
     cast({{ to_local_time('recorded_at_ts') }} as timestamp) as recorded_at_ts,
