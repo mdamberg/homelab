@@ -61,6 +61,12 @@ models:
           meta:
             dimension:
               type: number
+      - name: is_active
+        description: "Flag indicating whether or not the media entity is active in the library"
+        config:
+          meta:
+            dimension:
+              type: number
       - name: date_recorded
         description: "Date when the metrics were recorded"
         config:
