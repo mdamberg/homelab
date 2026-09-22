@@ -71,8 +71,32 @@ models:
           meta:
             dimension:
               type: timestamp
+      - name: release_year
+        description: "Year of media items release"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: media_player
+        description: "The entity on which the media was watched"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: watched_status
+        description: "A flag indicaing if the media item has been wached (1) or not (0)"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: percent_complete
+        description: "Indicates the pecent of the media that has been watched."
+        config:
+          meta:
+            dimension:
+              type: number
       - name: inserted_at
-        description: "Timestamp when the record was inserted into the raw table"
+        description: "timestamp for the time the media was inserted into the DB."
         config:
           meta:
             dimension:

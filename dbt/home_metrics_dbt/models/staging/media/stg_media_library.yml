@@ -65,6 +65,36 @@ models:
           meta:
             dimension:
               type: string
+      - name: studio
+        description: "The studio which produced the movie."
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: run_time
+        description: "Duration of the media entity in minutes."
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: play_count
+        description: "Number of times the media entity has been played"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: size_on_disk
+        description: "The amount of storage memory allocated for thie media entity."
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: movie_rating
+        description: "The rating of the media entity (G, PG, R etc)"
+        config:
+          meta:
+            dimension:
+              type: string
       - name: date_recorded
         description: "Timestamp when the library record was recorded"
         config:
