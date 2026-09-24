@@ -44,3 +44,5 @@ SELECT
     case when is_bom = true then 1 else 0 end as is_bom_flag,
     case when ABS((week_start_date - '2025-03-07'::date) / 7) % 2 = 0 then 1 else 0 end as is_payweek
 FROM dim_date_cte
+where month_start_date <= current_date
+and month_start_date >= '2026-01-01'
