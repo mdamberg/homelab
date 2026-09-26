@@ -7,9 +7,11 @@ with raw_media_library as (
     select
         *
     from
-        {{ source('home_metrics_raw', 'raw_media_library') }}
+        {{ ref('media_library_snapshot') }}
 )
 select
+    dbt_scd_id,
+    id,
 -- Dimension Key
     {{ dbt_utils.generate_surrogate_key(['source']) }} as media_source_key,
 -- Media Type Key
@@ -33,5 +35,7 @@ select
     cast({{ to_local_time('recorded_at') }} as timestamp) as recorded_at_ts,
     inserted_at::date as date_inserted,
     cast({{ to_local_time('inserted_at') }} as timestamp) as inserted_at_ts,
-    metadata
+    dbt_updated_at,
+    dbt_valid_from,
+    dbt_valid_to
 from raw_media_library

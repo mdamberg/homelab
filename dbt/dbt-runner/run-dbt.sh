@@ -42,6 +42,11 @@ fi
 
 EXIT=0
 
+# Snapshots run every invocation, before the build, so SCD2 history is captured
+# as close to each source change as possible. `check` strategy makes unchanged
+# runs a no-op. A snapshot failure is folded into EXIT so it still alerts.
+dbt snapshot || EXIT=$?
+
 if [ "$MODE" = "regular" ]; then
     { dbt run && dbt test; } || EXIT=$?
 else
