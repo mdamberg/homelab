@@ -70,8 +70,9 @@ services:
       - TZ=${TZ}
     volumes:
       - C:/media/config/radarr:/config
-      - C:/media/movies:/movies
-      - C:/media/downloads:/downloads
+      # Single parent mount so /data/downloads and /data/movies share one mount,
+      # enabling hardlink imports (separate mounts silently fell back to full copies)
+      - C:/media:/data
     ports:
       - "7878:7878"
     restart: unless-stopped
@@ -116,8 +117,9 @@ services:
       - TZ=${TZ}
     volumes:
       - C:/media/config/sonarr:/config
-      - C:/media/tv:/tv
-      - C:/media/downloads:/downloads
+      # Single parent mount so /data/downloads and /data/tv share one mount,
+      # enabling hardlink imports (separate mounts silently fell back to full copies)
+      - C:/media:/data
     ports:
       - "8989:8989"
     restart: unless-stopped
