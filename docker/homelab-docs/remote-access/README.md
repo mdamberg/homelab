@@ -127,6 +127,10 @@ See [QUICK-REFERENCE.md](./QUICK-REFERENCE.md) for quick access instructions.
 
 ## Troubleshooting
 
+> **Services unreachable while away but Tailscale shows "Connected"?** Work the layered
+> runbook in **[TROUBLESHOOTING.md](./TROUBLESHOOTING.md)** (Tailscale → firewall → Docker
+> → port binding). It isolates the break in ~2 minutes.
+
 ### Tailscale Not Connecting
 
 **Check Tailscale Status:**
