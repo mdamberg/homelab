@@ -1,8 +1,13 @@
-{{ config(
-    materialized='view',
-    schema='staging'
-) }}
+/*
 
+    Model pulling off the snapshot of raw_media_library
+    which gives us the valid from and to which we will use 
+    downstream to create a true inventory of media entities (ie.
+    whats in my library currently? whats been there in the past?)
+
+    Grain: 1 row per media entity. 
+
+*/
 with raw_media_library as (
     select
         *

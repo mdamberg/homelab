@@ -1,8 +1,14 @@
-{{ config( 
-        materialized='view',
-        schema='staging'
-    )   }}
+/*
 
+    Model which pulls in raw media data for the media_stack
+    tracking actions such as watches, type of media, added
+    and more. 
+
+    Grain: 1 row per media entity
+
+    *** This might not be a needed model and should be evalutated further***
+
+*/
     with raw_media_activity as (
 
         select
