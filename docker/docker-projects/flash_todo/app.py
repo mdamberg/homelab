@@ -4,8 +4,26 @@ import os
 
 app = Flask(__name__)
 
-TODO_FILE  = '/app/data/todos.json'   # where we save todos (/app/data is volume mount point)
-STATS_FILE = '/app/data/stats.json'   # persistent counters that survive task deletion
+TODO_FILE       = '/app/data/todos.json'   # where we save todos (/app/data is volume mount point)
+STATS_FILE      = '/app/data/stats.json'   # persistent counters that survive task deletion
+CATEGORIES_FILE = '/app/data/categories.json'  # user-editable list of categories
+
+# Built-in categories seeded on first run. 'General' is the fallback and must stay
+# last and undeletable so every task always has a valid home.
+DEFAULT_CATEGORIES = [
+    {'name': 'Docker',         'icon': '🐳'},
+    {'name': 'HomeAssistant',  'icon': '🏠'},
+    {'name': 'Remote Access',  'icon': '🌐'},
+    {'name': 'Scripting',      'icon': '💻'},
+    {'name': 'Monitoring',     'icon': '📊'},
+    {'name': 'DBT',            'icon': '🔄'},
+    {'name': 'HomeLab',        'icon': '🖥️'},
+    {'name': 'AI',             'icon': '🤖'},
+    {'name': 'House-Projects', 'icon': '🏡'},
+    {'name': 'General',        'icon': '📝'},
+]
+DEFAULT_CATEGORY_NAMES = {c['name'] for c in DEFAULT_CATEGORIES}
+DEFAULT_ICON           = '🏷️'   # given to custom categories added without an emoji
 
 
 # STATS PERSISTENCE (survives task deletion)
@@ -23,6 +41,34 @@ def save_stats(stats):
     os.makedirs(os.path.dirname(STATS_FILE), exist_ok=True)
     with open(STATS_FILE, 'w') as f:
         json.dump(stats, f, indent=2)
+
+
+# CATEGORY PERSISTENCE (user-editable list of categories)
+
+def load_categories():
+    """Load categories, seeding the built-in defaults on first run.
+
+    Returns a list of {'name', 'icon'} dicts. 'General' is always present and
+    forced to the end so it stays the standing fallback category.
+    """
+    if os.path.exists(CATEGORIES_FILE):
+        with open(CATEGORIES_FILE, 'r') as f:
+            cats = json.load(f)
+    else:
+        cats = [dict(c) for c in DEFAULT_CATEGORIES]
+        save_categories(cats)
+
+    # Guarantee a General category exists and sits last
+    others  = [c for c in cats if c['name'] != 'General']
+    general = next((c for c in cats if c['name'] == 'General'), {'name': 'General', 'icon': '📝'})
+    return others + [general]
+
+
+def save_categories(categories):
+    """Save the category list to JSON file"""
+    os.makedirs(os.path.dirname(CATEGORIES_FILE), exist_ok=True)
+    with open(CATEGORIES_FILE, 'w') as f:
+        json.dump(categories, f, indent=2)
 
 
 # CATEGORY AND PRIORITY MANAGEMENT
@@ -73,7 +119,7 @@ def auto_assign_category(task):
 
 def migrate_todos(todos):
     migrated = False
-    for todo in todos:
+    for index, todo in enumerate(todos):
         if 'category' not in todo:
             todo['category'] = auto_assign_category(todo['task'])
             migrated = True
@@ -85,6 +131,10 @@ def migrate_todos(todos):
             migrated = True
         if 'parent_id' not in todo:
             todo['parent_id'] = None
+            migrated = True
+        # 'order' drives manual drag-and-drop sorting within a category
+        if 'order' not in todo:
+            todo['order'] = index
             migrated = True
     return todos, migrated
 
@@ -107,8 +157,8 @@ def build_hierarchy(todos):
         children  = children_by_parent.get(todo['id'], [])
         is_parent = bool(children)
 
-        # Pending-first sort within children
-        children_sorted = sorted(children, key=lambda c: c['done'])
+        # Manual drag order governs the sequence within a parent
+        children_sorted = sorted(children, key=lambda c: c.get('order', 0))
 
         # Tasks with no children can be linked to a parent; parents cannot
         ep = [t for t in top_level if t['id'] != todo['id']] if not is_parent else []
@@ -125,8 +175,8 @@ def build_hierarchy(todos):
             'is_parent':        is_parent,
         })
 
-    # Sink done parent groups to the bottom
-    return sorted(result, key=lambda item: item['todo']['done'])
+    # Manual drag order governs the sequence of top-level items
+    return sorted(result, key=lambda item: item['todo'].get('order', 0))
 
 
 def calculate_metrics(todos, stats=None):
@@ -185,12 +235,13 @@ def save_todos(todos):
 @app.route('/')     # @ = decorator, '/' tells flask, when someone visits /, run this fx
 def index():
     """Main page - shows all todos with metrics and category grouping"""
-    todos = load_todos()                                # get todos from file
-    stats = load_stats()                                # get persistent completion stats
-    metrics = calculate_metrics(todos, stats)           # calculate dashboard metrics
-    sort = request.args.get('sort', 'category')         # 'category' (default) or 'urgency'
-
-    categories = ['Docker', 'HomeAssistant', 'Remote Access', 'Scripting', 'Monitoring', 'DBT', 'HomeLab', 'AI', 'House-Projects', 'General']
+    todos      = load_todos()                           # get todos from file
+    stats      = load_stats()                            # get persistent completion stats
+    metrics    = calculate_metrics(todos, stats)         # calculate dashboard metrics
+    sort       = request.args.get('sort', 'category')    # 'category' (default) or 'urgency'
+    categories = load_categories()                       # user-editable category list
+    cat_names  = [c['name'] for c in categories]
+    cat_icons  = {c['name']: c['icon'] for c in categories}
 
     grouped_todos = {}
     if sort == 'urgency':
@@ -200,20 +251,26 @@ def index():
                 # Flat items wrapped in hierarchy shape for template consistency
                 grouped_todos[priority] = [
                     {'todo': t, 'children': [], 'eligible_parents': [], 'is_parent': False}
-                    for t in sorted(priority_todos, key=lambda t: t['done'])
+                    for t in sorted(priority_todos, key=lambda t: t.get('order', 0))
                 ]
     else:
-        for category in categories:
+        for category in cat_names:
             category_todos = [t for t in todos if t.get('category') == category]
             if category_todos:
                 grouped_todos[category] = build_hierarchy(category_todos)
+            elif category not in DEFAULT_CATEGORY_NAMES:
+                # Show empty custom categories so a freshly created one stays
+                # visible (and deletable) before any task is assigned to it
+                grouped_todos[category] = []
 
     return render_template('index.html',
                          todos=todos,
                          metrics=metrics,
                          grouped_todos=grouped_todos,
                          sort=sort,
-                         categories=categories)
+                         categories=categories,
+                         cat_icons=cat_icons,
+                         default_category_names=DEFAULT_CATEGORY_NAMES)
 
 
 # User types task, selects category/priority & clicks add -> browser sends POST request to /add
@@ -235,6 +292,7 @@ def add_todo():
             'priority':  priority,
             'notes':     '',
             'parent_id': None,
+            'order':     len(todos),            # new tasks land at the bottom of their category
         })
         save_todos(todos)                       # Save updated list
     return redirect(url_for('index'))           # Go back to homepage
@@ -272,8 +330,7 @@ def update_category(todo_id):
     """Update the category of a todo"""
     category = request.form.get('category')
     sort = request.form.get('sort', 'category')   # preserve current sort view
-    valid_categories = ['Docker', 'HomeAssistant', 'Remote Access', 'Scripting', 'Monitoring',
-                        'DBT', 'HomeLab', 'AI', 'House-Projects', 'General']
+    valid_categories = {c['name'] for c in load_categories()}
     if category in valid_categories:
         todos = load_todos()
         if 0 <= todo_id < len(todos):
@@ -310,6 +367,72 @@ def update_parent(todo_id):
                 todos[todo_id]['parent_id'] = None
         save_todos(todos)
     return redirect(url_for('index', sort=sort))
+
+
+# CATEGORY MANAGEMENT ROUTES
+
+@app.route('/add_category', methods=['POST'])
+def add_category():
+    """Create a new user-defined category. Names are unique case-insensitively;
+    a blank icon falls back to the default tag emoji."""
+    name = request.form.get('category_name', '').strip()
+    icon = request.form.get('category_icon', '').strip() or DEFAULT_ICON
+    sort = request.form.get('sort', 'category')
+
+    if name:
+        cats     = load_categories()
+        existing = {c['name'].lower() for c in cats}
+        if name.lower() not in existing:
+            # Insert before General so General stays the last, standing fallback
+            others  = [c for c in cats if c['name'] != 'General']
+            general = [c for c in cats if c['name'] == 'General']
+            others.append({'name': name, 'icon': icon})
+            save_categories(others + general)
+    return redirect(url_for('index', sort=sort))
+
+
+@app.route('/delete_category', methods=['POST'])
+def delete_category():
+    """Delete a user-created category and move its tasks to General.
+    Built-in categories cannot be deleted."""
+    name = request.form.get('category_name', '')
+    sort = request.form.get('sort', 'category')
+
+    if name and name not in DEFAULT_CATEGORY_NAMES:
+        cats = [c for c in load_categories() if c['name'] != name]
+        save_categories(cats)
+
+        # Rehome any orphaned tasks so nothing is stranded on a missing category
+        todos   = load_todos()
+        changed = False
+        for todo in todos:
+            if todo.get('category') == name:
+                todo['category'] = 'General'
+                changed = True
+        if changed:
+            save_todos(todos)
+    return redirect(url_for('index', sort=sort))
+
+
+@app.route('/reorder', methods=['POST'])
+def reorder():
+    """Persist a new manual ordering after a drag-and-drop. Accepts JSON
+    {'ids': [...]} listing the todo ids of one list in their new sequence."""
+    data = request.get_json(silent=True) or {}
+    ids  = data.get('ids', [])
+
+    todos = load_todos()
+    by_id = {t['id']: t for t in todos}
+    for position, raw_id in enumerate(ids):
+        try:
+            tid = int(raw_id)
+        except (ValueError, TypeError):
+            continue
+        if tid in by_id:
+            by_id[tid]['order'] = position
+
+    save_todos(todos)
+    return jsonify({'status': 'ok'}), 200
 
 
 # Click "Delete" on todo -> Goes to /delete/ -> Removes todo at index 1: todos.pop(1)
@@ -381,6 +504,7 @@ def api_add_todo():
         'priority':  data.get('priority', 'Medium'),
         'notes':     data.get('notes', ''),
         'parent_id': data.get('parent_id', None),
+        'order':     data.get('order', len(todos)),
     }
     todos.append(new_todo)                  # Add to list
     save_todos(todos)                       # Save
@@ -395,7 +519,7 @@ def api_update_todo(todo_id):
         return jsonify({'error': 'Todo not found'}), 404
 
     data = request.get_json()               # Get update data
-    for field in ('task', 'done', 'category', 'priority', 'notes', 'parent_id'):
+    for field in ('task', 'done', 'category', 'priority', 'notes', 'parent_id', 'order'):
         if field in data:
             todos[todo_id][field] = data[field]
 
