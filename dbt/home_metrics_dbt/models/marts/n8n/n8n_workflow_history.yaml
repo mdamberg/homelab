@@ -7,39 +7,40 @@ models:
 
     config:
       tags: ['lightdash']
-    
-    metrics:
-      total_successful_runs:
-        type: count
-        label: "Total Successful Workflow Runs"
-        description: "The total number of n8n workflow runs that completed successfully"
-        sql: ${TABLE}.workflow_run_pk
-        filters:
-          - is_successful_run: 1
 
-      total_failed_runs:
-        type: count
-        label: "Total Failed Workflow Runs"
-        description: "The total number of n8n workflow runs that failed and did not complete"
-        sql: ${TABLE}.workflow_run_pk
-        filters:
-          - is_failed_run: 1
+      meta:
+        metrics:
+          total_successful_runs:
+            type: count
+            label: "Total Successful Workflow Runs"
+            description: "The total number of n8n workflow runs that completed successfully"
+            sql: ${TABLE}.workflow_run_pk
+            filters:
+              - is_successful_run: 1
 
-      total_no_data_alerts:
-        type: count
-        label: "Total No Data Alert Runs"
-        description: "The total number of n8n workflow runs that failed to produce data"
-        sql: ${TABLE}.workflow_run_pk
-        filters:
-          - is_no_data_alert: 1
+          total_failed_runs:
+            type: count
+            label: "Total Failed Workflow Runs"
+            description: "The total number of n8n workflow runs that failed and did not complete"
+            sql: ${TABLE}.workflow_run_pk
+            filters:
+              - is_failed_run: 1
 
-      total_node_error_alerts:
-        type: count
-        label: "Total Node Error Alert Runs"
-        description: "The total number of n8n workflow runs where a specific node produced an error"
-        sql: ${TABLE}.workflow_run_pk
-        filters:
-          - is_node_error_alert: 1
+          total_no_data_alerts:
+            type: count
+            label: "Total No Data Alert Runs"
+            description: "The total number of n8n workflow runs that failed to produce data"
+            sql: ${TABLE}.workflow_run_pk
+            filters:
+              - is_no_data_alert: 1
+
+          total_node_error_alerts:
+            type: count
+            label: "Total Node Error Alert Runs"
+            description: "The total number of n8n workflow runs where a specific node produced an error"
+            sql: ${TABLE}.workflow_run_pk
+            filters:
+              - is_node_error_alert: 1
 
     columns:
       - name: workflow_run_pk
