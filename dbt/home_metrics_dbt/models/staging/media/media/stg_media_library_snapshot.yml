@@ -1,11 +1,28 @@
 version: 2
 
 models:
-  - name: stg_media_library
-    description: "Staging table for media library data"
+  - name: stg_media_library_snapshot
+    description: "SCD2 history of media entities present in the library, from media_library_snapshot. Grain: 1 row per media entity per version."
     meta:
       hidden: true
     columns:
+      - name: dbt_scd_id
+        description: "Unique id for each version of each media entity"
+        tests:
+          - unique
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: media_key
+        description: "Surrogate key for the media entity (source + title)"
+        tests:
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
       - name: media_source_key
         description: "Surrogate key for the media source"
         tests:
@@ -77,32 +94,32 @@ models:
           meta:
             dimension:
               type: string
-      - name: play_count
-        description: "Number of times the media entity has been played"
+      - name: bitrate
+        description: "Bitrate of the media file (Plex only)"
         config:
           meta:
             dimension:
               type: string
-      - name: size_on_disk
-        description: "The amount of storage memory allocated for thie media entity."
+      - name: rating_key
+        description: "Plex rating key (Plex only)"
         config:
           meta:
             dimension:
               type: string
-      - name: movie_rating
-        description: "The rating of the media entity (G, PG, R etc)"
-        config:
-          meta:
-            dimension:
-              type: string
-      - name: date_recorded
-        description: "Timestamp when the library record was recorded"
+      - name: date_added
+        description: "Date the entity was added"
         config:
           meta:
             dimension:
               type: date
-      - name: recorded_at_ts
-        description: "Timestamp when the media library data was recorded"
+      - name: added_at_utc
+        description: "When the entity was added, in UTC"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: added_at_ts
+        description: "When the entity was added, local time"
         config:
           meta:
             dimension:
@@ -119,9 +136,21 @@ models:
           meta:
             dimension:
               type: timestamp
-      - name: metadata
-        description: "Additional metadata related to the media library in JSON format"
+      - name: dbt_updated_at
+        description: "Value of the snapshot updated_at column when this version was captured"
         config:
           meta:
             dimension:
-              type: string
+              type: timestamp
+      - name: dbt_valid_from
+        description: "Start of this version validity (the entity added date)"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: dbt_valid_to
+        description: "End of this version validity; 9999-12-31 while current"
+        config:
+          meta:
+            dimension:
+              type: timestamp

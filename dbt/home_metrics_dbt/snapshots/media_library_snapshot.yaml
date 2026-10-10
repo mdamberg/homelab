@@ -1,12 +1,54 @@
 snapshots:
   - name: media_library_snapshot
-    relation: source('home_metrics_raw', 'raw_media_library')
-    config:
-      schema: snapshots
-      database: home_metrics
-      unique_key: id
-      strategy: check
-      # these should be the ones that can change while an item remains the same entity
-      check_cols: [media_type, library_name, genre, year, overview, ratings, metadata]
-      hard_deletes: invalidate
-      dbt_valid_to_current: "'9999-12-31'::date"
+    description: "SCD2 history of media entities present in the library, one row per
+      entity per version. dbt_valid_from is the entity's added date and dbt_valid_to closes
+      when the entity drops out of stg_media_library_present (removed, or file no longer on disk).
+      Current rows carry dbt_valid_to = 9999-12-31, not null."
+    columns:
+      - name: dbt_scd_id
+        description: "Unique id for each version of each entity"
+        tests:
+          - unique
+          - not_null
+      - name: media_key
+        description: "Surrogate key for the media entity (source + title)"
+        tests:
+          - not_null
+      - name: source
+        description: "System the row came from (plex, radarr, sonarr)"
+      - name: media_type
+        description: "Type of media (movie, tv_show)"
+      - name: library_name
+        description: "Name of the library the entity belongs to"
+      - name: title
+        description: "Title of the media entity"
+      - name: genre
+        description: "Up to three genres, comma separated"
+      - name: year
+        description: "Release year"
+      - name: overview
+        description: "Plot summary (Radarr and Sonarr only)"
+      - name: ratings
+        description: "Rating value"
+      - name: inserted_at
+        description: "When the entity was first seen in the raw table"
+      - name: added_at_utc
+        description: "When the entity was added, in UTC. The snapshot's updated_at column."
+      - name: added_at_ts
+        description: "added_at_utc converted to local time"
+      - name: date_added
+        description: "Date the entity was added"
+      - name: studio
+        description: "Studio that produced the movie (Radarr only)"
+      - name: runtime
+        description: "Runtime in minutes (Radarr and Sonarr)"
+      - name: bitrate
+        description: "Bitrate of the media file (Plex only)"
+      - name: rating_key
+        description: "Plex rating key (Plex only)"
+      - name: dbt_updated_at
+        description: "Value of the updated_at column when this version was captured"
+      - name: dbt_valid_from
+        description: "Start of this version's validity (the entity's added_at_utc)"
+      - name: dbt_valid_to
+        description: "End of this version's validity; 9999-12-31 while current"

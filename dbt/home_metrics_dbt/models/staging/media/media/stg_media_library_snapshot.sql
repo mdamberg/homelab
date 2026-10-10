@@ -1,14 +1,18 @@
 /*
 
-    Model pulling off the snapshot of raw_media_library
-    which gives us the valid from and to which we will use 
-    downstream to create a true inventory of media entities (ie.
-    whats in my library currently? whats been there in the past?)
+    Model pulling off media_library_snapshot (SCD2 history of the
+    media entities present in the library). The valid from and to
+    columns are used downstream to build a true inventory of media
+    entities (ie. whats in my library currently? whats been there
+    in the past?)
 
-    Grain: 1 row per media entity. 
+    dbt_valid_from is the date the entity was added; dbt_valid_to is
+    9999-12-31 while the entity is still present.
+
+    Grain: 1 row per media entity per version.
 
 */
-with raw_media_library as (
+with media_library_snapshot as (
     select
         *
     from
@@ -16,31 +20,26 @@ with raw_media_library as (
 )
 select
     dbt_scd_id,
-    id,
--- Dimension Key
+    media_key,
     {{ dbt_utils.generate_surrogate_key(['source']) }} as media_source_key,
--- Media Type Key
     {{ dbt_utils.generate_surrogate_key(['source', 'media_type']) }} as media_type_key,
     source,
     media_type,
-    case 
-        when media_type = 'movie'  then 'radarr'
-        when media_type = 'tv_show' then 'sonarr'
-            end as library_name,
+    library_name,
     title,
     genre,
     cast(year as varchar(15)) as year,
     ratings,
-    metadata ->> 'studio' as studio,
-    metadata ->> 'runtime' as run_time,
-    metadata ->> 'play_count' as play_count,
-    metadata ->> 'size_on_disk' as size_on_disk,
-    metadata ->> 'certification' as movie_rating,
-    recorded_at::date as date_recorded,
-    cast({{ to_local_time('recorded_at') }} as timestamp) as recorded_at_ts,
+    studio,
+    runtime as run_time,
+    bitrate,
+    rating_key,
+    date_added,
+    added_at_utc,
+    cast(added_at_ts as timestamp) as added_at_ts,
     inserted_at::date as date_inserted,
     cast({{ to_local_time('inserted_at') }} as timestamp) as inserted_at_ts,
     dbt_updated_at,
     dbt_valid_from,
     dbt_valid_to
-from raw_media_library
+from media_library_snapshot

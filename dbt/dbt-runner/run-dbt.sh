@@ -42,15 +42,15 @@ fi
 
 EXIT=0
 
-# Snapshots run every invocation, before the build, so SCD2 history is captured
-# as close to each source change as possible. `check` strategy makes unchanged
-# runs a no-op. A snapshot failure is folded into EXIT so it still alerts.
-dbt snapshot || EXIT=$?
-
+# Regular runs use `dbt build` so snapshots run in DAG order with the models
+# they read from (media_library_snapshot depends on stg_media_library_present)
+# and SCD2 history is captured on every run. The nightly refresh rebuilds
+# staging, then snapshots, then tests. Any failure is folded into EXIT so it
+# still alerts.
 if [ "$MODE" = "regular" ]; then
-    { dbt run && dbt test; } || EXIT=$?
+    dbt build || EXIT=$?
 else
-    { dbt run --full-refresh --select path:models/staging && dbt test; } || EXIT=$?
+    { dbt run --full-refresh --select path:models/staging && dbt snapshot && dbt test; } || EXIT=$?
 fi
 
 if [ "$EXIT" -eq 0 ]; then

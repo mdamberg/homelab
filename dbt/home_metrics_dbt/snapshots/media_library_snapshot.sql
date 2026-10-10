@@ -12,17 +12,33 @@
 
     {{
         config(
-                target_schema='snapshots'
-                unique_key: 'id'
-                strategy: 'check'
-                check_cols: ['media_type', 'library_name', 'genre', 'year', 'overview', 'ratings', 'metadata']
-                hard_deletes: 'invalidate'
-                dbt_valid_to_current: "'9999-12-31'::date"
+                target_schema='snapshots',
+                unique_key='media_key',
+                strategy='timestamp',
+                updated_at='added_at_utc',
+                hard_deletes='invalidate',
+                dbt_valid_to_current="'9999-12-31'::date"
         )
     }}
 
-select 
-    *
-from {{ source('home_metrics_raw', 'raw_media_library') }}
+select
+    media_key,
+    source,
+    media_type,
+    library_name,
+    title,
+    genre,
+    year,
+    overview,
+    ratings,
+    inserted_at,
+    added_at_utc,
+    added_at_ts,
+    date_added,
+    studio,
+    runtime,
+    bitrate,
+    rating_key
+from {{ ref('stg_media_library_present') }}
 
-{% end snapshot %}
+{% endsnapshot %}

@@ -189,7 +189,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Transform Sonarr series into individual media items\nconst allItems = $input.all();\nconst now = new Date().toISOString();\n\nif (!allItems || allItems.length === 0) {\n  return [];\n}\n\nreturn allItems.map(item => {\n  const show = item.json;\n  return {\n    json: {\n      source: 'sonarr',\n      media_type: 'tv_show',\n      library_name: 'Sonarr Library',\n      title: (show.title || 'Unknown').substring(0, 255),\n      genre: (show.genres || []).slice(0, 3).join(', ').substring(0, 100),\n      year: show.year || null,\n      overview: (show.overview || '').substring(0, 500),\n      ratings: show.ratings?.value?.toString() || null,\n      recorded_at: now,\n      inserted_at: now,\n      metadata: JSON.stringify({\n        tvdb_id: show.tvdbId,\n        imdb_id: show.imdbId,\n        status: show.status,\n        network: show.network,\n        runtime: show.runtime,\n        episode_count: show.episodeCount,\n        season_count: show.seasonCount,\n        size_on_disk: show.sizeOnDisk,\n        monitored: show.monitored\n      })\n    }\n  };\n});"
+        "jsCode": "// Transform Sonarr series into individual media items\nconst allItems = $input.all();\nconst now = new Date().toISOString();\n\nif (!allItems || allItems.length === 0) {\n  return [];\n}\n\nreturn allItems.map(item => {\n  const show = item.json;\n  return {\n    json: {\n      source: 'sonarr',\n      media_type: 'tv_show',\n      library_name: 'Sonarr Library',\n      title: (show.title || 'Unknown').substring(0, 255),\n      genre: (show.genres || []).slice(0, 3).join(', ').substring(0, 100),\n      year: show.year || null,\n      overview: (show.overview || '').substring(0, 500),\n      ratings: show.ratings?.value?.toString() || null,\n      recorded_at: now,\n      inserted_at: now,\n      metadata: JSON.stringify({\n        tvdb_id: show.tvdbId,\n        imdb_id: show.imdbId,\n        status: show.status,\n        network: show.network,\n        runtime: show.runtime,\n        episode_file_count: show.statistics?.episodeFileCount ?? 0,\n        episode_count: show.statistics?.episodeCount ?? 0,\n        season_count: show.statistics?.seasonCount ?? 0,\n        size_on_disk: show.statistics?.sizeOnDisk ?? 0,\n        added_at: show.added ? Math.floor(new Date(show.added).getTime() / 1000) : null,\n        episode_count: show.episodeCount,\n        season_count: show.seasonCount,\n        size_on_disk: show.sizeOnDisk,\n        monitored: show.monitored\n      })\n    }\n  };\n});"
       },
       "id": "transform-sonarr-items",
       "name": "Transform Sonarr Items",
@@ -209,7 +209,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Transform Radarr movies into individual media items\nconst allItems = $input.all();\nconst now = new Date().toISOString();\n\nif (!allItems || allItems.length === 0) {\n  return [];\n}\n\nreturn allItems.map(item => {\n  const movie = item.json;\n  return {\n    json: {\n      source: 'radarr',\n      media_type: 'movie',\n      library_name: 'Radarr Library',\n      title: (movie.title || 'Unknown').substring(0, 255),\n      genre: (movie.genres || []).slice(0, 3).join(', ').substring(0, 100),\n      year: movie.year || null,\n      overview: (movie.overview || '').substring(0, 500),\n      ratings: movie.ratings?.imdb?.value?.toString() || movie.ratings?.tmdb?.value?.toString() || null,\n      recorded_at: now,\n      inserted_at: now,\n      metadata: JSON.stringify({\n        tmdb_id: movie.tmdbId,\n        imdb_id: movie.imdbId,\n        studio: movie.studio,\n        runtime: movie.runtime,\n        certification: movie.certification,\n        size_on_disk: movie.sizeOnDisk,\n        has_file: movie.hasFile,\n        monitored: movie.monitored\n      })\n    }\n  };\n});"
+        "jsCode": "// Transform Radarr movies into individual media items\nconst allItems = $input.all();\nconst now = new Date().toISOString();\n\nif (!allItems || allItems.length === 0) {\n  return [];\n}\n\nreturn allItems.map(item => {\n  const movie = item.json;\n  return {\n    json: {\n      source: 'radarr',\n      media_type: 'movie',\n      library_name: 'Radarr Library',\n      title: (movie.title || 'Unknown').substring(0, 255),\n      genre: (movie.genres || []).slice(0, 3).join(', ').substring(0, 100),\n      year: movie.year || null,\n      overview: (movie.overview || '').substring(0, 500),\n      ratings: movie.ratings?.imdb?.value?.toString() || movie.ratings?.tmdb?.value?.toString() || null,\n      recorded_at: now,\n      inserted_at: now,\n      metadata: JSON.stringify({\n        tmdb_id: movie.tmdbId,\n        imdb_id: movie.imdbId,\n        studio: movie.studio,\n        runtime: movie.runtime,\n        added_at: movie.added ? Math.floor(new Date(movie.added).getTime() / 1000) : null,\n        certification: movie.certification,\n        size_on_disk: movie.sizeOnDisk,\n        has_file: movie.hasFile,\n        monitored: movie.monitored\n      })\n    }\n  };\n});"
       },
       "id": "transform-radarr-items",
       "name": "Transform Radarr Items",
@@ -269,7 +269,7 @@
     },
     {
       "parameters": {
-        "operation": "insert",
+        "operation": "upsert",
         "schema": {
           "__rl": true,
           "mode": "list",
@@ -292,9 +292,128 @@
             "overview": "={{ $json.overview }}",
             "ratings": "={{ $json.ratings }}",
             "recorded_at": "={{ $json.recorded_at }}",
-            "inserted_at": "={{ $json.inserted_at }}",
             "metadata": "={{ $json.metadata }}"
-          }
+          },
+          "matchingColumns": [
+            "source",
+            "title"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "media_type",
+              "displayName": "media_type",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "library_name",
+              "displayName": "library_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "genre",
+              "displayName": "genre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "year",
+              "displayName": "year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "overview",
+              "displayName": "overview",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "ratings",
+              "displayName": "ratings",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "recorded_at",
+              "displayName": "recorded_at",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "inserted_at",
+              "displayName": "inserted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": false,
+              "removed": true
+            },
+            {
+              "id": "metadata",
+              "displayName": "metadata",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
         },
         "options": {}
       },
@@ -352,7 +471,7 @@
     },
     {
       "parameters": {
-        "operation": "insert",
+        "operation": "upsert",
         "schema": {
           "__rl": true,
           "mode": "list",
@@ -375,9 +494,129 @@
             "overview": "={{ $json.overview }}",
             "ratings": "={{ $json.ratings }}",
             "recorded_at": "={{ $json.recorded_at }}",
-            "inserted_at": "={{ $json.inserted_at }}",
             "metadata": "={{ $json.metadata }}"
-          }
+          },
+          "matchingColumns": [
+            "source",
+            "title"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "media_type",
+              "displayName": "media_type",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "library_name",
+              "displayName": "library_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "genre",
+              "displayName": "genre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "year",
+              "displayName": "year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "overview",
+              "displayName": "overview",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ratings",
+              "displayName": "ratings",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recorded_at",
+              "displayName": "recorded_at",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "inserted_at",
+              "displayName": "inserted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "metadata",
+              "displayName": "metadata",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
         },
         "options": {}
       },
@@ -435,7 +674,7 @@
     },
     {
       "parameters": {
-        "operation": "insert",
+        "operation": "upsert",
         "schema": {
           "__rl": true,
           "mode": "list",
@@ -458,9 +697,128 @@
             "overview": "={{ $json.overview }}",
             "ratings": "={{ $json.ratings }}",
             "recorded_at": "={{ $json.recorded_at }}",
-            "inserted_at": "={{ $json.inserted_at }}",
             "metadata": "={{ $json.metadata }}"
-          }
+          },
+          "matchingColumns": [
+            "source",
+            "title"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "source",
+              "displayName": "source",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "media_type",
+              "displayName": "media_type",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "library_name",
+              "displayName": "library_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "title",
+              "displayName": "title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "genre",
+              "displayName": "genre",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "year",
+              "displayName": "year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "overview",
+              "displayName": "overview",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "ratings",
+              "displayName": "ratings",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "recorded_at",
+              "displayName": "recorded_at",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "inserted_at",
+              "displayName": "inserted_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "metadata",
+              "displayName": "metadata",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "object",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
         },
         "options": {}
       },

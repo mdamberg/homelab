@@ -44,6 +44,14 @@ recorded_at     -- When data was captured
 metadata        -- Additional details (JSONB)
 ```
 
+### Item-level rows (raw_media_library)
+The `Insert Plex/Sonarr/Radarr Items` nodes write one row per media entity.
+
+- **Upsert**: the nodes upsert on `(source, title)`. On conflict they update the mapped columns (`recorded_at`, `metadata`, etc.). `inserted_at` is not mapped, so the table default (`now()`) sets it once, when the entity is first seen.
+- **Never deletes**: an entity that disappears from its source keeps its row, with a stale `recorded_at`. Presence is derived downstream (see `stg_media_library_present`).
+- **`metadata.added_at`**: epoch seconds, present for all three sources. Plex: added to Plex (`added_at` from Tautulli). Radarr/Sonarr: the `added` date converted to epoch seconds, i.e. when the title was added to Radarr/Sonarr, not when the file arrived.
+- **Presence fields**: Radarr `metadata.has_file`, Sonarr `metadata.episode_file_count` (from `statistics.episodeFileCount` in the Sonarr API; the series object has no top-level count).
+
 ### Workflow Nodes
 ```
 Schedule Trigger (6h) ──┬── Get Plex Libraries ── Transform ── Insert

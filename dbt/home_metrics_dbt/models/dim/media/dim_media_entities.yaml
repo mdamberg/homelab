@@ -4,10 +4,18 @@ models:
   - name: dim_media_entities
     description: "Dimension table for media entities"
     columns:
-      - name: id
-        description: "Surrogate key for the dimension table"
+      - name: dbt_scd_id
+        description: "Unique id for each version of each media entity"
         tests:
           - unique
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: media_key
+        description: "Surrogate key for the media entity (source + title); repeats across versions"
+        tests:
           - not_null
         config:
           meta:
