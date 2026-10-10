@@ -79,8 +79,9 @@ raw_media_library
 ```
 
 - **`stg_media_library_present`** keeps only entities currently in the library: rows written by the latest n8n run per source (`recorded_at` equals the source's max), and for Radarr `has_file = 'true'`, for Sonarr `episode_file_count > 0`. Plex rows need only the latest-run condition. Key: `media_key` (`source` + `title`).
-- **`media_library_snapshot`** (`snapshots/media_library_snapshot.sql`): `timestamp` strategy on `added_at_utc`, `unique_key: media_key`, `hard_deletes: invalidate`. `dbt_valid_from` is the entity's added date. When an entity drops out of the present view its `dbt_valid_to` is closed. Current rows carry `dbt_valid_to = 9999-12-31`, not null, so query point-in-time as `X between dbt_valid_from and dbt_valid_to`.
+- **`media_library_snapshot`** (`snapshots/media_library_snapshot.sql`): `timestamp` strategy on `added_at_utc`, `unique_key: media_key`, `hard_deletes: invalidate`. `dbt_valid_from` is the entity's added date. When an entity drops out of the present view its `dbt_valid_to` is closed. Current rows have a null `dbt_valid_to`, so query point-in-time as `X >= dbt_valid_from and (dbt_valid_to is null or X < dbt_valid_to)`.
 - **Not tracked**: attribute changes (genre, ratings, play counts). The timestamp strategy only versions on a changed `added_at_utc`, and the snapshot deliberately omits volatile columns.
+- **Lag**: raw only changes when the n8n workflow runs (every 6 hours), so a removal closes `dbt_valid_to` on the first `dbt build` after the next n8n run, not immediately.
 - **Running**: the snapshot reads a `ref()`, so the runner uses `dbt build` (DAG order). A snapshot table is incremental and is not rebuilt by a build. After changing its `unique_key` or columns, drop the table first (`staging.stg_media_library_snapshot` depends on it and must be dropped too; dbt recreates it).
 
 ---

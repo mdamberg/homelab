@@ -7,7 +7,7 @@
     in the past?)
 
     dbt_valid_from is the date the entity was added; dbt_valid_to is
-    9999-12-31 while the entity is still present.
+    null while the entity is still present.
 
     Grain: 1 row per media entity per version.
 

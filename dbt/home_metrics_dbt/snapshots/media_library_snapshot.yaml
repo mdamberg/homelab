@@ -3,7 +3,7 @@ snapshots:
     description: "SCD2 history of media entities present in the library, one row per
       entity per version. dbt_valid_from is the entity's added date and dbt_valid_to closes
       when the entity drops out of stg_media_library_present (removed, or file no longer on disk).
-      Current rows carry dbt_valid_to = 9999-12-31, not null."
+      Current rows have a null dbt_valid_to."
     columns:
       - name: dbt_scd_id
         description: "Unique id for each version of each entity"
@@ -51,4 +51,4 @@ snapshots:
       - name: dbt_valid_from
         description: "Start of this version's validity (the entity's added_at_utc)"
       - name: dbt_valid_to
-        description: "End of this version's validity; 9999-12-31 while current"
+        description: "End of this version's validity; null while current"

@@ -149,7 +149,7 @@ models:
             dimension:
               type: timestamp
       - name: dbt_valid_to
-        description: "End of this version validity; 9999-12-31 while current"
+        description: "End of this version validity; null while current"
         config:
           meta:
             dimension:

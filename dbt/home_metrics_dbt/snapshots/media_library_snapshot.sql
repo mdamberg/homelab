@@ -16,8 +16,7 @@
                 unique_key='media_key',
                 strategy='timestamp',
                 updated_at='added_at_utc',
-                hard_deletes='invalidate',
-                dbt_valid_to_current="'9999-12-31'::date"
+                hard_deletes='invalidate'
         )
     }}
 
