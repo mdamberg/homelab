@@ -64,12 +64,6 @@ models:
           meta:
             dimension:
               type: string
-      - name: ratings
-        description: "Rating value"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: recorded_at
         description: "When the latest n8n run wrote this row. Equal to the source's most recent run for every row in this view."
         config:
@@ -82,12 +76,6 @@ models:
           meta:
             dimension:
               type: timestamp
-      - name: bitrate
-        description: "Bitrate of the media file (Plex only)"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: added_at_utc
         description: "When the entity was added, in UTC. Plex: added to Plex. Radarr/Sonarr: added to Radarr/Sonarr."
         tests:
@@ -138,12 +126,6 @@ models:
           meta:
             dimension:
               type: string
-      - name: rating_key
-        description: "Plex rating key (Plex only)"
-        config:
-          meta:
-            dimension:
-              type: string
       - name: last_played
         description: "Epoch seconds of the last play (Plex only)"
         config:
@@ -168,8 +150,14 @@ models:
           meta:
             dimension:
               type: number
-      - name: certification
+      - name: certification_rating
         description: "The sonarr rating for the media entitiy (G, PG, PG-13 etc...)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: network
+        description: "For sonarr tv shows, the network that produced the show."
         config:
           meta:
             dimension:

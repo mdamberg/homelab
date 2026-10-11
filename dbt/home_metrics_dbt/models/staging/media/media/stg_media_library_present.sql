@@ -24,7 +24,6 @@ with media_persistence as (
         ratings,
         recorded_at,
         inserted_at,
-        metadata ->> 'bitrate' as bitrate,
         
         (to_timestamp((metadata ->> 'added_at')::bigint) at time zone 'UTC') as added_at_utc,
         {{ to_local_time("to_timestamp((metadata ->> 'added_at')::bigint)") }} as added_at_ts,
@@ -40,7 +39,8 @@ with media_persistence as (
         metadata ->> 'episode_file_count' as episode_file_count,
         metadata ->> 'monitored' as monitored,
         metadata ->> 'size_on_disk' as size_on_disk,
-        metadata ->> 'certification' as certification_rating
+        metadata ->> 'certification' as certification_rating,
+        metadata ->> 'network' as network
     from {{ source('home_metrics_raw', 'raw_media_library') }}
 ),
 most_recent_recorded as (
@@ -59,22 +59,20 @@ select
     mp.genre,
     mp.year,
     mp.overview,
-    mp.ratings,
     mp.recorded_at,
     mp.inserted_at,
-    mp.bitrate,
     mp.added_at_ts,
     mp.added_at_utc,
     mp.date_added,
-    mp.studio,
+    coalesce(mp.studio, mp.network) as produced_by, 
     mp.runtime,
     mp.has_file,
-    mp.file_size,
+    coalesce(mp.file_size, mp.size_on_disk) as file_size,
     mp.play_count,
-    mp.rating_key,
     mp.last_played,
     mp.episode_file_count,
-    mp.monitored
+    mp.monitored,
+    mp.certification_rating
 from media_persistence mp
 join most_recent_recorded mr
     on mp.source = mr.source
