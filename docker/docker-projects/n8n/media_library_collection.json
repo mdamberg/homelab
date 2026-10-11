@@ -34,22 +34,26 @@
         "queryParameters": {
           "parameters": [
             {
-              "name": "apikey",
-              "value": "Xr9UEqUarIPJUr0DkwndQDWihtSxXQlK"
-            },
-            {
               "name": "cmd",
               "value": "get_libraries"
             }
           ]
         },
-        "options": {}
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth"
       },
       "id": "get-tautulli-libraries",
       "name": "Get Plex Libraries",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [500, 200]
+      "position": [500, 200],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "",
+          "name": "Tautulli API Key"
+        }
+      }
     },
     {
       "parameters": {
@@ -126,7 +130,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Extract section_ids from Plex libraries for item-level fetch\nconst input = $input.first().json;\n\nlet libraries = [];\nif (input && input.response && input.response.data) {\n  libraries = input.response.data;\n} else if (Array.isArray(input)) {\n  libraries = input;\n}\n\nif (!libraries || libraries.length === 0) {\n  return [];\n}\n\n// Return each library as separate item for looping\nreturn libraries.map(lib => ({\n  json: {\n    section_id: lib.section_id,\n    section_name: lib.section_name,\n    section_type: lib.section_type\n  }\n}));"
+        "jsCode": "// Extract section_ids from Plex libraries for item-level fetch\nconst input = $input.first().json;\n\nlet libraries = [];\nif (input && input.response && input.response.data) {\n  libraries = input.response.data;\n} else if (Array.isArray(input)) {\n  libraries = input;\n}\n\n// Only movie and show libraries carry the item-level metadata we load\nlibraries = (libraries || []).filter(lib => ['movie', 'show'].includes(lib.section_type));\n\nif (!libraries || libraries.length === 0) {\n  return [];\n}\n\n// Return each library as separate item for looping\nreturn libraries.map(lib => ({\n  json: {\n    section_id: lib.section_id,\n    section_name: lib.section_name,\n    section_type: lib.section_type\n  }\n}));"
       },
       "id": "extract-plex-sections",
       "name": "Extract Plex Sections",
@@ -142,10 +146,6 @@
         "queryParameters": {
           "parameters": [
             {
-              "name": "apikey",
-              "value": "Xr9UEqUarIPJUr0DkwndQDWihtSxXQlK"
-            },
-            {
               "name": "cmd",
               "value": "get_library_media_info"
             },
@@ -159,23 +159,31 @@
             }
           ]
         },
-        "options": {}
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth"
       },
       "id": "get-plex-library-items",
       "name": "Get Plex Library Items",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [1000, 250]
+      "position": [1000, 250],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "",
+          "name": "Tautulli API Key"
+        }
+      }
     },
     {
       "parameters": {
-        "jsCode": "// Transform Plex library items into individual media records\nconst input = $input.first().json;\nconst now = new Date().toISOString();\n\nlet items = [];\nif (input && input.response && input.response.data && input.response.data.data) {\n  items = input.response.data.data;\n}\n\nif (!items || items.length === 0) {\n  return [];\n}\n\nreturn items.map(item => {\n  let mediaType = item.media_type || 'unknown';\n  if (mediaType === 'show' || mediaType === 'season' || mediaType === 'episode') mediaType = 'tv_show';\n  \n  return {\n    json: {\n      source: 'plex',\n      media_type: mediaType,\n      library_name: item.library_name || 'Unknown Library',\n      title: (item.title || 'Unknown').substring(0, 255),\n      genre: (item.genres || []).slice(0, 3).join(', ').substring(0, 100),\n      year: parseInt(item.year) || null,\n      overview: null,\n      ratings: item.rating ? item.rating.toString() : null,\n      recorded_at: now,\n      inserted_at: now,\n      metadata: JSON.stringify({\n        rating_key: item.rating_key,\n        added_at: item.added_at,\n        last_played: item.last_played,\n        play_count: item.play_count,\n        file_size: item.file_size,\n        bitrate: item.bitrate,\n        duration: item.duration\n      })\n    }\n  };\n});"
+        "jsCode": "// Build one raw_media_library row per Plex title.\n// Plex (library listing) is the source of truth for what exists and for descriptive fields;\n// Tautulli's per-item stats only fill gaps (file size / play history Plex does not return).\nconst now = new Date().toISOString();\nconst sections = $('Extract Plex Sections').all().map(i => i.json);\nconst plexResponses = $input.all().map(i => i.json);   // one response per library\n\n// Tautulli rows keyed by rating_key (unique per Plex server)\nconst tautulli = new Map();\nfor (const r of $('Get Plex Library Items').all()) {\n  const rows = (r.json && r.json.response && r.json.response.data && r.json.response.data.data) || [];\n  for (const row of rows) tautulli.set(String(row.rating_key), row);\n}\n\nconst num = v => (v === null || v === undefined || v === '') ? null : (Number.isFinite(Number(v)) ? Number(v) : null);\nconst seen = new Set();   // raw_media_library is unique on (source, title)\nconst out = [];\n\nplexResponses.forEach((res, idx) => {\n  // responses come back in the same order as the sections we sent\n  const section = sections[idx] || {};\n  const items = (res && res.MediaContainer && res.MediaContainer.Metadata) || [];\n  const mediaType = section.section_type === 'show' ? 'tv_show' : (section.section_type || 'unknown');\n\n  for (const item of items) {\n    const title = String(item.title || 'Unknown').substring(0, 200);\n    if (seen.has(title)) continue;\n    seen.add(title);\n\n    const t = tautulli.get(String(item.ratingKey)) || {};\n    const parts = (item.Media || []).flatMap(m => m.Part || []);\n    const partBytes = parts.reduce((sum, p) => sum + (num(p.size) || 0), 0);\n    const isShow = item.type === 'show';\n    const genre = (item.Genre || []).map(g => g.tag).slice(0, 3).join(', ').substring(0, 100);\n    const rating = item.audienceRating ?? item.rating;\n\n    out.push({\n      json: {\n        source: 'plex',\n        media_type: mediaType,\n        library_name: section.section_name || 'Unknown Library',\n        title,\n        genre: genre || null,\n        year: parseInt(item.year) || null,\n        overview: item.summary ? String(item.summary).substring(0, 500) : null,\n        ratings: (rating !== undefined && rating !== null) ? String(rating).substring(0, 10) : null,\n        recorded_at: now,\n        inserted_at: now,\n        metadata: JSON.stringify({\n          rating_key: item.ratingKey ?? t.rating_key ?? null,\n          added_at: num(item.addedAt) ?? num(t.added_at),\n          last_played: num(item.lastViewedAt) ?? num(t.last_played),\n          play_count: num(item.viewCount) ?? num(t.play_count) ?? num(item.viewedLeafCount) ?? 0,\n          file_size: partBytes || num(t.file_size),\n          bitrate: num(item.Media && item.Media[0] && item.Media[0].bitrate) ?? num(t.bitrate),\n          duration: num(item.duration),\n          runtime: item.duration ? Math.round(item.duration / 60000) : null,\n          has_file: isShow ? (num(item.leafCount) || 0) > 0 : parts.some(p => p.file),\n          studio: item.studio || null,\n          certification: item.contentRating || null,\n          episode_file_count: isShow ? num(item.leafCount) : null\n        })\n      }\n    });\n  }\n});\n\nreturn out;"
       },
       "id": "transform-plex-items",
       "name": "Transform Plex Items",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1250, 250]
+      "position": [1500, 250]
     },
     {
       "parameters": {
@@ -421,7 +429,7 @@
       "name": "Insert Plex Items",
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.5,
-      "position": [1500, 250],
+      "position": [1750, 250],
       "credentials": {
         "postgres": {
           "id": "POSTGRES_CREDENTIAL_ID",
@@ -876,7 +884,7 @@
     },
     {
       "parameters": {
-        "content": "## Media Library Data Collection\n\n### Two Data Paths:\n1. **Metrics** → `raw_media_library_metrics` (aggregated counts/sizes)\n2. **Items** → `raw_media_library` (individual titles with genre/year)\n\n### Setup Required:\n1. **PostgreSQL Credential**: Select on all Insert nodes\n2. **Create Tables**: Ensure both tables exist in database\n\n### Data Collected:\n- **Plex**: Library metrics + individual items per library\n- **Sonarr**: Series metrics + individual shows\n- **Radarr**: Movie metrics + individual movies\n- **Prowlarr**: Indexer metrics only\n\n### Schedule:\nRuns every 6 hours automatically",
+        "content": "## Media Library Data Collection\n\n### Two Data Paths:\n1. **Metrics** → `raw_media_library_metrics` (aggregated counts/sizes)\n2. **Items** → `raw_media_library` (individual titles with genre/year)\n\n### Setup Required:\n1. **PostgreSQL Credential**: Select on all Insert nodes\n2. **Tautulli API Key** (Query Auth credential): name `apikey`, value = your Tautulli API key. Select on `Get Plex Libraries` and `Get Plex Library Items`\n3. **Plex Token** (Query Auth credential): name `X-Plex-Token`, value = your Plex token. Select on `Get Plex Library Details`\n4. **Create Tables**: Ensure both tables exist in database\n\n### Data Collected:\n- **Plex**: Library metrics (Tautulli) + individual items per movie/show library (Plex for genre, summary, studio, runtime, rating, files; Tautulli for file size and play history)\n- **Sonarr**: Series metrics + individual shows\n- **Radarr**: Movie metrics + individual movies\n- **Prowlarr**: Indexer metrics only\n\n### Schedule:\nRuns every 6 hours automatically",
         "height": 380,
         "width": 360
       },
@@ -885,6 +893,37 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [180, 1200]
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=http://host.docker.internal:32400/library/sections/{{ $('Extract Plex Sections').all()[$itemIndex].json.section_id }}/all",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "id": "get-plex-library-details",
+      "name": "Get Plex Library Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1250, 250],
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "",
+          "name": "Plex Token"
+        }
+      }
     }
   ],
   "connections": {
@@ -971,7 +1010,7 @@
       "main": [
         [
           {
-            "node": "Transform Plex Items",
+            "node": "Get Plex Library Details",
             "type": "main",
             "index": 0
           }
@@ -1092,6 +1131,17 @@
         [
           {
             "node": "Insert Prowlarr Metrics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Plex Library Details": {
+      "main": [
+        [
+          {
+            "node": "Transform Plex Items",
             "type": "main",
             "index": 0
           }
