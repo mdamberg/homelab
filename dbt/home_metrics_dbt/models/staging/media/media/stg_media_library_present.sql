@@ -38,7 +38,9 @@ with media_persistence as (
         metadata ->> 'rating_key' as rating_key,
         metadata ->> 'last_played' as last_played,
         metadata ->> 'episode_file_count' as episode_file_count,
-        metadata ->> 'monitored' as monitored
+        metadata ->> 'monitored' as monitored,
+        metaata ->> 'size_on_disk' as size_on_disk,
+        metadata ->> 'certification' as certification_rating
     from {{ source('home_metrics_raw', 'raw_media_library') }}
 ),
 most_recent_recorded as (

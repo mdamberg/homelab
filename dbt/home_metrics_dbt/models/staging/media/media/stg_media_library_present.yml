@@ -162,3 +162,15 @@ models:
           meta:
             dimension:
               type: string
+      - name: size_on_disk
+        description: "The total memory storage this media file takes on the homelab hard drive"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: certification
+        description: "The sonarr rating for the media entitiy (G, PG, PG-13 etc...)"
+        config:
+          meta:
+            dimension:
+              type: string
