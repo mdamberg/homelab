@@ -55,20 +55,28 @@ n8n lives in the main `docker-projects` repo and handles:
 
 ### 3. Plex Watch History
 
-**Schedule**: Every 15 minutes (or webhook-triggered)
+**Workflow ID**: `rA7UcFV39hoiYAQA`
+
+**Schedule**: Every 15 minutes
+
+**Source**: Tautulli `get_history` (`http://host.docker.internal:8181/api/v2`), not the Plex API directly — same as the library workflow.
 
 **Steps**:
-1. Get recently watched items from Plex
-2. Parse watch history
-3. Insert into `raw_media_activity`
+1. Query `MAX(watched_at)` from `raw_media_activity` (watermark)
+2. HTTP GET Tautulli `cmd=get_history&length=1000`
+3. Code node maps fields and drops anything at or before the watermark
+4. Insert new plays into `raw_media_activity`
+
+**Dedup**: `raw_media_activity` has no unique constraint (staging `stg_media_activity` dedupes). The watermark keeps raw lean so 15-min re-runs don't re-insert the same plays. First run backfills the last 1000 plays.
 
 **Data Collected**:
-- User name
+- User name (Tautulli `friendly_name`)
 - Media type
-- Title
-- Series title (for episodes)
-- Duration
-- Watched timestamp
+- Title (episode/movie/track title)
+- Series title (episode `grandparent_title`, else null)
+- Duration (seconds)
+- Watched timestamp (from `stopped`/`date` epoch, stored UTC)
+- Metadata (rating keys, platform, player, percent_complete, Tautulli history id, etc.)
 
 ### 4. Pi-hole Metrics
 
