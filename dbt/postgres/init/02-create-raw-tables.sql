@@ -104,62 +104,6 @@ COMMENT ON TABLE raw_media_activity IS 'Watch/listen history from Plex';
 COMMENT ON COLUMN raw_media_activity.metadata IS 'Additional details like device, client, quality, etc.';
 
 -- ============================================================================
--- Pi-hole DNS Metrics
--- ============================================================================
-CREATE TABLE IF NOT EXISTS raw_pihole_metrics (
-    id BIGSERIAL PRIMARY KEY,
-    pihole_instance VARCHAR(100) DEFAULT 'primary',
-    total_queries INTEGER,
-    blocked_queries INTEGER,
-    percent_blocked NUMERIC(5, 2),
-    unique_domains INTEGER,
-    unique_clients INTEGER,
-    recorded_at TIMESTAMP NOT NULL,
-    inserted_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    top_blocked_domains JSONB,
-    top_queries JSONB,
-    metadata JSONB,
-    CONSTRAINT valid_queries CHECK (total_queries >= 0 AND blocked_queries >= 0),
-    CONSTRAINT valid_percent CHECK (percent_blocked >= 0 AND percent_blocked <= 100)
-);
-
-CREATE INDEX IF NOT EXISTS idx_pihole_time ON raw_pihole_metrics(recorded_at DESC);
-CREATE INDEX IF NOT EXISTS idx_pihole_instance ON raw_pihole_metrics(pihole_instance, recorded_at DESC);
-
-COMMENT ON TABLE raw_pihole_metrics IS 'DNS blocking statistics from Pi-hole';
-COMMENT ON COLUMN raw_pihole_metrics.top_blocked_domains IS 'Array of most blocked domains with counts';
-COMMENT ON COLUMN raw_pihole_metrics.top_queries IS 'Array of most queried domains';
-
--- ============================================================================
--- System Health
--- ============================================================================
-CREATE TABLE IF NOT EXISTS raw_system_health (
-    id BIGSERIAL PRIMARY KEY,
-    hostname VARCHAR(255) NOT NULL,
-    recorded_at TIMESTAMP NOT NULL,
-    inserted_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    cpu_percent NUMERIC(5, 2),
-    memory_percent NUMERIC(5, 2),
-    disk_percent NUMERIC(5, 2),
-    temperature_c NUMERIC(5, 2),
-    windows_logical_disk_read_latency_seconds_total NUMERIC(10, 4),
-    windows_logical_disk_write_latency_seconds_total NUMERIC(10, 4),
-    windows_logical_disk_read_bytes_total BIGINT,
-    windows_logical_disk_write_bytes_total BIGINT,
-    windows_net_bytes_received_total BIGINT,
-    windows_net_bytes_sent_total BIGINT,
-    windows_system_processor_queue_length NUMERIC(10, 2),
-    windows_os_paging_free_bytes BIGINT,
-    windows_memory_commit_limit BIGINT,
-    windows_memory_committed_bytes BIGINT,
-    metadata JSONB
-);
-
-CREATE INDEX IF NOT EXISTS idx_health_host_time ON raw_system_health(hostname, recorded_at DESC);
-
-COMMENT ON TABLE raw_system_health IS 'System health metrics for monitoring server performance';
-
--- ============================================================================
 -- N8N Workflow Runs
 -- ============================================================================
 CREATE TABLE IF NOT EXISTS raw_n8n_workflow_runs (
@@ -299,13 +243,9 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA raw GRANT USAGE, SELECT ON SEQUENCES TO metri
 SET search_path TO public, raw;
 
 
-
-
 -- ============================================================================
 -- Finances
 -- ============================================================================
-
-
 
 CREATE TABLE IF NOT EXISTS raw.raw_transactions (                                                                                                                                                             id BIGSERIAL PRIMARY KEY,
       transaction_date DATE NOT NULL,                                                                                                                                                                           original_date DATE,
@@ -400,35 +340,39 @@ GRANT USAGE, SELECT ON raw.raw_teller_accounts_id_seq TO metrics_user;
 GRANT USAGE, SELECT ON raw.raw_teller_transactions_id_seq TO metrics_user;
 GRANT USAGE, SELECT ON raw.raw_teller_balances_id_seq TO metrics_user;
 
-
-
-
 -- ============================================================================
--- HWiNFO -- system health monitoring
+-- SimpleFIN Bridge bank transactions (simplefin_extractor job)
 -- ============================================================================
 
-CREATE TABLE IF NOT exists raw.raw_hwinfo_monitoring (
-	recorded_at_date DATE,        -- parse from "11.9.2026"  -> to_date(x,'DD.MM.YYYY')
-    recorded_at_time TIME(3),
-	virtual_memory_comitted NUMERIC(12, 2),
-	virtual_memory_available NUMERIC(12, 2),
-	physical_memory_used NUMERIC(12, 2),
-	physical_memory_available NUMERIC(12, 2),
-	physical_memory_load NUMERIC(12, 2),
-	cpu_die NUMERIC(12, 2),
-	core_temperatures NUMERIC(12, 2),
-	total_cpu_usage NUMERIC(12, 2),
-	max_cpu_usage NUMERIC(12, 2)
+CREATE TABLE IF NOT EXISTS raw.raw_simplefin_transactions (
+    account_id        TEXT           NOT NULL,
+    transaction_id    TEXT           NOT NULL,
+    institution_name  TEXT,
+    account_name      TEXT,
+    posted_at         TIMESTAMPTZ    NOT NULL,
+    transacted_at     TIMESTAMPTZ,
+    amount            NUMERIC(14, 2) NOT NULL,
+    description       TEXT,
+    payload           JSONB          NOT NULL,
+    inserted_at       TIMESTAMPTZ    NOT NULL DEFAULT now(),
+    -- SimpleFIN transaction ids are only unique within an account
+    PRIMARY KEY (account_id, transaction_id)
 );
 
-CREATE INDEX IF NOT EXISTS idx_hwinfo_recorded_at_date
-    ON raw.raw_hwinfo_monitoring (recorded_at_date DESC);
-CREATE INDEX IF NOT EXISTS idx_hwinfo_recorded_at_time
-    ON raw.raw_hwinfo_monitoring (recorded_at_time DESC);   -- was recorded_at_date
+CREATE INDEX IF NOT EXISTS idx_simplefin_transactions_posted ON raw.raw_simplefin_transactions(posted_at DESC);
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON raw.raw_hwinfo_monitoring TO metrics_user;
-GRANT USAGE ON SCHEMA raw TO metrics_user;
-	
+COMMENT ON TABLE raw.raw_simplefin_transactions IS 'Posted bank transactions from SimpleFIN Bridge';
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON raw.raw_hwinfo_monitoring TO metrics_user;
-GRANT USAGE, SELECT ON raw.raw_hwinfo_monitoring TO metrics_user;
+-- Least-privilege writer for the extractor. Password is set out of band and
+-- stored outside the repo (see docs/finance/simplefin-extractor.md).
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'bank_writer') THEN
+        CREATE ROLE bank_writer LOGIN;
+    END IF;
+END
+$$;
+
+GRANT CONNECT ON DATABASE home_metrics TO bank_writer;
+GRANT USAGE ON SCHEMA raw TO bank_writer;
+GRANT SELECT, INSERT ON raw.raw_simplefin_transactions TO bank_writer;

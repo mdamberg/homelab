@@ -1,0 +1,40 @@
+# Job, not a service: Task Scheduler runs it daily via run.ps1 and it exits.
+# No restart policy, no published ports, not in start-all-services.ps1.
+services:
+  simplefin-extractor:
+    build: .
+    profiles: ["manual"]
+    user: "10001:10001"
+    secrets:
+      - simplefin_access_url
+      - pg_password
+    environment:
+      TZ: America/Chicago
+      SIMPLEFIN_ACCESS_URL_FILE: /run/secrets/simplefin_access_url
+      PGPASSWORD_FILE: /run/secrets/pg_password
+      PGHOST: home-metrics-postgres
+      PGDATABASE: home_metrics
+      PGUSER: bank_writer
+      LOOKBACK_DAYS: "14"
+      KUMA_PUSH_URL: ${KUMA_PUSH_URL:-}
+    networks:
+      - home-metrics
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+# Secrets live outside the repo so they can never be committed or swept into
+# the Duplicati backup of docker-projects/.
+secrets:
+  simplefin_access_url:
+    file: ${SIMPLEFIN_SECRETS_DIR:?set SIMPLEFIN_SECRETS_DIR in .env}/access_url.txt
+  pg_password:
+    file: ${SIMPLEFIN_SECRETS_DIR:?set SIMPLEFIN_SECRETS_DIR in .env}/pg_password.txt
+
+networks:
+  home-metrics:
+    external: true
