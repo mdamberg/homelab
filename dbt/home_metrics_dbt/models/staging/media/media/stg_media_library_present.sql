@@ -21,7 +21,6 @@ with media_persistence as (
         genre,
         year,
         overview,
-        ratings,
         recorded_at,
         inserted_at,
         
@@ -34,7 +33,6 @@ with media_persistence as (
         metadata ->> 'has_file' as has_file,
         metadata ->> 'file_size' as file_size,
         metadata ->> 'play_count' as play_count,
-        metadata ->> 'rating_key' as rating_key,
         metadata ->> 'last_played' as last_played,
         metadata ->> 'episode_file_count' as episode_file_count,
         metadata ->> 'monitored' as monitored,
@@ -77,6 +75,7 @@ from media_persistence mp
 join most_recent_recorded mr
     on mp.source = mr.source
     and mp.recorded_at = mr.recorded_at
-where mp.source = 'plex'
-    or mp.has_file = 'true'
+where mp.source in ('radarr', 'sonarr')
+    and (mp.has_file = 'true' 
     or mp.episode_file_count::int > 0
+)

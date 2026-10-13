@@ -27,9 +27,7 @@ snapshots:
       - name: year
         description: "Release year"
       - name: overview
-        description: "Plot summary (Radarr and Sonarr only)"
-      - name: ratings
-        description: "Rating value"
+        description: "Plot summary (Plex, Radarr and Sonarr)"
       - name: inserted_at
         description: "When the entity was first seen in the raw table"
       - name: added_at_utc
@@ -38,14 +36,16 @@ snapshots:
         description: "added_at_utc converted to local time"
       - name: date_added
         description: "Date the entity was added"
-      - name: studio
-        description: "Studio that produced the movie (Radarr only)"
+      - name: produced_by
+        description: "Studio that produced the entity, falling back to the network (Plex, Radarr and Sonarr)"
+      - name: certification_rating
+        description: "Content rating, e.g. G, PG, PG-13, R, TV-MA"
+      - name: has_file
+        description: "Whether a file exists on disk for the entity (true/false)"
+      - name: file_size
+        description: "File size in bytes"
       - name: runtime
-        description: "Runtime in minutes (Radarr and Sonarr)"
-      - name: bitrate
-        description: "Bitrate of the media file (Plex only)"
-      - name: rating_key
-        description: "Plex rating key (Plex only)"
+        description: "Runtime in minutes (Plex, Radarr and Sonarr)"
       - name: dbt_updated_at
         description: "Value of the updated_at column when this version was captured"
       - name: dbt_valid_from

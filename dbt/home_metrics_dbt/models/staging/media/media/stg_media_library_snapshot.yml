@@ -76,32 +76,26 @@ models:
           meta:
             dimension:
               type: string
-      - name: ratings
-        description: "Rating value"
+      - name: produced_by
+        description: "Studio that produced the entity, falling back to the network."
         config:
           meta:
             dimension:
               type: string
-      - name: studio
-        description: "The studio which produced the movie."
+      - name: certification_rating
+        description: "Content rating, e.g. G, PG, PG-13, R, TV-MA."
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: has_file
+        description: "Whether a file exists on disk for the entity (true/false)."
         config:
           meta:
             dimension:
               type: string
       - name: run_time
         description: "Duration of the media entity in minutes."
-        config:
-          meta:
-            dimension:
-              type: string
-      - name: bitrate
-        description: "Bitrate of the media file (Plex only)"
-        config:
-          meta:
-            dimension:
-              type: string
-      - name: rating_key
-        description: "Plex rating key (Plex only)"
         config:
           meta:
             dimension:

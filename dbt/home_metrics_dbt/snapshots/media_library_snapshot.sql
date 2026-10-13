@@ -28,16 +28,15 @@ select
     title,
     genre,
     year,
+    produced_by,
+    certification_rating,
+    has_file,
     overview,
-    ratings,
     inserted_at,
     added_at_utc,
     added_at_ts,
     date_added,
-    studio,
-    runtime,
-    bitrate,
-    rating_key
+    runtime
 from {{ ref('stg_media_library_present') }}
 
 {% endsnapshot %}
