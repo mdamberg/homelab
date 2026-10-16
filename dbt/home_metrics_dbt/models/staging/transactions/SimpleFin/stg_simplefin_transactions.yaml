@@ -1,0 +1,44 @@
+version: 2
+
+models:
+  - name: stg_simplefin_transactions
+    description: >-
+      Posted Wells Fargo transactions from SimpleFIN Bridge, 1:1 with
+      raw_simplefin_transactions. Light renaming plus fields pulled out of the
+      JSON payload. Grain: one row per posted transaction (account_id + transaction_id).
+    columns:
+      - name: transaction_pk
+        description: The unique hash identifier that combines account_id and transaction_id
+        tests:
+          - unique
+          - not_null 
+      - name: date_key
+        description: a unique key representing each date.
+      - name: account_id
+        description: "SimpleFIN account identifier (opaque Bridge id, not the bank account number)"
+      - name: transaction_id
+        description: "SimpleFIN transaction identifier; unique only within an account, so pair it with account_id"
+      - name: institution_name
+        description: "Bank the account belongs to (e.g. Wells Fargo)"
+      - name: account_name
+        description: "Account name as the bank reports it"
+      - name: posted_at_datetime
+        description: "Timestamp (UTC) the transaction posted to the account"
+      - name: transacted_at_datetime
+        description: "Timestamp (UTC) the transaction occurred, when the bank provides it; null otherwise"
+      - name: amount
+        description: "Signed transaction amount; negative is money out, positive is money in"
+      - name: transaction_description
+        description: "Transaction description from the bank"
+      - name: inserted_at_datetime
+        description: "Timestamp the row was first loaded into the raw table"
+      - name: merchant_category_code
+        description: "Merchant category code (4-digit card network code for the merchant type); blank for non-card activity"
+      - name: memo
+        description: "Memo text from SimpleFIN; currently empty for all Wells Fargo transactions"
+      - name: payee
+        description: "Payee or merchant name as cleaned up by SimpleFIN (e.g. Online Transfer)"
+      - name: posted
+        description: "Raw posted time from the payload as Unix epoch seconds; same moment as posted_at_datetime"
+      - name: transacted_at
+        description: "Raw transacted time from the payload as Unix epoch seconds; same moment as transacted_at_datetime"

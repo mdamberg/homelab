@@ -1,0 +1,38 @@
+version: 2
+
+sources:
+  - name: home_metrics_raw
+    schema: raw
+    description: "Raw data tables for Home Metrics project"
+
+    tables:
+      - name: raw_simplefin_transactions
+        description: >-
+          Posted bank transactions from Wells Fargo via SimpleFIN Bridge
+          (simplefin_extractor job). Brings raw financial data into the database.
+          One row per posted transaction; pending transactions are not loaded.
+        loaded_at_field: inserted_at
+        freshness:
+          warn_after: {count: 26, period: hour}
+          error_after: {count: 50, period: hour}
+        columns:
+          - name: account_id
+            description: "SimpleFIN account identifier (opaque Bridge id, not the bank account number). Part of the primary key."
+          - name: transaction_id
+            description: "SimpleFIN transaction identifier; unique only within an account. Part of the primary key."
+          - name: institution_name
+            description: "Bank the account belongs to, from the SimpleFIN connection (e.g. Wells Fargo)"
+          - name: account_name
+            description: "Account name as the bank reports it (e.g. EVERYDAY CHECKING ...1234)"
+          - name: posted_at
+            description: "Timestamp (UTC) the transaction posted to the account"
+          - name: transacted_at
+            description: "Timestamp (UTC) the transaction occurred, when the bank provides it; null otherwise"
+          - name: amount
+            description: "Signed transaction amount; negative is money out, positive is money in"
+          - name: description
+            description: "Transaction description from the bank"
+          - name: payload
+            description: "Full SimpleFIN transaction as JSON (id, posted, transacted_at, amount, description, payee, memo, mcc)"
+          - name: inserted_at
+            description: "Timestamp the row was first loaded; never updated on later runs"
