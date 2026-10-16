@@ -7,7 +7,7 @@ FuboTV Inc,fuboTV,Streaming,Subscription,FuboTV,true,monthly
 Sling TV,Sling TV,Streaming,Subscription,Sling TV,true,monthly
 PLEXINC*PASS YEARLY PLEX.TV CA,,Streaming,Subscription,Plex,true,yearly
 OPENAI *CHATGPT,OpenAI,AI,Software,OpenAI,true,monthly
-CLAUDE.AI SUBSCRIPTION ANTHROPIC.COMCA,,AI,Software,Anthropic,true,monthly
+CLAUDE.AI SUBSCRIPTION ANTHROPIC.COMCA,Anthropic.com,AI,Software,Anthropic,true,monthly
 MICROSOFT*XBOX,,Entertainment,Gaming,Xbox,true,monthly
 WL *STEAM,,Entertainment,Gaming,Steam,false,
 STEAMGAMES.COM,Steam,Entertainment,Gaming,Steam,false,
@@ -22,7 +22,6 @@ ONSTREET,,Transportation,Parking,OnStreet Parking,false,
 10002N UMMC PARKING,N Ummc Parking,Transportation,Parking,UMMC Parking,false,
 IMPARK,impark,Transportation,Parking,Impark,false,
 COSTCO WHSE,Costco,Groceries,Wholesale,Costco,false,
-WM SUPERCENTER,,Groceries,Supermarket,Walmart,false,
 TRADER JOE S,,Groceries,Supermarket,Trader Joe's,false,
 SQ *EAST VILLAGE MARKET,,Groceries,Local,East Village Market,false,
 TARGET,Target,Shopping,Retail,Target,false,
@@ -58,10 +57,10 @@ SQ *DIPSY,,Dining,Restaurant,Dipsy,false,
 ALOFT AUSTIN,Aloft Hotels,Dining,Hotel,Aloft Austin,false,
 MIDWEST NATURAL GAS,Midwest Natural Gas,Utilities,Natural Gas,Midwest Natural Gas,true,monthly
 MIDWEST NG SERVICEFEE,Midwest Servicefee,Utilities,Natural Gas,Midwest Natural Gas,true,monthly
-XCEL ENERGY-WI XCELENERGY,,Utilities,Electric,XCEL Energy,true,monthly
+XCEL ENERGY-WI XCELENERGY,Xcel Energy,Utilities,Electric,XCEL Energy,true,monthly
 ALLPAID*SOMERSET,Allpaid Somerset Utilities,Utilities,Municipal,Somerset Utilities,true,monthly
 ALLPAID*VILLAGE OF SOMERS,,Utilities,Municipal,Somerset Village,true,monthly
-Somerset Utility Bill,,Utilities,Municipal,Somerset Village,true,monthly
+Somerset Utility Bill,V of Somerset Utility Bill Damberg Matt & Jessic,Utilities,Municipal,Somerset Village,true,monthly
 City of Hudson,,Utilities,Municipal,City of Hudson,true,monthly
 PROGRESSIVE,Progressive,Insurance,Auto,Progressive,true,biannually
 AUTO-OWNERS INSURANCE,,Insurance,Auto,Auto-Owners,true,biannually
@@ -214,3 +213,36 @@ Fairview Health,,Income,Paycheck,Fairview Health,true,bi-monthly
 LUNAMED HOLDINGS,,Income,Reimbursement,Lunamed Holdings,false,
 PEOPLE CENTER,,Income,Payment,People Center,false,
 ST CROIX KIDS,,Income,Payment,St Croix Kids,false,
+AUS AUSTIN CHRONICLE,,Shopping,Convenience,Austin Chronicle,false,
+AUS BARTON SPRINGS,,Shopping,Retail,Barton Springs,false,
+AUS MARKET,,Shopping,Convenience,AUS Market,false,
+BACKBLAZE,Backblaze,Software,Cloud Backup,Backblaze,false,
+BADGERLAND MIDWAYS,,Entertainment,Attractions,Badgerland Midways,false,
+BARNES & NOBLE,Barnes & Noble,Shopping,Retail,Barnes & Noble,false,
+NURSING BOARD FEE,,Services,License,MN Board of Nursing,false,
+NURSES BOARD,,Services,License,MN Board of Nursing,false,
+DUPLICATEDRLICENSE,,Services,License,WI Driver License,false,
+BURGER PARADOX,Burger Paradox,Dining,Restaurant,Burger Paradox,false,
+CVS/PHARMACY,CVS,Healthcare,Pharmacy,CVS,false,
+CITY OF STILLWATER MN PAR,City of Stillwater,Transportation,Parking,City of Stillwater Parking,false,
+ETIX RETAIL,Etix Retail,Entertainment,Tickets,Etix,false,
+STUBHUB,StubHub!,Entertainment,Tickets,StubHub,false,
+FIVE BELOW,Five Below,Shopping,Retail,Five Below,false,
+GIGGLES' CAMPFIRE,,Dining,Restaurant,Giggles' Campfire Grill,false,
+GREAT STEAK,Great Steak,Dining,Fast Food,Great Steak,false,
+GREEN MILL,,Dining,Restaurant,Green Mill,false,
+JAVVY COFFEE,,Groceries,Coffee,Javvy Coffee,true,monthly
+LINK.COM* SIMPLEFIN,,Banking,Finance Management,SimpleFIN Bridge,true,
+MICROSOFT*14 DAY TRIAL,Microsoft 14 Day Trial,Software,Subscription,Microsoft,true,monthly
+MICROSOFT*STORE,Microsoft Store,Entertainment,App Store,Microsoft Store,false,
+MI PUEBLO,,Dining,Restaurant,Mi Pueblo,false,
+MOUTH TRAP CHEESE CURD,,Dining,Concessions,Mouth Trap Cheese Curds,false,
+OLIPHANT BREWING,,Dining,Brewery,Oliphant Brewing,false,
+RETRO MANUFACTURI,,Auto,Parts,Retro Manufacturing,false,
+SOMERSET PARTS CITY,,Auto,Parts,Somerset Parts City,false,
+SCHULTZS SPORTS BAR,Schultzs Sports Bar,Dining,Bar & Grill,Schultz's Sports Bar,false,
+SPEEDWAY,Speedway,Transportation,Gas,Speedway,false,
+SUMMER LAKES BEVERAGE,Summer Lakes Beverage,Dining,Brewery,Summer Lakes Beverage,false,
+SUMMER TUESDAY,Summer Tuesday Inc,Giving,Donation,Summer Tuesday,false,
+TRIPPY BUCK COFFEE,,Dining,Coffee,Trippy Buck Coffee,false,
+VELVET TACO,Velvet Taco,Dining,Fast Casual,Velvet Taco,false,
