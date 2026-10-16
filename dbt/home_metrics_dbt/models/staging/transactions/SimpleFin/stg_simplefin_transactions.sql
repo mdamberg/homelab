@@ -23,7 +23,7 @@ select
     trim(description) as transaction_description,
     inserted_at as inserted_at_datetime,
     payload ->> 'mcc' as merchant_category_code,
-    nullif(payload ->> 'memo', '') as memo
+    nullif(payload ->> 'memo', '') as memo,
     payload ->> 'payee' as payee,
     payload ->> 'posted' as posted,
     payload ->> 'transacted_at' as transacted_at
