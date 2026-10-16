@@ -41,11 +41,20 @@ transactions_mapped as (
         coalesce(tm.vendor_normalized, an.payee) as vendor,
         is_recurring,
         billing_cycle,
-        -- longer description_pattern = more specific match; pick rank 1 when multiple patterns match 
-        row_number() over(partition by an.transaction_pk order by length(tm.description_pattern) desc) as match_rank
+        case
+            when lower(an.payee) = lower(tm.payee) then 'payee'
+            when tm.description_pattern is not null then 'description'
+        end as match_type,
+        -- exact payee match wins; otherwise longer description_pattern = more specific match
+        row_number() over(partition by an.transaction_pk
+            order by
+                case when lower(an.payee) = lower(tm.payee) then 1 else 2 end,
+                length(tm.description_pattern) desc
+        ) as match_rank
     from account_names an
     left join category_map tm
-        on an.transaction_description ilike '%' || tm.description_pattern || '%'
+        on lower(an.payee) = lower(tm.payee)
+        or an.transaction_description ilike '%' || tm.description_pattern || '%'
 ),
 
 best_match as (
@@ -58,7 +67,6 @@ transactions_classifications as (
         case when amount > 0 then 'Income' else 'Expense' end as transaction_type
     from best_match
 )
-
 select 
     *
 from transactions_classifications

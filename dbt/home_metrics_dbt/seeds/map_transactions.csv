@@ -1,215 +1,216 @@
-description_pattern,custom_category,custom_subcategory,vendor_normalized,is_recurring,billing_cycle
-STILLWATERDENTISTRY,Health,Dentist,Still Water Modern Dentistry,false
-HLU*HULUPLUS,Streaming,Subscription,Hulu,true,monthly
-SPOTIFY USA,Streaming,Subscription,Spotify,true,monthly
-Hulu 877-8244858,Streaming,Subscription,Hulu,true,monthly
-FuboTV Inc,Streaming,Subscription,FuboTV,true,monthly
-Sling TV,Streaming,Subscription,Sling TV,true,monthly
-PLEXINC*PASS YEARLY PLEX.TV CA,Streaming,Subscription,Plex,true,yearly
-OPENAI *CHATGPT,AI,Software,OpenAI,true,monthly
-CLAUDE.AI SUBSCRIPTION ANTHROPIC.COMCA,AI,Software,Anthropic,true,monthly
-MICROSOFT*XBOX,Entertainment,Gaming,Xbox,true,monthly
-WL *STEAM,Entertainment,Gaming,Steam,false
-STEAMGAMES.COM,Entertainment,Gaming,Steam,false
-CHUCKEMEMBERSHIP,Entertainment,Family,Chuck E. Cheese,true,monthly
-WOODBURY 10 THEATRE,Entertainment,Movies,Woodbury 10 Theatre,false
-TMNA SUBSCRIPTION,Auto,Membership,Toyota,true,monthly
-NIC*VEHICLEREGRENEW,Auto,Registration,Wisconsin DMV,false
-KWIK TRIP,Transportation,Gas,Kwik Trip,false
-COSTCO GAS,Transportation,Gas,Costco Gas,false
-UBER *TRIP,Transportation,Rideshare,Uber,false
-ONSTREET,Transportation,Parking,OnStreet Parking,false
-10002N UMMC PARKING,Transportation,Parking,UMMC Parking,false
-IMPARK,Transportation,Parking,Impark,false
-COSTCO WHSE,Groceries,Wholesale,Costco,false
-WM SUPERCENTER,Groceries,Supermarket,Walmart,false
-TRADER JOE S,Groceries,Supermarket,Trader Joe's,false
-SQ *EAST VILLAGE MARKET,Groceries,Local,East Village Market,false
-TARGET,Shopping,Retail,Target,false
-THE HOME DEPOT,Shopping,Home Improvement,Home Depot,false
-HOMEDEPOT.COM,Shopping,Home Improvement,Home Depot,false
-LOWES,Shopping,Home Improvement,Lowe's,false
-HARBOR FREIGHT,Shopping,Home Improvement,Harbor Freight,false
-CABELA,Shopping,Outdoor,Cabela's,false
-SAVERS,Shopping,Thrift,Savers,false
-FLEET FARM,Shopping,Home & Farm,Fleet Farm,false
-VILLAGE LIQUOR,Shopping,Liquor,Village Liquor,false
-ZENNI OPTICAL,Shopping,Eyewear,Zenni Optical,false
-TEMU.COM,Shopping,Online,Temu,false
-TIKTOK SHOP,Shopping,Online,TikTok Shop,false
-TikTok Shop,Shopping,Online,TikTok Shop,false
-CAB STORE,Shopping,Convenience,Cab Store,false
-PLAY AGAIN SP,Shopping,Sporting Goods,Play It Again Sports,false
-MCDONALD,Dining,Fast Food,McDonald's,false
-CHICK-FIL-A,Dining,Fast Food,Chick-fil-A,false
-CULVERS,Dining,Fast Food,Culver's,false
-LITTLE CAESARS,Dining,Fast Food,Little Caesars,false
-DOMINO,Dining,Delivery,Domino's,false
-UBER *EATS,Dining,Delivery,Uber Eats,false
-CHIPOTLE,Dining,Fast Casual,Chipotle,false
-TST* CARIBOU COFFEE,Dining,Coffee,Caribou Coffee,false
-DUNN BROTHERS COFFEE,Dining,Coffee,Dunn Brothers,false
-SQ *WHEELHOUSE COFFEE,Dining,Coffee,Wheelhouse Coffee,false
-SPORTSMAN,Dining,Bar & Grill,Sportsman's Bar & Grill,false
-SHANGHAI HENRI,Dining,Restaurant,Shanghai Henri's,false
-EDGY EATS,Dining,Restaurant,Edgy Eats,false
-TST*TAQUERIA 10 DE 10,Dining,Restaurant,Taqueria 10 de 10,false
-SQ *DIPSY,Dining,Restaurant,Dipsy,false
-ALOFT AUSTIN,Dining,Hotel,Aloft Austin,false
-MIDWEST NATURAL GAS,Utilities,Natural Gas,Midwest Natural Gas,true,monthly
-MIDWEST NG SERVICEFEE,Utilities,Natural Gas,Midwest Natural Gas,true,monthly
-XCEL ENERGY-WI XCELENERGY,Utilities,Electric,XCEL Energy,true,monthly
-ALLPAID*SOMERSET,Utilities,Municipal,Somerset Utilities,true,monthly
-ALLPAID*VILLAGE OF SOMERS,Utilities,Municipal,Somerset Village,true,monthly
-City of Hudson,Utilities,Municipal,City of Hudson,true,monthly
-PROGRESSIVE,Insurance,Auto,Progressive,true,biannually
-AUTO-OWNERS INSURANCE,Insurance,Auto,Auto-Owners,true,biannually
-HUNTINGTON NAT'L MTG PMTS,Mortgage,Home Expenses,Huntington Nat. Mortgage,true,monthly
-DEPT EDUCATION STUDENT LN,Student Loan,Monthly Payment,Dept of Education Std Ln,true,monthly
-SUVIDA HEALTHCAR PAYROLL,Income,Paycheck,Suvida,true,bi-monthly
-ANDREW RESIDENCE DIRECT DEP,Income,Paycheck,Andrew Residence,true,bi-monthly
-MOBILE DEPOSIT,Income,Check Deposit,Wells Fargo,false
-INTEREST CHARGE ON PURCHASES,Banking,Fee,Credit Card Interest,false
-LATE FEE,Banking,Fee,Late Fee,false
-ADJUSTMENT-PURCHASES,Banking,Adjustment,Credit Card Adjustment,false
-OVERDRAFT PROTECTION XFER,Banking,Transfer,Overdraft Protection,false
-AUTOMATIC PAYMENT - THANK YOU,Banking,Payment,Auto-Pay,false
-ONLINE PAYMENT THANK YOU,Banking,Payment,Online Payment,false
-ATM WITHDRAWAL,Banking,ATM Withdrawal,ATM Withdrawal,false
-CHECK,Banking,Check,Check,false
-THE UPS STORE,Services,Shipping,UPS Store,false
-PROPERTYREC.COM,Services,Records,PropertyRec,false
-INTUIT *TURBOTAX,Services,Tax,TurboTax,false
-MARRIOTT,Travel,Hotel,Marriott,false
-GILLETTE CHILDRENS,Healthcare,PT/OT,Gillette Children's Hospital,false
-216 HARDEES HINCKLEY,Dining,Restaurant,Hardees,false
-MAIN STREET PIZZA,Dining,Restaurant,Main Street Pizza,false
-ATM WITHDRAWAL AUTHORIZED,Banking,ATM Withdrawal,ATM Withdrawal,false
-WM SUPERCENTER,Shopping,Retail,Walmart,false,
-AUSTIN AIRPORT-RETAIL ,Shopping,Retail,Austin Airport,false
-P TERRYS BURGER STAND,Dining,Restaurant,P Terry's Burger Stand,false
-MILLER BROTHERS AUTO,Auto,Vehicle Maintenance,Miller Brothers Auto,false
-TST* BISCUITS CAFE,Dining,Restaurant,Biscuits Cafe,false
-CIRCLE K,Transportation,Gas,Circle K,false
-SHEIN,Shopping,Online,Shein,false
-ENDLESS POXYBILI,Shopping,Home Improvement,Endless Poxybilities,false
-BUSINESS TO BUSINESS ACH Rocket,Banking,Finance Management,Rocket Money,false
-NWCOMM BILLPAY,Utilities,Internet,Northwest Communications,true,monthly
-LUNA CAFE,Dining,Cafe,Luna Cafe,false
-EL LORO MEXICAN,Dining,Restaurant,El Loro Mexican,false
-OLIVY & IVY,Dining,Restaurant,Olive & Ivy,false
-BUFFALO WILD,Dining,Bar & Grill,Buffalo Wild Wings,false
-NOTHING BUNDT CAKES,Dining,Bakery,Nothing Bundt Cakes,false
-DARWIN 'S PUB,Dining,Bar & Grill,Darwin's Pub,false
-TACODELI,Dining,Restaurant,Tacodeli,false
-FAIRVIEW CAFE,Dining,Cafe,Fairview Cafe,false
-FAIRVIEW COFFEE,Dining,Coffee,Fairview Coffee,false
-FINNISH BISTRO,Dining,Restaurant,Finnish Bistro,false
-SAMMYS PIZZA,Dining,Restaurant,Sammy's Pizza,false
-BRICKS NEAPOLITAN PIZZA,Dining,Restaurant,Bricks Neapolitan Pizza,false
-ANDUZZI,Dining,Bar & Grill,Anduzzi's Sports Club,false
-EJS PIZZERIA,Dining,Restaurant,EJ's Pizzeria,false
-AGAVE KITCHEN,Dining,Restaurant,Agave Kitchen,false
-EL SOL MEXICAN,Dining,Restaurant,El Sol Mexican Food,false
-TOMATILLO MEXICAN,Dining,Restaurant,Tomatillo Mexican Cuisine,false
-NICOS TACOS,Dining,Restaurant,Nicos Tacos,false
-MAXWELLS,Dining,Restaurant,Maxwell's American Grill,false
-KPOT KOREAN BBQ,Dining,Restaurant,KPOT Korean BBQ,false
-MELLOW MUSHROOM,Dining,Restaurant,Mellow Mushroom,false
-FIRST WATCH,Dining,Restaurant,First Watch,false
-BUTTERS PANCAKES,Dining,Restaurant,Butters Pancakes & Cafe,false
-OVER EASY,Dining,Restaurant,Over Easy,false
-STARR 'S BAR,Dining,Bar & Grill,Starr's Bar & Grill,false
-DUNKIN,Dining,Coffee,Dunkin',false
-BURKELS,Dining,Bar & Grill,Burkel's One Block Over,false
-3RD ACT BREWERY,Dining,Brewery,3rd Act Brewery,false
-BAD WEATHER BREWING,Dining,Brewery,Bad Weather Brewing,false
-THE HANGAR,Dining,Bar & Grill,The Hangar,false
-DAIRY QUEEN,Dining,Fast Food,Dairy Queen,false
-TACO BELL,Dining,Fast Food,Taco Bell,false
-WENDY S,Dining,Fast Food,Wendy's,false
-PANDA EXPRESS,Dining,Fast Food,Panda Express,false
-JIMMY JOHNS,Dining,Fast Food,Jimmy John's,false
-STARBUCKS,Dining,Coffee,Starbucks,false
-GB FOOTBALL VEND,Dining,Concessions,Green Bay Football,false
-USBS CONCESSIONS,Dining,Concessions,US Bank Stadium,false
-CUB FOODS,Groceries,Supermarket,Cub Foods,false
-WAL-MART,Groceries,Supermarket,Walmart,false
-WALMART.COM,Shopping,Online,Walmart,false
-DOLLAR GENERAL,Groceries,Discount,Dollar General,false
-7-ELEVEN,Groceries,Convenience,7-Eleven,false
-AUSTIN CITY MARKET,Groceries,Convenience,Austin City Market,false
-AMOCO,Transportation,Gas,Amoco,false
-EXXON,Transportation,Gas,Exxon,false
-HOLIDAY STATIONS,Transportation,Gas,Holiday Stationstores,false
-CIRCLEK,Transportation,Gas,Circle K,false
-AMERICAN AI,Travel,Airfare,American Airlines,false
-STADIUM RAMP,Transportation,Parking,Stadium Ramp,false
-WTC RAMP,Transportation,Parking,WTC Ramp,false
-MN STATE FAIR-PARKING,Transportation,Parking,MN State Fair Parking,false
-U-HAUL,Transportation,Truck Rental,U-Haul,false
-AGILITE,Shopping,Outdoor,Agilite,false
-OPTICSPLANET,Shopping,Outdoor,OpticsPlanet,false
-PRIMARY ARMS,Shopping,Outdoor,Primary Arms,false
-BRAVO COMPANY,Shopping,Outdoor,Bravo Company USA,false
-BILLS GUN SHOP,Shopping,Outdoor,Bills Gun Shop & Range,false
-HUDSON ROD GUN ARCHERY,Shopping,Outdoor,Hudson Rod Gun Archery,false
-UPLIFT DESK,Shopping,Furniture,Uplift Desk,false
-KOHL,Shopping,Retail,Kohl's,false
-TJMAXX,Shopping,Retail,TJ Maxx,false
-MENARDS,Shopping,Home Improvement,Menards,false
-BESTBUY,Shopping,Electronics,Best Buy,false
-DHGATE,Shopping,Online,DHgate,false
-PRINTERVAL,Shopping,Online,Printerval,false
-BUBBLYDOO,Shopping,Online,Bubblydoo,false
-NFLSHOP,Shopping,Online,NFL Shop,false
-LIBRIO,Shopping,Online,Librio,false
-SHEIN.COM,Shopping,Online,Shein,false
-AMAZON MKTPL,Shopping,Online,Amazon,false
-AMZN Mktp,Shopping,Online,Amazon,false
-Amazon.com,Shopping,Online,Amazon,false
-AMAZON RETA,Shopping,Online,Amazon,false
-AMAZON PRIME,Shopping,Subscription,Amazon Prime,false
-Audible,Entertainment,Audiobooks,Audible,true,monthly
-Prime Video,Entertainment,Streaming,Prime Video,false
-APPLE.COM/BI,Entertainment,App Store,Apple,false
-DISNEY PLUS,Streaming,Subscription,Disney+,true,monthly
-SLING.COM,Streaming,Subscription,Sling TV,true,monthly
-FORTNITE,Entertainment,Gaming,Fortnite,false
-HOUSE OF COMEDY,Entertainment,Comedy Club,House of Comedy,false
-MEDIEVAL TIMES,Entertainment,Attractions,Medieval Times,false
-WOODBURY 10 THEATER,Entertainment,Movies,Woodbury 10 Theatre,false
-CINEMARK,Entertainment,Movies,Cinemark,false
-MN CHILDREN,Entertainment,Attractions,MN Children's Museum,false
-CHUCK E CHEESE,Entertainment,Family,Chuck E. Cheese,false
-MINNESOTA ZOO,Entertainment,Attractions,Minnesota Zoo,false
-NORTON,Software,Security,Norton,true,yearly
-PRIVATEINTERNETACCESS,Software,VPN,Private Internet Access,true,yearly
-SUVIDA HEALTHCAR BVC,Healthcare,Medical,Suvida Healthcare,false
-HEALTHPARTNERS PHARMACY,Healthcare,Pharmacy,HealthPartners,false
-FAIRVIEW MYCHART,Healthcare,Medical,Fairview,false
-CORDBLOOD REGISTRY,Healthcare,Cord Blood,Cord Blood Registry,false
-VISIONWORKS,Healthcare,Vision,Visionworks,false
-HAUS OF FADES,Personal Care,Haircut,Haus of Fades,false
-USPS CHANGE OF ADDRESS,Services,Postal,USPS,false
-STONE AND LEAF,Services,Landscaping,Stone and Leaf Landscaping,false
-E & M RED LION,Shopping,Liquor,E&M Red Lion Liquors,false
-TRAVELERS PER INSUR,Insurance,Personal,Travelers,true,annually
-FAIRVIEW COBRA,Insurance,Health,Fairview COBRA,true,monthly
-NIC*VEHICLEREGRENE,Auto,Registration,Wisconsin DMV,false
-PERSHING BROKERAGE,Investments,Brokerage,Pershing,false
-GOFUNDME,Giving,Donation,GoFundMe,false
-IRS TREAS 310,Taxes,Federal Tax,IRS,false
-WI DEPT REVENUE,Taxes,State Tax,Wisconsin DOR,false
-MN DEPT OF REVEN,Taxes,State Tax,Minnesota DOR,false
-STCROIXCOWITAX,Taxes,Property Tax,St Croix County,false
-VENMO,Banking,Peer Transfer,Venmo,false
-APPLE CASH SENT,Banking,Peer Transfer,Apple Cash,false
-LAST STATEMENT BAL,Banking,Statement,Statement Balance,false
-MONTHLY SERVICE FEE,Banking,Fee,Monthly Service Fee,false
-MINIMUM INTEREST CHARGE,Banking,Fee,Interest Charge,false
-eDeposit in Branch,Banking,Deposit,Branch Deposit,false
-Fairview Health,Income,Paycheck,Fairview Health,true,bi-monthly
-LUNAMED HOLDINGS,Income,Reimbursement,Lunamed Holdings,false
-PEOPLE CENTER,Income,Payment,People Center,false
-ST CROIX KIDS,Income,Payment,St Croix Kids,false
+description_pattern,payee,custom_category,custom_subcategory,vendor_normalized,is_recurring,billing_cycle
+STILLWATERDENTISTRY,,Health,Dentist,Still Water Modern Dentistry,false,
+HLU*HULUPLUS,,Streaming,Subscription,Hulu,true,monthly
+SPOTIFY USA,Spotify,Streaming,Subscription,Spotify,true,monthly
+Hulu 877-8244858,,Streaming,Subscription,Hulu,true,monthly
+FuboTV Inc,fuboTV,Streaming,Subscription,FuboTV,true,monthly
+Sling TV,Sling TV,Streaming,Subscription,Sling TV,true,monthly
+PLEXINC*PASS YEARLY PLEX.TV CA,,Streaming,Subscription,Plex,true,yearly
+OPENAI *CHATGPT,OpenAI,AI,Software,OpenAI,true,monthly
+CLAUDE.AI SUBSCRIPTION ANTHROPIC.COMCA,,AI,Software,Anthropic,true,monthly
+MICROSOFT*XBOX,,Entertainment,Gaming,Xbox,true,monthly
+WL *STEAM,,Entertainment,Gaming,Steam,false,
+STEAMGAMES.COM,Steam,Entertainment,Gaming,Steam,false,
+CHUCKEMEMBERSHIP,Chuckemembership Funpa,Entertainment,Family,Chuck E. Cheese,true,monthly
+WOODBURY 10 THEATRE,,Entertainment,Movies,Woodbury 10 Theatre,false,
+TMNA SUBSCRIPTION,Toyota Connected Services Plan Subscription,Auto,Membership,Toyota,true,monthly
+NIC*VEHICLEREGRENEW,,Auto,Registration,Wisconsin DMV,false,
+KWIK TRIP,Kwik Trip,Transportation,Gas,Kwik Trip,false,
+COSTCO GAS,,Transportation,Gas,Costco Gas,false,
+UBER *TRIP,Uber,Transportation,Rideshare,Uber,false,
+ONSTREET,,Transportation,Parking,OnStreet Parking,false,
+10002N UMMC PARKING,N Ummc Parking,Transportation,Parking,UMMC Parking,false,
+IMPARK,impark,Transportation,Parking,Impark,false,
+COSTCO WHSE,Costco,Groceries,Wholesale,Costco,false,
+WM SUPERCENTER,,Groceries,Supermarket,Walmart,false,
+TRADER JOE S,,Groceries,Supermarket,Trader Joe's,false,
+SQ *EAST VILLAGE MARKET,,Groceries,Local,East Village Market,false,
+TARGET,Target,Shopping,Retail,Target,false,
+THE HOME DEPOT,The Home Depot,Shopping,Home Improvement,Home Depot,false,
+HOMEDEPOT.COM,,Shopping,Home Improvement,Home Depot,false,
+LOWES,Lowe's,Shopping,Home Improvement,Lowe's,false,
+HARBOR FREIGHT,,Shopping,Home Improvement,Harbor Freight,false,
+CABELA,,Shopping,Outdoor,Cabela's,false,
+SAVERS,,Shopping,Thrift,Savers,false,
+FLEET FARM,Fleet Farm,Shopping,Home & Farm,Fleet Farm,false,
+VILLAGE LIQUOR,,Shopping,Liquor,Village Liquor,false,
+ZENNI OPTICAL,,Shopping,Eyewear,Zenni Optical,false,
+TEMU.COM,,Shopping,Online,Temu,false,
+TIKTOK SHOP,TikTok Shop,Shopping,Online,TikTok Shop,false,
+TikTok Shop,,Shopping,Online,TikTok Shop,false,
+CAB STORE,,Shopping,Convenience,Cab Store,false,
+PLAY AGAIN SP,,Shopping,Sporting Goods,Play It Again Sports,false,
+MCDONALD,,Dining,Fast Food,McDonald's,false,
+CHICK-FIL-A,Chick-fil-A,Dining,Fast Food,Chick-fil-A,false,
+CULVERS,,Dining,Fast Food,Culver's,false,
+LITTLE CAESARS,,Dining,Fast Food,Little Caesars,false,
+DOMINO,Domino's,Dining,Delivery,Domino's,false,
+UBER *EATS,Uber Eats,Dining,Delivery,Uber Eats,false,
+CHIPOTLE,,Dining,Fast Casual,Chipotle,false,
+TST* CARIBOU COFFEE,Caribou Coffee,Dining,Coffee,Caribou Coffee,false,
+DUNN BROTHERS COFFEE,,Dining,Coffee,Dunn Brothers,false,
+SQ *WHEELHOUSE COFFEE,,Dining,Coffee,Wheelhouse Coffee,false,
+SPORTSMAN,Sportsman's Bar & Grill,Dining,Bar & Grill,Sportsman's Bar & Grill,false,
+SHANGHAI HENRI,,Dining,Restaurant,Shanghai Henri's,false,
+EDGY EATS,Edgy Eats,Dining,Restaurant,Edgy Eats,false,
+TST*TAQUERIA 10 DE 10,Taqueria De,Dining,Restaurant,Taqueria 10 de 10,false,
+SQ *DIPSY,,Dining,Restaurant,Dipsy,false,
+ALOFT AUSTIN,Aloft Hotels,Dining,Hotel,Aloft Austin,false,
+MIDWEST NATURAL GAS,Midwest Natural Gas,Utilities,Natural Gas,Midwest Natural Gas,true,monthly
+MIDWEST NG SERVICEFEE,Midwest Servicefee,Utilities,Natural Gas,Midwest Natural Gas,true,monthly
+XCEL ENERGY-WI XCELENERGY,,Utilities,Electric,XCEL Energy,true,monthly
+ALLPAID*SOMERSET,Allpaid Somerset Utilities,Utilities,Municipal,Somerset Utilities,true,monthly
+ALLPAID*VILLAGE OF SOMERS,,Utilities,Municipal,Somerset Village,true,monthly
+Somerset Utility Bill,,Utilities,Municipal,Somerset Village,true,monthly
+City of Hudson,,Utilities,Municipal,City of Hudson,true,monthly
+PROGRESSIVE,Progressive,Insurance,Auto,Progressive,true,biannually
+AUTO-OWNERS INSURANCE,,Insurance,Auto,Auto-Owners,true,biannually
+HUNTINGTON NAT'L MTG PMTS,Huntington Bank,Mortgage,Home Expenses,Huntington Nat. Mortgage,true,monthly
+DEPT EDUCATION STUDENT LN,,Student Loan,Monthly Payment,Dept of Education Std Ln,true,monthly
+SUVIDA HEALTHCAR PAYROLL,,Income,Paycheck,Suvida,true,bi-monthly
+ANDREW RESIDENCE DIRECT DEP,,Income,Paycheck,Andrew Residence,true,bi-monthly
+MOBILE DEPOSIT,Mobile Deposit,Income,Check Deposit,Wells Fargo,false,
+INTEREST CHARGE ON PURCHASES,,Banking,Fee,Credit Card Interest,false,
+LATE FEE,,Banking,Fee,Late Fee,false,
+ADJUSTMENT-PURCHASES,,Banking,Adjustment,Credit Card Adjustment,false,
+OVERDRAFT PROTECTION XFER,,Banking,Transfer,Overdraft Protection,false,
+AUTOMATIC PAYMENT - THANK YOU,,Banking,Payment,Auto-Pay,false,
+ONLINE PAYMENT THANK YOU,Payment,Banking,Payment,Online Payment,false,
+ATM WITHDRAWAL,,Banking,ATM Withdrawal,ATM Withdrawal,false,
+CHECK,,Banking,Check,Check,false,
+THE UPS STORE,,Services,Shipping,UPS Store,false,
+PROPERTYREC.COM,,Services,Records,PropertyRec,false,
+INTUIT *TURBOTAX,,Services,Tax,TurboTax,false,
+MARRIOTT,,Travel,Hotel,Marriott,false,
+GILLETTE CHILDRENS,,Healthcare,PT/OT,Gillette Children's Hospital,false,
+216 HARDEES HINCKLEY,Hardee's,Dining,Restaurant,Hardees,false,
+MAIN STREET PIZZA,Main Street Pizza Star,Dining,Restaurant,Main Street Pizza,false,
+ATM WITHDRAWAL AUTHORIZED,,Banking,ATM Withdrawal,ATM Withdrawal,false,
+WM SUPERCENTER,,Shopping,Retail,Walmart,false,
+AUSTIN AIRPORT-RETAIL ,,Shopping,Retail,Austin Airport,false,
+P TERRYS BURGER STAND,,Dining,Restaurant,P Terry's Burger Stand,false,
+MILLER BROTHERS AUTO,,Auto,Vehicle Maintenance,Miller Brothers Auto,false,
+TST* BISCUITS CAFE,,Dining,Restaurant,Biscuits Cafe,false,
+CIRCLE K,,Transportation,Gas,Circle K,false,
+SHEIN,,Shopping,Online,Shein,false,
+ENDLESS POXYBILI,,Shopping,Home Improvement,Endless Poxybilities,false,
+BUSINESS TO BUSINESS ACH Rocket,Rocket Money Premium,Banking,Finance Management,Rocket Money,false,
+NWCOMM BILLPAY,Nwcomm Northwest Commu Matthew W Damberg,Utilities,Internet,Northwest Communications,true,monthly
+LUNA CAFE,Luna Cafe,Dining,Cafe,Luna Cafe,false,
+EL LORO MEXICAN,El Loro Mexican,Dining,Restaurant,El Loro Mexican,false,
+OLIVY & IVY,,Dining,Restaurant,Olive & Ivy,false,
+BUFFALO WILD,,Dining,Bar & Grill,Buffalo Wild Wings,false,
+NOTHING BUNDT CAKES,,Dining,Bakery,Nothing Bundt Cakes,false,
+DARWIN 'S PUB,,Dining,Bar & Grill,Darwin's Pub,false,
+TACODELI,,Dining,Restaurant,Tacodeli,false,
+FAIRVIEW CAFE,,Dining,Cafe,Fairview Cafe,false,
+FAIRVIEW COFFEE,Fairview Coffee,Dining,Coffee,Fairview Coffee,false,
+FINNISH BISTRO,,Dining,Restaurant,Finnish Bistro,false,
+SAMMYS PIZZA,Sammys Pizza,Dining,Restaurant,Sammy's Pizza,false,
+BRICKS NEAPOLITAN PIZZA,,Dining,Restaurant,Bricks Neapolitan Pizza,false,
+ANDUZZI,,Dining,Bar & Grill,Anduzzi's Sports Club,false,
+EJS PIZZERIA,,Dining,Restaurant,EJ's Pizzeria,false,
+AGAVE KITCHEN,,Dining,Restaurant,Agave Kitchen,false,
+EL SOL MEXICAN,,Dining,Restaurant,El Sol Mexican Food,false,
+TOMATILLO MEXICAN,,Dining,Restaurant,Tomatillo Mexican Cuisine,false,
+NICOS TACOS,,Dining,Restaurant,Nicos Tacos,false,
+MAXWELLS,,Dining,Restaurant,Maxwell's American Grill,false,
+KPOT KOREAN BBQ,,Dining,Restaurant,KPOT Korean BBQ,false,
+MELLOW MUSHROOM,,Dining,Restaurant,Mellow Mushroom,false,
+FIRST WATCH,,Dining,Restaurant,First Watch,false,
+BUTTERS PANCAKES,,Dining,Restaurant,Butters Pancakes & Cafe,false,
+OVER EASY,,Dining,Restaurant,Over Easy,false,
+STARR 'S BAR,,Dining,Bar & Grill,Starr's Bar & Grill,false,
+DUNKIN,,Dining,Coffee,Dunkin',false,
+BURKELS,,Dining,Bar & Grill,Burkel's One Block Over,false,
+3RD ACT BREWERY,,Dining,Brewery,3rd Act Brewery,false,
+BAD WEATHER BREWING,Bad Weather Brewing,Dining,Brewery,Bad Weather Brewing,false,
+THE HANGAR,,Dining,Bar & Grill,The Hangar,false,
+DAIRY QUEEN,,Dining,Fast Food,Dairy Queen,false,
+TACO BELL,Taco Bell,Dining,Fast Food,Taco Bell,false,
+WENDY S,Wendy's,Dining,Fast Food,Wendy's,false,
+PANDA EXPRESS,Panda Express,Dining,Fast Food,Panda Express,false,
+JIMMY JOHNS,Jimmy John's,Dining,Fast Food,Jimmy John's,false,
+STARBUCKS,,Dining,Coffee,Starbucks,false,
+GB FOOTBALL VEND,,Dining,Concessions,Green Bay Football,false,
+USBS CONCESSIONS,,Dining,Concessions,US Bank Stadium,false,
+CUB FOODS,,Groceries,Supermarket,Cub Foods,false,
+WAL-MART,Walmart,Groceries,Supermarket,Walmart,false,
+WALMART.COM,,Shopping,Online,Walmart,false,
+DOLLAR GENERAL,Dollar General,Groceries,Discount,Dollar General,false,
+7-ELEVEN,,Groceries,Convenience,7-Eleven,false,
+AUSTIN CITY MARKET,,Groceries,Convenience,Austin City Market,false,
+AMOCO,,Transportation,Gas,Amoco,false,
+EXXON,,Transportation,Gas,Exxon,false,
+HOLIDAY STATIONS,,Transportation,Gas,Holiday Stationstores,false,
+CIRCLEK,Circlek,Transportation,Gas,Circle K,false,
+AMERICAN AI,,Travel,Airfare,American Airlines,false,
+STADIUM RAMP,,Transportation,Parking,Stadium Ramp,false,
+WTC RAMP,Ramp Allied,Transportation,Parking,WTC Ramp,false,
+MN STATE FAIR-PARKING,,Transportation,Parking,MN State Fair Parking,false,
+U-HAUL,,Transportation,Truck Rental,U-Haul,false,
+AGILITE,,Shopping,Outdoor,Agilite,false,
+OPTICSPLANET,,Shopping,Outdoor,OpticsPlanet,false,
+PRIMARY ARMS,,Shopping,Outdoor,Primary Arms,false,
+BRAVO COMPANY,,Shopping,Outdoor,Bravo Company USA,false,
+BILLS GUN SHOP,,Shopping,Outdoor,Bills Gun Shop & Range,false,
+HUDSON ROD GUN ARCHERY,,Shopping,Outdoor,Hudson Rod Gun Archery,false,
+UPLIFT DESK,,Shopping,Furniture,Uplift Desk,false,
+KOHL,,Shopping,Retail,Kohl's,false,
+TJMAXX,,Shopping,Retail,TJ Maxx,false,
+MENARDS,Menards,Shopping,Home Improvement,Menards,false,
+BESTBUY,,Shopping,Electronics,Best Buy,false,
+DHGATE,,Shopping,Online,DHgate,false,
+PRINTERVAL,Printerval.com,Shopping,Online,Printerval,false,
+BUBBLYDOO,,Shopping,Online,Bubblydoo,false,
+NFLSHOP,,Shopping,Online,NFL Shop,false,
+LIBRIO,,Shopping,Online,Librio,false,
+SHEIN.COM,Shein,Shopping,Online,Shein,false,
+AMAZON MKTPL,Amazon,Shopping,Online,Amazon,false,
+AMZN Mktp,,Shopping,Online,Amazon,false,
+Amazon.com,,Shopping,Online,Amazon,false,
+AMAZON RETA,,Shopping,Online,Amazon,false,
+AMAZON PRIME,Amazon Prime Membership,Shopping,Subscription,Amazon Prime,false,
+Audible,,Entertainment,Audiobooks,Audible,true,monthly
+Prime Video,,Entertainment,Streaming,Prime Video,false,
+APPLE.COM/BI,Apple,Entertainment,App Store,Apple,false,
+DISNEY PLUS,,Streaming,Subscription,Disney+,true,monthly
+SLING.COM,,Streaming,Subscription,Sling TV,true,monthly
+FORTNITE,,Entertainment,Gaming,Fortnite,false,
+HOUSE OF COMEDY,House of Comedy,Entertainment,Comedy Club,House of Comedy,false,
+MEDIEVAL TIMES,,Entertainment,Attractions,Medieval Times,false,
+WOODBURY 10 THEATER,,Entertainment,Movies,Woodbury 10 Theatre,false,
+CINEMARK,,Entertainment,Movies,Cinemark,false,
+MN CHILDREN,The Children's Museum,Entertainment,Attractions,MN Children's Museum,false,
+CHUCK E CHEESE,,Entertainment,Family,Chuck E. Cheese,false,
+MINNESOTA ZOO,,Entertainment,Attractions,Minnesota Zoo,false,
+NORTON,Norton,Software,Security,Norton,true,yearly
+PRIVATEINTERNETACCESS,,Software,VPN,Private Internet Access,true,yearly
+SUVIDA HEALTHCAR BVC,,Healthcare,Medical,Suvida Healthcare,false,
+HEALTHPARTNERS PHARMACY,HealthPartners,Healthcare,Pharmacy,HealthPartners,false,
+FAIRVIEW MYCHART,,Healthcare,Medical,Fairview,false,
+CORDBLOOD REGISTRY,Cordblood Registry,Healthcare,Cord Blood,Cord Blood Registry,false,
+VISIONWORKS,Visionworks,Healthcare,Vision,Visionworks,false,
+HAUS OF FADES,Haus of Fades Somerset Wi,Personal Care,Haircut,Haus of Fades,false,
+USPS CHANGE OF ADDRESS,,Services,Postal,USPS,false,
+STONE AND LEAF,Stone and Leaf Landscsomerset Wi,Services,Landscaping,Stone and Leaf Landscaping,false,
+E & M RED LION,,Shopping,Liquor,E&M Red Lion Liquors,false,
+TRAVELERS PER INSUR,,Insurance,Personal,Travelers,true,annually
+FAIRVIEW COBRA,,Insurance,Health,Fairview COBRA,true,monthly
+NIC*VEHICLEREGRENE,,Auto,Registration,Wisconsin DMV,false,
+PERSHING BROKERAGE,,Investments,Brokerage,Pershing,false,
+GOFUNDME,,Giving,Donation,GoFundMe,false,
+IRS TREAS 310,,Taxes,Federal Tax,IRS,false,
+WI DEPT REVENUE,Wisconsin Department of Revenue,Taxes,State Tax,Wisconsin DOR,false,
+MN DEPT OF REVEN,,Taxes,State Tax,Minnesota DOR,false,
+STCROIXCOWITAX,,Taxes,Property Tax,St Croix County,false,
+VENMO,Transfer to Venmo,Banking,Peer Transfer,Venmo,false,
+APPLE CASH SENT,,Banking,Peer Transfer,Apple Cash,false,
+LAST STATEMENT BAL,,Banking,Statement,Statement Balance,false,
+MONTHLY SERVICE FEE,,Banking,Fee,Monthly Service Fee,false,
+MINIMUM INTEREST CHARGE,,Banking,Fee,Interest Charge,false,
+eDeposit in Branch,,Banking,Deposit,Branch Deposit,false,
+Fairview Health,,Income,Paycheck,Fairview Health,true,bi-monthly
+LUNAMED HOLDINGS,,Income,Reimbursement,Lunamed Holdings,false,
+PEOPLE CENTER,,Income,Payment,People Center,false,
+ST CROIX KIDS,,Income,Payment,St Croix Kids,false,
