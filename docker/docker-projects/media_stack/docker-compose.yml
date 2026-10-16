@@ -22,11 +22,22 @@ services:
       - VPN_TYPE=openvpn
       - OPENVPN_USER=${OPENVPN_USER}
       - OPENVPN_PASSWORD=${OPENVPN_PASSWORD}
-      - SERVER_REGIONS=US California
+      # PIA has no port forwarding on US servers; without it qBittorrent can't accept
+      # incoming peers and low-seed torrents stall. Canadian regions support it.
+      - SERVER_REGIONS=CA Toronto,CA Ontario,CA Montreal,CA Vancouver
+      - PORT_FORWARD_ONLY=true
+      - VPN_PORT_FORWARDING=on
+      # The forwarded port changes on every reconnect; push it into qBittorrent's listen port
+      # via its WebUI API (requires qBittorrent's "bypass auth for localhost").
+      # DOWN resets the port to work around a qBittorrent bug where forwarding doesn't resume.
+      - VPN_PORT_FORWARDING_UP_COMMAND=/bin/sh -c 'wget -O- -nv --retry-connrefused --post-data "json={\"listen_port\":{{PORT}},\"current_network_interface\":\"{{VPN_INTERFACE}}\",\"random_port\":false,\"upnp\":false}" http://127.0.0.1:8080/api/v2/app/setPreferences'
+      - VPN_PORT_FORWARDING_DOWN_COMMAND=/bin/sh -c 'wget -O- -nv --retry-connrefused --post-data "json={\"listen_port\":0,\"current_network_interface\":\"lo\"}" http://127.0.0.1:8080/api/v2/app/setPreferences'
       - TZ=${TZ}
       # Allows Radarr/Sonarr/Prowlarr to reach qBittorrent on the local Docker network
-      # and lets qBittorrent reach local LAN (10.x) and private ranges
-      - FIREWALL_OUTBOUND_SUBNETS=192.168.0.0/16,10.0.0.0/8,172.16.0.0/12
+      # and lets qBittorrent reach the local LAN (10.0.0.x) and private ranges.
+      # Keep the LAN entry narrow: a 10.0.0.0/8 route would send PIA's in-tunnel
+      # port forwarding API (10.x.x.1) out eth0 instead of tun0 and break forwarding.
+      - FIREWALL_OUTBOUND_SUBNETS=192.168.0.0/16,10.0.0.0/24,172.16.0.0/12
     volumes:
       - C:/media/config/gluetun:/gluetun
     healthcheck:
