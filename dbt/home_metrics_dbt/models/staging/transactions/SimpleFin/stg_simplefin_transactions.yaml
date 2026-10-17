@@ -7,7 +7,7 @@ models:
       raw_simplefin_transactions. Light renaming plus fields pulled out of the
       JSON payload. Grain: one row per posted transaction (account_id + transaction_id).
     columns:
-      - name: transaction_pk
+      - name: transaction_skey
         description: The unique hash identifier that combines account_id and transaction_id
         tests:
           - unique
@@ -16,6 +16,8 @@ models:
         description: a unique key representing each date.
       - name: account_id
         description: "SimpleFIN account identifier (opaque Bridge id, not the bank account number)"
+      - name: transaction_date
+        description: "the date of that specific transaction"
       - name: transaction_id
         description: "SimpleFIN transaction identifier; unique only within an account, so pair it with account_id"
       - name: institution_name

@@ -13,10 +13,11 @@ with stg_transactions as (
 ),
 account_names as (
     select
-        st.transaction_pk,
+        st.transaction_skey,
         st.date_key,
         st.account_id,
         st.transaction_id,
+        st.transaction_date, 
         st.transaction_description,
         st.amount,
         st.institution_name,
@@ -46,7 +47,7 @@ transactions_mapped as (
             when tm.description_pattern is not null then 'description'
         end as match_type,
         -- exact payee match wins; otherwise longer description_pattern = more specific match
-        row_number() over(partition by an.transaction_pk
+        row_number() over(partition by an.transaction_skey
             order by
                 case when lower(an.payee) = lower(tm.payee) then 1 else 2 end,
                 length(tm.description_pattern) desc

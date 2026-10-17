@@ -1,0 +1,111 @@
+models:
+  - name: fct_simplefin_transactions
+    description: "One row per posted SimpleFIN transaction with normalized account names and custom category mapping"
+    meta:
+      hidden: true
+    columns:
+      - name: transaction_skey
+        description: "Surrogate key from account_id + transaction_id"
+        tests:
+          - unique
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: transaction_date
+        description: "Date the transaction occurred"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: transaction_id
+        description: "SimpleFIN transaction identifier; unique only within an account"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: description_pattern
+        description: "map_transactions pattern of the winning mapping row; null when unmapped"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_name
+        description: "Clean account name from map_financial_accounts"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_owner
+        description: "Account owner from map_financial_accounts"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_id
+        description: "SimpleFIN account identifier (opaque Bridge id, not the bank account number)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_last_four
+        description: "Last four digits of the account number"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: institution_name
+        description: "Bank the account belongs to (e.g. Wells Fargo)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: payee
+        description: "Payee or merchant name as cleaned up by SimpleFIN"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: amount
+        description: "Signed transaction amount; negative is money out, positive is money in"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: transaction_type
+        description: "Income when amount is positive, otherwise Expense"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: merchant_category_code
+        description: "Merchant category code (4-digit card network code); null for non-card activity"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: custom_category
+        description: "Category from map_transactions; null when unmapped"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: custom_subcategory
+        description: "Subcategory from map_transactions; null when unmapped"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: is_recurring
+        description: "Whether the transaction is recurring per map_transactions"
+        config:
+          meta:
+            dimension:
+              type: boolean
+      - name: billing_cycle
+        description: "Billing cycle for recurring charges per map_transactions (e.g. monthly)"
+        config:
+          meta:
+            dimension:
+              type: string

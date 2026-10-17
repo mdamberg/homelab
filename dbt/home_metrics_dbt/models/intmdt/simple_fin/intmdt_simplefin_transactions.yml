@@ -25,6 +25,12 @@ models:
           meta:
             dimension:
               type: string
+      - name: transaction_date
+        description: "The date of that specific transaction"
+        config:
+          meta:
+            dimension:
+              type: date
       - name: transaction_id
         description: "SimpleFIN transaction identifier; unique only within an account"
         config:

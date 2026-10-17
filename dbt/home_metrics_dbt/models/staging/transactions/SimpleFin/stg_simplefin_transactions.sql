@@ -11,14 +11,14 @@
 
 
 select
-    {{ dbt_utils.generate_surrogate_key(['account_id', 'transaction_id']) }} as transaction_pk,
+    {{ dbt_utils.generate_surrogate_key(['account_id', 'transaction_id']) }} as transaction_skey,
     to_char(posted_at, 'YYYYMMDD')::integer as date_key,
     account_id,
     transaction_id,
     institution_name,
     account_name,
     posted_at::date as posted_at_date,
-    transacted_at::date as transacted_at_date,
+    transacted_at::date as transaction_date,
     amount,
     trim(description) as transaction_description,
     inserted_at as inserted_at_datetime,
