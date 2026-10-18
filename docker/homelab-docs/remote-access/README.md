@@ -119,6 +119,12 @@ See [SETUP.md](./SETUP.md) for detailed installation and configuration instructi
 
 ---
 
+## SSH (Remote Recovery)
+
+Shell access to the server over Tailscale for fixing things while away. See [SSH.md](./SSH.md).
+
+---
+
 ## Daily Usage
 
 See [QUICK-REFERENCE.md](./QUICK-REFERENCE.md) for quick access instructions.

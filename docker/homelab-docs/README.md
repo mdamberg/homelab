@@ -19,6 +19,7 @@ It's divided by project stack and topic for easy navigation.
 - [Analytics Stack](analytics-stack/README.md)
 - [VPN Stack](vpn-stack/README.md)
 - [Remote Access (Tailscale)](remote-access/README.md)
+- [SSH Remote Recovery](remote-access/SSH.md)
 - [Backups (Duplicati)](backups/README.md)
 - [Pi-hole (DNS)](pi-hole/pi-home.md)
 - [Hardware](hardware/inventory.md)

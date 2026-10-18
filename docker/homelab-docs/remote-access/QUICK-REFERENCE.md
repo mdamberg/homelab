@@ -200,9 +200,8 @@ At home:
 
 ### If Server Goes Down
 
-- **Can't access anything remotely**
-- Need physical access to restart server
-- Or set up Wake-on-LAN for remote restarts (future project)
+- **Services down but Windows up** → `ssh mattd@100.82.35.70` and fix from the shell — see [SSH.md](./SSH.md)
+- **Whole box frozen/off** → SSH can't help; power-cycle via smart plug + BIOS "Restore on AC power loss" (see [SSH.md](./SSH.md#closing-the--gaps-hardware-no-code))
 
 ---
 
