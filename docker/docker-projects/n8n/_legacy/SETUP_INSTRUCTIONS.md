@@ -22,7 +22,7 @@ If you want to verify the connection first:
 
 1. **Test from command line**:
    ```bash
-   curl -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiI1NTUzNzU2ODc4NGU0ZDBlYjUxOThkMDE4ZDk2MmE3NCIsImlhdCI6MTc2ODAyMDAyMCwiZXhwIjoyMDgzMzgwMDIwfQ.Kj40JyRm33ql-Im4v9tFgH7TGuZeNIvV8Y3nCKO2Rg0" http://localhost:8123/api/states
+   curl -H "Authorization: Bearer <HA_LONG_LIVED_TOKEN>" http://localhost:8123/api/states
    ```
 
    If this works, your token is valid and HA is accessible.
