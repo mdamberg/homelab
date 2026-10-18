@@ -29,6 +29,7 @@ account_names as (
     from stg_transactions st
     join {{ ref('map_financial_accounts') }} mf
         on mf.account_name = st.account_name 
+    where payee not in ('Interest Payment', 'Wells Fargo Rewards', 'Online Transfer')   -- excludes CC payments already reflected in expenses
 ),
 category_map as (
     select * from {{ ref('map_transactions') }}
