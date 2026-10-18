@@ -20,6 +20,10 @@ docker/docker-projects/pie_hole/etc-pihole/tls.pem
 docker/docker-projects/pie_hole/etc-pihole/tls_ca.crt
 docker/docker-projects/pie_hole/etc-pihole/migration_backup/
 
+# n8n: config holds the credential encryption key; workflow exports embed API keys
+docker/docker-projects/n8n/n8n_data/config
+docker/docker-projects/n8n/n8n_data/*backup*.json
+
 # Caddy runtime state (ACME account key, certificate private keys, autosaved config)
 docker/docker-projects/reverse_proxy/data/
 docker/docker-projects/reverse_proxy/config/
