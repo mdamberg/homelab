@@ -78,6 +78,9 @@ if ($Services -eq "all") {
     $ServicesToStart = $Services -split ',' | ForEach-Object { $_.Trim().ToLower() }
 }
 
+# The proxy attaches to other stacks' networks, so it must start after them
+$ServicesToStart = @($ServicesToStart | Where-Object { $_ -ne 'proxy' }) + @($ServicesToStart | Where-Object { $_ -eq 'proxy' })
+
 Write-Host "`n========================================" -ForegroundColor Cyan
 Write-Host "  Docker Infrastructure Startup Script  " -ForegroundColor Cyan
 Write-Host "========================================`n" -ForegroundColor Cyan

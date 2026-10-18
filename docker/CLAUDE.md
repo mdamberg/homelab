@@ -105,31 +105,37 @@ C:\Users\mattd\repos\homelab\docker\docker-projects\stop-all-services.ps1
 
 ## Services Reference
 
-| Service | Port | Notes |
-|---------|------|-------|
-| Plex | 32400 | Media server |
-| Radarr | 7878 | Movies |
-| Sonarr | 8989 | TV Shows |
-| Prowlarr | 9696 | Indexer manager |
-| qBittorrent | 8080 | Via Gluetun VPN |
-| Overseerr | 5055 | Media requests |
-| Tautulli | 8181 | Plex stats |
-| LazyLibrarian | 5299 | Books |
-| Audiobookshelf | 13378 | Audiobooks/podcasts |
-| Home Assistant | 8123 | Docker (`home_assist`); the VirtualBox VM is powered off |
-| n8n | 5678 | Workflow automation |
-| Uptime Kuma | 3001 | Monitoring |
-| Glances | 61208 | System stats |
-| Lightdash | 8090 | Analytics dashboards |
-| Portainer | 9443 | Docker management |
-| Homarr | 7575 | Dashboard |
-| Dashdot | 3002 | System monitor |
-| Flash Todo | 5070 | To-do app |
-| Jelu | 5072 | "To be read" book tracker (SQLite) |
-| Linkding | 8282 | Bookmarks |
-| Duplicati | 8200 | Backups |
-| Pi-hole | 8082 | Admin UI; actively serving DNS on port 53 |
-| FantasyFootball | 8899 | AI Web-app integrated with FF league
+Named URLs are `https://<name>.damattberghome.duckdns.org` via the Caddy reverse proxy
+(`docker-projects/reverse_proxy/`). DuckDNS points at the Tailscale IP, so they work on tailnet
+devices only. Direct `host:port` access still works.
+
+| Service | Port | Name | Notes |
+|---------|------|------|-------|
+| Plex | 32400 | — | Media server; stays direct (own TLS/relay) |
+| Radarr | 7878 | radarr | Movies |
+| Sonarr | 8989 | sonarr | TV Shows |
+| Prowlarr | 9696 | prowlarr | Indexer manager |
+| qBittorrent | 8080 | qbit | Via Gluetun VPN |
+| Overseerr | 5055 | overseerr | Media requests |
+| Tautulli | 8181 | tautulli | Plex stats |
+| LazyLibrarian | 5299 | books | Books |
+| Audiobookshelf | 13378 | audiobooks | Audiobooks/podcasts |
+| Home Assistant | 8123 | ha | Docker (`home_assist`); the VirtualBox VM is powered off |
+| n8n | 5678 | n8n | Workflow automation |
+| Uptime Kuma | 3001 | kuma | Monitoring |
+| Glances | 61208 | glances | System stats |
+| Lightdash | 8090 | lightdash | Analytics dashboards |
+| Portainer | 9443 | portainer | Docker management |
+| Homarr | 7575 | homarr | Dashboard |
+| Dashdot | 3002 | dashdot | System monitor |
+| Flash Todo | 5070 | todo | To-do app |
+| Work Todo | 5071 | worktodo | Work to-do app |
+| Jelu | 5072 | jelu | "To be read" book tracker (SQLite) |
+| Linkding | 8282 | links | Bookmarks |
+| Duplicati | 8200 | duplicati | Backups |
+| Pi-hole | 8082 | pihole | Admin UI; container runs but LAN clients use the router (10.0.0.1) for DNS |
+| phpIPAM | 8081 | ipam | IP address management |
+| FantasyFootball | 8899 | football | AI Web-app integrated with FF league |
 
 ## Code Style
 

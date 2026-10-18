@@ -1,7 +1,9 @@
 # ============================================
 # Reverse proxy (Caddy) - named URLs for homelab services
-# Upstreams are reached via host.docker.internal:<published port>, so the
-# proxy does not need to join every stack's Docker network.
+# Caddy joins each stack's network and reaches containers by name. Going through
+# host.docker.internal instead stalls parallel requests for 30s in Docker
+# Desktop's host port proxy (6/40 failed vs 40/40 direct, tested 2026-10-17).
+# Every network below must exist before this starts, so start it last.
 # ============================================
 services:
   caddy:
@@ -18,6 +20,46 @@ services:
       - ./config:/config
     secrets:
       - duckdns_token
+    networks:
+      - default
+      - media_stack
+      - monitoring
+      - home_metrics
+      - home_assist
+      - backups
+      - pihole
+      - linkding
+      - phpipam
+      - fantasy_football
+
+networks:
+  media_stack:
+    external: true
+    name: media_stack_default
+  monitoring:
+    external: true
+    name: monitoring_default
+  home_metrics:
+    external: true
+    name: home-metrics
+  home_assist:
+    external: true
+    name: home_assist_default
+  backups:
+    external: true
+    name: backups_default
+  pihole:
+    external: true
+    name: pie_hole_default
+  linkding:
+    external: true
+    name: linkding_default
+  phpipam:
+    external: true
+    name: phpipam_phpipam_net
+  fantasy_football:
+    external: true
+    name: fantasy-football_default
 
 # Token lives outside the repo; mounted read-only at /run/secrets/duckdns_token
 secrets:

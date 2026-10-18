@@ -10,6 +10,13 @@ automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
+# Caddy reverse proxy (ha.damattberghome.duckdns.org). Caddy joins home_assist_default
+# with a dynamic IP, so trust that network's subnet.
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.25.0.0/16
+
 # Media Dashboard Sensors
 rest: !include media_dashboard_sensors.yaml
 

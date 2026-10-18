@@ -5,20 +5,139 @@
 }
 
 # One wildcard certificate covers every service; each subdomain is routed by host.
+# Upstreams are <container name>:<container port> on a shared Docker network
+# (container ports, not the published host ports).
 *.damattberghome.duckdns.org {
-	@homarr host homarr.damattberghome.duckdns.org
-	handle @homarr {
-		reverse_proxy host.docker.internal:7575
+	# --- Media ---
+	@radarr host radarr.damattberghome.duckdns.org
+	handle @radarr {
+		reverse_proxy radarr:7878
 	}
 
+	@sonarr host sonarr.damattberghome.duckdns.org
+	handle @sonarr {
+		reverse_proxy sonarr:8989
+	}
+
+	@prowlarr host prowlarr.damattberghome.duckdns.org
+	handle @prowlarr {
+		reverse_proxy prowlarr:9696
+	}
+
+	# qBittorrent runs inside Gluetun's network namespace, so Gluetun is the upstream
+	@qbit host qbit.damattberghome.duckdns.org
+	handle @qbit {
+		reverse_proxy gluetun:8080
+	}
+
+	@overseerr host overseerr.damattberghome.duckdns.org
+	handle @overseerr {
+		reverse_proxy overseerr:5055
+	}
+
+	@tautulli host tautulli.damattberghome.duckdns.org
+	handle @tautulli {
+		reverse_proxy tautulli:8181
+	}
+
+	@books host books.damattberghome.duckdns.org
+	handle @books {
+		reverse_proxy lazylibrarian:5299
+	}
+
+	@audiobooks host audiobooks.damattberghome.duckdns.org
+	handle @audiobooks {
+		reverse_proxy audiobookshelf:80
+	}
+
+	# --- Home & automation ---
+	@ha host ha.damattberghome.duckdns.org
+	handle @ha {
+		reverse_proxy homeassistant:8123
+	}
+
+	@n8n host n8n.damattberghome.duckdns.org
+	handle @n8n {
+		reverse_proxy n8n:5678
+	}
+
+	# --- Monitoring & management ---
 	@kuma host kuma.damattberghome.duckdns.org
 	handle @kuma {
-		reverse_proxy host.docker.internal:3001
+		reverse_proxy uptime-kuma:3001
 	}
 
+	@glances host glances.damattberghome.duckdns.org
+	handle @glances {
+		reverse_proxy glances:61208
+	}
+
+	@dashdot host dashdot.damattberghome.duckdns.org
+	handle @dashdot {
+		reverse_proxy dashdot:3001
+	}
+
+	# Portainer only serves HTTPS with a self-signed cert, so skip upstream verification
+	@portainer host portainer.damattberghome.duckdns.org
+	handle @portainer {
+		reverse_proxy https://portainer:9443 {
+			transport http {
+				tls_insecure_skip_verify
+			}
+		}
+	}
+
+	@duplicati host duplicati.damattberghome.duckdns.org
+	handle @duplicati {
+		reverse_proxy duplicati:8200
+	}
+
+	@pihole host pihole.damattberghome.duckdns.org
+	handle @pihole {
+		redir / /admin/
+		reverse_proxy pihole:80
+	}
+
+	@ipam host ipam.damattberghome.duckdns.org
+	handle @ipam {
+		reverse_proxy phpipam-web:80
+	}
+
+	# --- Dashboards & analytics ---
+	@homarr host homarr.damattberghome.duckdns.org
+	handle @homarr {
+		reverse_proxy homarr:7575
+	}
+
+	@lightdash host lightdash.damattberghome.duckdns.org
+	handle @lightdash {
+		reverse_proxy lightdash:8080
+	}
+
+	# --- Personal apps ---
 	@links host links.damattberghome.duckdns.org
 	handle @links {
-		reverse_proxy host.docker.internal:8282
+		reverse_proxy linkding:9090
+	}
+
+	@todo host todo.damattberghome.duckdns.org
+	handle @todo {
+		reverse_proxy flash_todo:5000
+	}
+
+	@worktodo host worktodo.damattberghome.duckdns.org
+	handle @worktodo {
+		reverse_proxy work_todo:5000
+	}
+
+	@jelu host jelu.damattberghome.duckdns.org
+	handle @jelu {
+		reverse_proxy jelu:11111
+	}
+
+	@football host football.damattberghome.duckdns.org
+	handle @football {
+		reverse_proxy call-sheet:80
 	}
 
 	# Unknown subdomains get a dropped connection instead of a random backend

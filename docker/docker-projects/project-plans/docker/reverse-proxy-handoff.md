@@ -31,10 +31,35 @@ Linkding login POST passes CSRF (401 on bad creds, not 403).
 **Known blip:** the first Homarr request after an idle night hung 30s → 502, then fine. Possibly a
 stale upstream keepalive through Docker Desktop's port proxy (unconfirmed). Watch for recurrence.
 
-**Next:**
-1. Matt browser-tests from a tailnet device (Kuma dashboard live updates = WebSockets work).
-2. Migrate remaining services one at a time (step 5), noting the HA / Portainer / qBittorrent notes below.
-3. App base URLs, docs, `docker/CLAUDE.md` table, TODO A1 (steps 6–7). Nothing committed yet.
+**All services migrated (2026-10-17):** 24 routes, names listed in the `docker/CLAUDE.md`
+Services Reference. Plex stays direct. Skipped as non-UI/internal: Postgres, FlareSolverr,
+Gluetun control port 8000, weather_api.
+- Home Assistant: added `http: use_x_forwarded_for / trusted_proxies: [172.25.0.1]`. That IP is
+  the `home_assist_default` gateway, read from HA's own rejection log, not guessed. Caveat: direct
+  hits on :8123 also arrive from that gateway, so a client could spoof X-Forwarded-For on the
+  direct port (only affects HA's IP-based features). WebSocket handshake via proxy → 101.
+- Portainer: `https://` upstream with `tls_insecure_skip_verify` (self-signed on 9443).
+- Pi-hole: `/` is 403 even directly; Caddy redirects `/` → `/admin/`.
+- Tautulli, LazyLibrarian, phpIPAM build `http://` absolute redirects (ignore X-Forwarded-Proto);
+  Caddy's 308 to HTTPS covers it at the cost of one extra hop.
+- Pre-existing, unrelated to the proxy: HA REST sensors calling `host.docker.internal:8080`
+  (qBittorrent API) get 403 Forbidden.
+
+**Upstreams moved to container names (2026-10-17):** in browser testing, n8n went black and
+qBittorrent / Pi-hole loaded slowly. Caddy logs showed batches of asset requests hanging exactly
+30s then 502 EOF. Root cause: Docker Desktop's host port proxy (`host.docker.internal` =
+192.168.65.254) stalls under parallel connections. Test: 40 parallel requests via
+host.docker.internal → 6 failed at 30s; direct container-to-container → 40/40 in 1s. Fix: Caddy
+joins 9 stack networks as `external` and targets `<container>:<container port>`. After the fix,
+40/40 parallel n8n assets through Caddy returned 200. HA's `trusted_proxies` is now the
+`home_assist_default` subnet `172.25.0.0/16` (Caddy's IP there is dynamic).
+- Consequences: Caddy must start after those stacks (start script forces `proxy` last), and it can
+  reach every container on those networks (including Postgres on `home-metrics`).
+- phpIPAM and call-sheet aren't in `start-all-services.ps1`. Their networks persist across Docker
+  restarts, but `docker compose down` on either removes the network and Caddy won't start.
+
+**Next:** app base URLs (n8n `N8N_HOST`/`WEBHOOK_URL`, Lightdash `SITE_URL`), docs in `docs/`,
+TODO A1, optional lock-down of direct ports (Matt's go-ahead per service).
 **Target dir:** `docker/docker-projects/reverse_proxy/` (create it)
 **Origin:** `docker/homelab-docs/TODO.md` item A1 and the "Nginx Proxy Manager or Traefik"
 section of `docker/homelab-docs/homelab-docker-review.md`.
