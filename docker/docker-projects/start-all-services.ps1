@@ -11,7 +11,7 @@
 .PARAMETER Services
     Optional. Specify which services to start (comma-separated). If not provided, starts all.
     Valid values: pihole, homeassistant, mediastack, linkding, monitoring, flash, work, jelu, weather,
-                  n8n, backups, homemetrics, all
+                  n8n, backups, homemetrics, lightdash, watchtower, proxy, all
     Example: .\start-all-services.ps1 -Services "pihole,homeassistant"
 
 .PARAMETER StartDBeaver
@@ -67,6 +67,7 @@ $InfraServices = @{
     'homemetrics' = '..\..\dbt'
     'lightdash' = 'lightdash'
     'watchtower' = 'watchtower'
+    'proxy' = 'reverse_proxy'
 }
 
 # Parse which services to start

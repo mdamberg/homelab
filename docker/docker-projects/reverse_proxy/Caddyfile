@@ -1,0 +1,28 @@
+{
+	# DNS-01: Caddy proves ownership by writing a TXT record through the DuckDNS API,
+	# which works behind CGNAT where Let's Encrypt can't reach us over HTTP.
+	acme_dns duckdns {file./run/secrets/duckdns_token}
+}
+
+# One wildcard certificate covers every service; each subdomain is routed by host.
+*.damattberghome.duckdns.org {
+	@homarr host homarr.damattberghome.duckdns.org
+	handle @homarr {
+		reverse_proxy host.docker.internal:7575
+	}
+
+	@kuma host kuma.damattberghome.duckdns.org
+	handle @kuma {
+		reverse_proxy host.docker.internal:3001
+	}
+
+	@links host links.damattberghome.duckdns.org
+	handle @links {
+		reverse_proxy host.docker.internal:8282
+	}
+
+	# Unknown subdomains get a dropped connection instead of a random backend
+	handle {
+		abort
+	}
+}

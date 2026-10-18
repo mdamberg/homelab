@@ -1,0 +1,25 @@
+# ============================================
+# Reverse proxy (Caddy) - named URLs for homelab services
+# Upstreams are reached via host.docker.internal:<published port>, so the
+# proxy does not need to join every stack's Docker network.
+# ============================================
+services:
+  caddy:
+    build: .
+    image: homelab-caddy:2.11.7-duckdns
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data:/data
+      - ./config:/config
+    secrets:
+      - duckdns_token
+
+# Token lives outside the repo; mounted read-only at /run/secrets/duckdns_token
+secrets:
+  duckdns_token:
+    file: C:/Users/mattd/.secrets/duckdns/token
