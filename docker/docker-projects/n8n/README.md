@@ -18,6 +18,28 @@
 3. Configure Discord webhook URL (optional, for alerts)
 4. Activate each workflow
 
+### LibreHardwareMonitor autostart (Hardware Sensors workflow)
+
+The workflow reads `http://host.docker.internal:8085/data.json` from LibreHardwareMonitor's
+Remote Web Server. LHM's manifest is `requireAdministrator`, so launching it from the startup
+script at boot raises a UAC prompt nobody answers, and LHM never starts (every run errors
+until it is opened by hand). Instead, a Task Scheduler task starts it elevated at logon with
+no prompt. Register it once from an **elevated** PowerShell:
+
+```powershell
+$exe = "$env:USERPROFILE\LibreHardwareMonitor\LibreHardwareMonitor\LibreHardwareMonitor.exe"
+$user = "$env:USERDOMAIN\$env:USERNAME"
+Register-ScheduledTask -TaskName "LibreHardwareMonitor" `
+  -Action (New-ScheduledTaskAction -Execute $exe) `
+  -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $user) `
+  -Principal (New-ScheduledTaskPrincipal -UserId $user -LogonType Interactive -RunLevel Highest) `
+  -Settings (New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries)
+```
+
+`ExecutionTimeLimit` of zero means no limit; the default (72h) would kill LHM after three days.
+`start-all-services.ps1 -StartLibreHardwareMonitor` still runs at login but skips LHM when it
+is already running. Nothing runs until Windows login (see the Hello PIN note in reboot docs).
+
 ## Column Mappings
 
 ### raw_media_library
