@@ -9,7 +9,9 @@ Context: dbt scheduled runs were silently failing since ~June 4. Root cause was 
 - [x] Pinned 3 MCP server requirements to exact versions (same time-bomb pattern).
 
 ## P1 — Discord per-failure alerting
-Healthchecks is one-shot (alerts only on green→red transition, not every failed run). To get an alert on EVERY failed run, post to Discord directly from the dbt job.
+Done 2026-10-19: `run-dbt.sh` now sends the dbt error summary (then the tail of the output) as the body of the Healthchecks `/fail` ping, for both the run/build check and the freshness check. The Discord alert shows the first 1000 chars as "Last Ping Body"; the full body of every failed run is in the check's event log on healthchecks.io.
+
+Still open: Healthchecks is one-shot (alerts only on green→red transition, not every failed run). To get an alert on EVERY failed run, post to Discord directly from the dbt job.
 - [ ] Get a Discord webhook URL for the **DBT Notifications** channel. Mobile app can't create webhooks; options: desktop browser (discord.com/app → channel → Edit Channel → Integrations → Webhooks → New Webhook → Copy URL), OR reuse the existing webhook Healthchecks created (open it in the channel's webhook list → Copy URL).
 - [ ] Put it in `dbt/.env` as `DISCORD_WEBHOOK_URL=...` (gitignored).
 - [ ] Wire up: `run-dbt.sh` posts last ~1500 chars of dbt error to the webhook on failure; pass `DISCORD_WEBHOOK_URL` through `docker-compose.yml`; document in `.env.example`.
