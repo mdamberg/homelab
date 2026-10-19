@@ -24,6 +24,9 @@ docker/docker-projects/pie_hole/etc-pihole/migration_backup/
 docker/docker-projects/n8n/n8n_data/config
 docker/docker-projects/n8n/n8n_data/*backup*.json
 
+# Claude Code per-machine settings (allowlisted commands can embed tokens)
+**/.claude/settings.local.json
+
 # Caddy runtime state (ACME account key, certificate private keys, autosaved config)
 docker/docker-projects/reverse_proxy/data/
 docker/docker-projects/reverse_proxy/config/
