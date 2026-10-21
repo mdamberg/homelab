@@ -69,7 +69,9 @@ is a non-zero exit, after loading whatever did arrive.
 ## Scheduling and monitoring
 
 `run.ps1` runs the job via Task Scheduler (daily at 6:00 AM) and writes timestamped
-output to `%LOCALAPPDATA%\simplefin-extractor\last-run.log`. If Docker is not reachable
+output to one file per run, `%LOCALAPPDATA%\simplefin-extractor\run-yyyyMMdd-HHmmss.log`,
+keeping the newest 30 (`-KeepLogs`). Task Scheduler history is disabled on this machine,
+so these logs and the Kuma heartbeats are the only run record. If Docker is not reachable
 (e.g. Docker Desktop still starting after a reboot), it retries every 5 minutes for up
 to an hour before calling SimpleFIN, so retries never use Bridge quota; after that it
 logs the failure and exits 1. On success the job pings an Uptime
