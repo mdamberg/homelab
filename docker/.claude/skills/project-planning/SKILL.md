@@ -20,9 +20,9 @@ A structured, interview-based approach to planning projects before any code is w
 
 | Type | Pattern Files | Plan Folder | Builder Skill |
 |------|---------------|-------------|---------------|
-| dbt | `dbt_resources/*.md`, `models/*_table_grain.md` | `project-plans/dbt/` | `dbt-model` |
-| n8n | Query MCP for existing workflows | `project-plans/n8n/` | `n8n-workflow` |
-| Docker | `docker-projects/*/docker-compose.yml` | `project-plans/docker/` | `docker-service` |
+| dbt | `dbt_resources/*.md`, `models/*_table_grain.md` | `project-plans/dbt/` | `dbt-sql-standards` + `dbt-yaml-standards` |
+| n8n | Existing workflows (MCP if attached, else `docker/docker-projects/n8n/*.json`) | `project-plans/n8n/` | `n8n-workflow` |
+| Docker | `docker/docker-projects/*/docker-compose.yml` | `project-plans/docker/` | `docker-service` |
 | General | N/A | `project-plans/general/` | (manual) |
 
 ## Process Overview
@@ -61,7 +61,7 @@ A structured, interview-based approach to planning projects before any code is w
 
 ## Phase 1: Enter Plan Mode
 
-When this skill is invoked, IMMEDIATELY call `EnterPlanMode` tool. No code should be written until the user explicitly approves the plan.
+When this skill is invoked, call `EnterPlanMode` first if that tool is available. If it is not available in this session, say so and follow the same rule manually. Either way, no code is written until the user explicitly approves the plan.
 
 ## Phase 2: Discovery Interview
 
@@ -117,23 +117,23 @@ Before creating any plan, thoroughly review relevant code and patterns.
 Always read these files to understand conventions:
 
 ```
-docker-projects/home_metrics_dbt/dbt_resources/key_design_cheatsheet.md
-docker-projects/home_metrics_dbt/models/staging/stg_table_grain.md
-docker-projects/home_metrics_dbt/models/intmdt/intmdt_table_grain.md
-docker-projects/home_metrics_dbt/models/marts/marts_table_grain.md
+dbt/home_metrics_dbt/dbt_resources/key_design_cheatsheet.md
+dbt/home_metrics_dbt/models/staging/stg_table_grain.md
+dbt/home_metrics_dbt/models/intmdt/intmdt_table_grain.md
+dbt/home_metrics_dbt/models/marts/marts_table_grain.md
 ```
 
 #### Existing Code to Review
 
-```powershell
+```bash
 # Check existing models in relevant domain
-ls docker-projects/home_metrics_dbt/models/**/*.sql
+ls dbt/home_metrics_dbt/models/**/*.sql
 
 # Check sources
-cat docker-projects/home_metrics_dbt/models/staging/sources.yml
+find dbt/home_metrics_dbt/models/staging -name "sources.y*ml"
 
 # Check macros
-ls docker-projects/home_metrics_dbt/macros/*.sql
+ls dbt/home_metrics_dbt/macros/*.sql
 ```
 
 #### dbt-Specific Interview Questions
@@ -165,7 +165,7 @@ Compare the model against patterns in `key_design_cheatsheet.md`:
 
 #### Discovery via MCP
 
-Use the n8n MCP server to understand current state:
+If the `n8n-manager` MCP tools are attached, use them to understand current state. If they are not, read the exported workflows in `docker/docker-projects/n8n/*.json` and its README, and note that live state was not checked.
 
 ```
 mcp__n8n-manager__list_workflows        # See all workflows
@@ -189,9 +189,9 @@ mcp__n8n-manager__get_workflow_stats    # Understand what's working/failing
 
 #### Existing Code to Review
 
-```powershell
+```bash
 # Check existing services
-ls docker-projects/*/docker-compose.yml
+ls docker/docker-projects/*/docker-compose.yml
 
 # Check if service name is already used
 docker ps --format "{{.Names}}"
@@ -383,7 +383,7 @@ Once the user approves:
 
    | Project Type | Builder Skill |
    |--------------|---------------|
-   | dbt | `dbt-model` |
+   | dbt | `dbt-sql-standards` + `dbt-yaml-standards` |
    | n8n | `n8n-workflow` |
    | docker | `docker-service` |
    | general | Continue manually |
@@ -395,7 +395,7 @@ Once the user approves:
 
 ## Checklist
 
-- [ ] EnterPlanMode called immediately
+- [ ] Plan mode entered (or rule followed manually if the tool is unavailable)
 - [ ] Discovery interview completed (intent, problem, success)
 - [ ] Project type determined
 - [ ] Pattern files read (type-specific)
@@ -405,5 +405,5 @@ Once the user approves:
 - [ ] Plan presented to user
 - [ ] User approval obtained
 - [ ] Plan status updated
-- [ ] ExitPlanMode called
+- [ ] ExitPlanMode called (if plan mode was entered)
 - [ ] Builder skill invoked with context

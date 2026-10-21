@@ -50,7 +50,7 @@ This split is the known cause of the flat-JSON to-do apps' data loss: the app si
 
 **Default to a bind mount under `docker-projects/`** (`./data:/app/data`). Duplicati's source is the repo's `docker-projects/` folder, so a bind mount there is persistent *and* automatically backed up with no extra machinery.
 
-Named volumes are **not** covered by Duplicati automatically. If an image requires one, it must also be mounted read-only into `backups/docker-compose.yml` or its data is unprotected. Full decision table and examples: `.claude/skills/new-container/SKILL.md` (Phase 5).
+Named volumes are **not** covered by Duplicati automatically. If an image requires one, it must also be mounted read-only into `backups/docker-compose.yml` or its data is unprotected. Full decision table and examples: `.claude/skills/docker-service/SKILL.md` (Volumes and backup).
 
 ### Container Distribution
 
@@ -166,7 +166,7 @@ For non-trivial work, use `/project-planning` to enter structured planning mode:
 5. **Risk assessment** - identify pitfalls and mitigations
 6. **Task breakdown** - structure into phases and tasks
 7. **User approval** - explicit agreement before implementation
-8. **Auto-handoff** - invoke appropriate builder skill (dbt-query, n8n-workflow, docker-service)
+8. **Auto-handoff** - invoke appropriate builder skill (dbt-sql-standards + dbt-yaml-standards, n8n-workflow, docker-service)
 
 Plans are saved to `docker/docker-projects/project-plans/<type>/` for documentation. For n8n projects, the skill queries the MCP server to understand existing workflows before planning.
 
