@@ -23,7 +23,7 @@ models:
           type: number
           description: Total money left over after accounting for expenses (income - expenses)
           label: "Net Income"
-          sql: ${total_income} - ${total_expense}
+          sql: ${total_income} + ${total_expense}
           format: usd
 
     columns:
