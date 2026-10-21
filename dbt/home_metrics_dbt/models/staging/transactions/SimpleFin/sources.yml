@@ -39,7 +39,7 @@ sources:
 
       - name: raw_simplefin_balances
         description: >-
-          Daily account balances for each account and credit card, pulled from WellsFargo
+          Balances for each account and credit card, pulled from WellsFargo
           via SimpleFin. One row per account per bank refresh.
         loaded_at_field: inserted_at
         freshness:
@@ -49,7 +49,7 @@ sources:
           - name: account_id
             description: "SimpleFIN account identifier (opaque Bridge id, not the bank account number). Part of the primary key."
           - name: conn_id
-            description: "The the SimpleFIN connection ID." 
+            description: "The SimpleFIN connection ID." 
           - name: institution_name
             description: "Name of the financial institution the data was pulled from."
           - name: account_name
@@ -60,8 +60,8 @@ sources:
             description: "The balance for that respective account."
           - name: available_balance
             description: >-
-              "The balance available for that account as of the balance date. Returns null
-              if its the same as the balance."
+              The balance available for that account as of the balance date. Returns null
+              if it's the same as the balance.
           - name: balance_date
             description: "UTC timestamp of when the bank last updated the balance."
           - name: payload
