@@ -33,4 +33,4 @@ transaction_months as (
     	and ft.transaction_date >= ds.month_start_date
     where transaction_skey is not null
 )
-select * from transaction_months;
+select * from transaction_months

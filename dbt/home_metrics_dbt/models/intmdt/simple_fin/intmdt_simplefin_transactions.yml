@@ -4,7 +4,7 @@ models:
     meta:
       hidden: true
     columns:
-      - name: transaction_pk
+      - name: transaction_skey
         description: "Surrogate key from account_id + transaction_id"
         tests:
           - unique
