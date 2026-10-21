@@ -36,3 +36,35 @@ sources:
             description: "Full SimpleFIN transaction as JSON (id, posted, transacted_at, amount, description, payee, memo, mcc)"
           - name: inserted_at
             description: "Timestamp the row was first loaded; never updated on later runs"
+
+      - name: raw_simplefin_balances
+        description: >-
+          Daily account balances for each account and credit card, pulled from WellsFargo
+          via SimpleFin. One row per account per bank refresh.
+        loaded_at_field: inserted_at
+        freshness:
+          warn_after: {count: 26, period: hour}
+          error_after: {count: 50, period: hour}
+        columns:
+          - name: account_id
+            description: "SimpleFIN account identifier (opaque Bridge id, not the bank account number). Part of the primary key."
+          - name: conn_id
+            description: "The the SimpleFIN connection ID." 
+          - name: institution_name
+            description: "Name of the financial institution the data was pulled from."
+          - name: account_name
+            description: "Friendly name of that respective account."
+          - name: currency
+            description: "The type of currency the balances represent."
+          - name: balance
+            description: "The balance for that respective account."
+          - name: available_balance
+            description: >-
+              "The balance available for that account as of the balance date. Returns null
+              if its the same as the balance."
+          - name: balance_date
+            description: "UTC timestamp of when the bank last updated the balance."
+          - name: payload
+            description: "JSON containing account object."
+          - name: inserted_at
+            description: "Time the data was inserted into the raw table"

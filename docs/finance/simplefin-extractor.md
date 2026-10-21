@@ -1,8 +1,8 @@
 # SimpleFIN extractor
 
 Containerized job (`docker/docker-projects/simplefin_extractor/`) that pulls posted
-bank transactions from [SimpleFIN Bridge](https://bridge.simplefin.org) and lands them
-in `raw.raw_simplefin_transactions`. Replaces the retired Teller extractor. It is a job,
+bank transactions and account balances from [SimpleFIN Bridge](https://bridge.simplefin.org)
+and lands them in `raw.raw_simplefin_transactions` and `raw.raw_simplefin_balances`. Replaces the retired Teller extractor. It is a job,
 not a service: Task Scheduler runs it daily and it exits. It is not in
 `start-all-services.ps1` and has no restart policy.
 
@@ -42,12 +42,18 @@ docker compose --profile manual run --rm simplefin-extractor --dry-run --since 2
 docker compose --profile manual run --rm simplefin-extractor --since 2026-04-01               # backfill
 ```
 
-Exit 0 on success (prints `fetched=N inserted=M`); non-zero with the reason on stderr.
+Exit 0 on success (prints `fetched=N inserted=M balances_fetched=N balances_inserted=M`); non-zero with the reason on stderr.
 Any `errlist` entry from SimpleFIN (e.g. the bank connection needs re-authentication)
 is a non-zero exit, after loading whatever did arrive.
 
 - **Idempotent:** primary key is `(account_id, transaction_id)` (SimpleFIN ids are only
   unique within an account); re-runs insert nothing new.
+- **Balances are snapshots:** SimpleFIN only returns each account's current balance
+  as of `balance-date`, with no history. Each run stores one row per account, keyed on
+  `(account_id, balance_date)`, so a day when the bank has not refreshed adds nothing.
+  Snapshot history starts 2026-10-20; earlier daily balances have to be derived in dbt
+  from transactions. `available_balance` is NULL when SimpleFIN omits it (meaning it
+  equals `balance`). No extra Bridge requests: balances come back on the same call.
 - **Pending transactions are skipped** because their ids may change when they post.
   `LOOKBACK_DAYS` (14) re-reads recent days so they land once posted.
 - **Bridge limits:** 24 requests per day; exceeding it disables the token. The docs
@@ -76,7 +82,9 @@ secret on the host.
 
 ## Database
 
-`dbt/postgres/init/02-create-raw-tables.sql` defines `raw.raw_simplefin_transactions`
-and the `bank_writer` role (select/insert on that table only). The container joins the
+`dbt/postgres/init/02-create-raw-tables.sql` defines `raw.raw_simplefin_transactions`,
+`raw.raw_simplefin_balances`, and the `bank_writer` role (select/insert on those two
+tables only). Init scripts only run on an empty data directory, so new tables there
+must also be created by hand on the live database. The container joins the
 external `home-metrics` network and connects to `home-metrics-postgres`, database
 `home_metrics`.

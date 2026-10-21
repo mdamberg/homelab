@@ -1,4 +1,4 @@
-"""Load posted bank transactions from SimpleFIN Bridge into Postgres.
+"""Load posted bank transactions and account balances from SimpleFIN Bridge into Postgres.
 
 Schedule: once a day at 6:00 AM (America/Chicago), run by the Windows Task
 Scheduler task "SimpleFIN extractor" via run.ps1, only while user mattd is
@@ -165,18 +165,21 @@ def epoch(value):
     return dt.datetime.fromtimestamp(value, dt.timezone.utc) if value else None
 
 
-def to_rows(account_set):
-    # Turns SimpleFIN's nested JSON (accounts -> transactions) into flat tuples,
-    # one per transaction, in the same column order as the INSERT in load_rows().
-
+def institution_of(account_set, account):
     # Dict comprehension: {key: value for item in list}. Builds a lookup from
     # connection id to institution name, e.g. {"CONN-1": "Wells Fargo"}.
     institutions = {c["conn_id"]: c.get("name") for c in account_set.get("connections", [])}
+    # "or" returns the first truthy value, so this falls back to the older
+    # "org" field when the connection lookup finds nothing.
+    return institutions.get(account.get("conn_id")) or account.get("org", {}).get("name")
+
+
+def to_rows(account_set):
+    # Turns SimpleFIN's nested JSON (accounts -> transactions) into flat tuples,
+    # one per transaction, in the same column order as the INSERT in load_rows().
     rows = []
     for account in account_set.get("accounts", []):
-        # "or" returns the first truthy value, so this falls back to the older
-        # "org" field when the connection lookup finds nothing.
-        institution = institutions.get(account.get("conn_id")) or account.get("org", {}).get("name")
+        institution = institution_of(account_set, account)
         for txn in account.get("transactions", []):
             # Pending ids may change once posted; the lookback window picks them up then
             if txn.get("pending") or not txn.get("posted"):
@@ -196,12 +199,38 @@ def to_rows(account_set):
     return rows
 
 
+def to_balance_rows(account_set):
+    # One tuple per account, in the same column order as the balances INSERT in
+    # load_rows(). SimpleFIN only reports the balance as of balance-date, so each
+    # run captures a snapshot; history builds up one run at a time.
+    rows = []
+    for account in account_set.get("accounts", []):
+        available = account.get("available-balance")
+        # Everything except the transaction list, so "extra" and any fields
+        # added to the spec later are kept in the payload column.
+        payload = {k: v for k, v in account.items() if k != "transactions"}
+        rows.append((
+            account["id"],
+            account.get("conn_id"),
+            institution_of(account_set, account),
+            account.get("name"),
+            account.get("currency"),
+            Decimal(account["balance"]),
+            # Omitted by SimpleFIN when it equals balance; left NULL here
+            Decimal(available) if available is not None else None,
+            epoch(account["balance-date"]),
+            json.dumps(payload),
+        ))
+    return rows
+
+
 # ---------------------------------------------------------------------------
 # Writing to Postgres
 # ---------------------------------------------------------------------------
-def load_rows(rows):
-    if not rows:                                 # an empty list is falsy
-        return 0
+def load_rows(rows, balance_rows):
+    # Returns (transactions inserted, balance snapshots inserted).
+    if not rows and not balance_rows:            # an empty list is falsy
+        return 0, 0
     conn = psycopg2.connect(
         host=os.environ["PGHOST"],               # os.environ["X"] crashes if X is missing; these must be set
         dbname=os.environ["PGDATABASE"],
@@ -236,7 +265,23 @@ def load_rows(rows):
             # what makes re-runs safe. "returning 1" emits one row per row
             # actually inserted, and fetch=True hands those back, so
             # len(inserted) counts only the new rows.
-        return len(inserted)
+            # Same pattern for balances. The key is (account_id, balance_date),
+            # so a day when the bank hasn't refreshed inserts nothing.
+            balances_inserted = execute_values(
+                cur,
+                """
+                insert into raw.raw_simplefin_balances
+                  (account_id, conn_id, institution_name, account_name, currency,
+                   balance, available_balance, balance_date, payload)
+                values %s
+                on conflict (account_id, balance_date) do nothing
+                returning 1
+                """,
+                balance_rows,
+                fetch=True,
+            )
+            # Both inserts share one transaction, so a failure loads neither.
+        return len(inserted), len(balances_inserted)
     finally:
         conn.close()
 
@@ -301,18 +346,25 @@ def main():
         # 2. Fetch every window and collect rows and errors.
         base, auth = load_access()
         rows, errors = [], []
+        balances = {}
         for window_start, window_end in windows(start, now):
             account_set = fetch(base, auth, window_start, window_end)
             rows.extend(to_rows(account_set))    # extend adds each item; append would add the whole list as one item
             errors.extend(errors_of(account_set))
+            # Every window returns the same current balances; keying on
+            # (account_id, balance_date) keeps one copy of each.
+            for row in to_balance_rows(account_set):
+                balances[(row[0], row[7])] = row
+        balance_rows = list(balances.values())
 
         # 3. Load (or just report on a dry run).
         if args.dry_run:
             report(rows)
-            inserted = 0
+            inserted, balances_inserted = 0, 0
         else:
-            inserted = load_rows(rows)
-        print(f"fetched={len(rows)} inserted={inserted}")
+            inserted, balances_inserted = load_rows(rows, balance_rows)
+        print(f"fetched={len(rows)} inserted={inserted} "
+              f"balances_fetched={len(balance_rows)} balances_inserted={balances_inserted}")
 
         # 4. Fail loudly on SimpleFIN errors, otherwise tell Kuma we succeeded.
         if errors:
@@ -320,7 +372,7 @@ def main():
             # set() removes duplicates (the same error can come back for every window).
             raise ExtractError("SimpleFIN reported errors: " + "; ".join(sorted(set(errors))))
         if not args.dry_run:
-            ping_kuma(f"inserted={inserted}")
+            ping_kuma(f"inserted={inserted} balances_inserted={balances_inserted}")
     except Exception as exc:  # exit code is the contract with the scheduler
         # Catches anything that went wrong above, prints one clean line to
         # stderr, and exits with code 1. run.ps1 passes that code to Task

@@ -363,6 +363,24 @@ CREATE INDEX IF NOT EXISTS idx_simplefin_transactions_posted ON raw.raw_simplefi
 
 COMMENT ON TABLE raw.raw_simplefin_transactions IS 'Posted bank transactions from SimpleFIN Bridge';
 
+CREATE TABLE IF NOT EXISTS raw.raw_simplefin_balances (
+    account_id         TEXT           NOT NULL,
+    conn_id            TEXT,
+    institution_name   TEXT,
+    account_name       TEXT,
+    currency           TEXT,
+    balance            NUMERIC(14, 2) NOT NULL,
+    -- NULL when SimpleFIN omits it, which means it equals balance
+    available_balance  NUMERIC(14, 2),
+    balance_date       TIMESTAMPTZ    NOT NULL,
+    payload            JSONB          NOT NULL,
+    inserted_at        TIMESTAMPTZ    NOT NULL DEFAULT now(),
+    -- balance_date only moves when the bank refreshes, so unchanged days dedupe
+    PRIMARY KEY (account_id, balance_date)
+);
+
+COMMENT ON TABLE raw.raw_simplefin_balances IS 'Account balance snapshots from SimpleFIN Bridge, one per bank refresh';
+
 -- Least-privilege writer for the extractor. Password is set out of band and
 -- stored outside the repo (see docs/finance/simplefin-extractor.md).
 DO $$
@@ -376,3 +394,4 @@ $$;
 GRANT CONNECT ON DATABASE home_metrics TO bank_writer;
 GRANT USAGE ON SCHEMA raw TO bank_writer;
 GRANT SELECT, INSERT ON raw.raw_simplefin_transactions TO bank_writer;
+GRANT SELECT, INSERT ON raw.raw_simplefin_balances TO bank_writer;
