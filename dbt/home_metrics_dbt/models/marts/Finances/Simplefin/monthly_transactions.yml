@@ -20,9 +20,11 @@ models:
             filter: 
                 - transaction_type: 'Expense' 
         net_income:
+            type: number
             description: Total money left over after accounting for expenses (income - expenses)
             label: "Net Income"
-            sql: total_income - total_expense
+            sql: ${total_income} - ${total_expense}
+            format: usd
 
     columns:
       - name: transaction_skey
