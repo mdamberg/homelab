@@ -75,8 +75,13 @@ so these logs and the Kuma heartbeats are the only run record. If Docker is not 
 (e.g. Docker Desktop still starting after a reboot), it retries every 5 minutes for up
 to an hour before calling SimpleFIN, so retries never use Bridge quota; after that it
 logs the failure and exits 1. On success the job pings an Uptime
-Kuma push monitor (`KUMA_PUSH_URL` in `.env`, via `host.docker.internal:3001`), so a
-failed or missed run shows up as a missing heartbeat.
+Kuma push monitor (`KUMA_PUSH_URL` in `.env`, via `host.docker.internal:3001`). On any
+non-zero exit, `run.ps1` pushes `status=down` with the last log lines as the message,
+so Discord alerts within minutes with the reason. A run that never starts shows up as a
+missing heartbeat after the monitor's 26h window.
+
+The Bridge only promises daily updates, so `balances_inserted=0` is normal when the bank
+has not refreshed since the last run; the run still succeeds and pings Kuma.
 
 n8n does not run this job: invoking Docker from n8n would mean mounting the Docker
 socket into it, which gives anything with n8n access control of every container and
