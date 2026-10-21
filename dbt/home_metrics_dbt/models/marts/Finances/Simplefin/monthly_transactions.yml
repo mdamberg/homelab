@@ -5,26 +5,26 @@ models:
       tags: ['lightdash']
     meta:
       metrics:
-        total_income: 
-            description: Sum of transactions flagged as Income
-            label: "Total Income"
-            type: sum
-            sql: ${TABLE}.amount
-            filter: 
-                - transaction_type: 'Income' 
-        total_expense: 
-            description: Sum of transactions flagged as Expense.
-            label: "Total Expense"
-            type: sum
-            sql: ${TABLE}.amount
-            filter: 
-                - transaction_type: 'Expense' 
+        total_income:
+          description: Sum of transactions flagged as Income
+          label: "Total Income"
+          type: sum
+          sql: ${TABLE}.amount
+          filters:
+            - transaction_type: 'Income'
+        total_expense:
+          description: Sum of transactions flagged as Expense.
+          label: "Total Expense"
+          type: sum
+          sql: ${TABLE}.amount
+          filters:
+            - transaction_type: 'Expense'
         net_income:
-            type: number
-            description: Total money left over after accounting for expenses (income - expenses)
-            label: "Net Income"
-            sql: ${total_income} - ${total_expense}
-            format: usd
+          type: number
+          description: Total money left over after accounting for expenses (income - expenses)
+          label: "Net Income"
+          sql: ${total_income} - ${total_expense}
+          format: usd
 
     columns:
       - name: transaction_skey
