@@ -12,6 +12,7 @@ models:
           sql: ${TABLE}.amount
           filters:
             - transaction_type: 'Income'
+          format: usd
         total_expense:
           description: Sum of transactions flagged as Expense.
           label: "Total Expense"
@@ -19,6 +20,7 @@ models:
           sql: ${TABLE}.amount
           filters:
             - transaction_type: 'Expense'
+          format: usd
         net_income:
           type: number
           description: Total money left over after accounting for expenses (income - expenses)
