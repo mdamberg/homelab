@@ -38,3 +38,12 @@ This file documents the granularity for each staging model. Staging models are 1
    - Grain: 1 row per alert triggered
    - Primary key: `id`
    - Source: `raw_n8n_alerts`
+
+---
+
+## Finances (SimpleFIN)
+
+6. **stg_simplefin_balances**
+   - Grain: 1 row per account per bank refresh
+   - Primary key: `account_id` + `balance_date`
+   - Source: `raw_simplefin_balances`

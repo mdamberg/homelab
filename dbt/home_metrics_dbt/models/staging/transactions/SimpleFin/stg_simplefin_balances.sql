@@ -11,6 +11,7 @@
 
 
 select
+    {{ dbt_utils.generate_surrogate_key(['account_id', 'balance_date']) }} as balance_skey,
     balance_date,
     account_id,
     account_name,
