@@ -15,8 +15,14 @@ models:
         config:
           meta:
             dimension:
-              type: string
+              type: str
       - name: balance_date
+        description: "Timestamp (UTC) the bank last updated this balance; not the time the job ran"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: balance_datetime
         description: "Timestamp (UTC) the bank last updated this balance; not the time the job ran"
         tests:
           - not_null

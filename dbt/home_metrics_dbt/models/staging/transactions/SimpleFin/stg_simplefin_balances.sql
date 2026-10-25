@@ -12,7 +12,8 @@
 
 select
     {{ dbt_utils.generate_surrogate_key(['account_id', 'balance_date']) }} as balance_skey,
-    balance_date,
+    balance_date::date as balance_date,
+    balance_date as balance_datetime,
     account_id,
     account_name,
     conn_id,
