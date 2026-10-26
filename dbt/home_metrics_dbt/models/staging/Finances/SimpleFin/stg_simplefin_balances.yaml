@@ -1,0 +1,84 @@
+version: 2
+
+models:
+  - name: stg_simplefin_balances
+    description: >-
+      Account balance snapshots from SimpleFIN Bridge, 1:1 with raw_simplefin_balances.
+      One row per account per bank refresh (account_id + balance_date); a day with no
+      bank refresh has no row, so pick the latest snapshot per day downstream.
+    columns:
+      - name: balance_skey
+        description: "The unique row level identifier, keyed on account id and balance date."
+        tests:
+          - not_null
+          - unique
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: balance_date
+        description: "Timestamp (UTC) the bank last updated this balance; not the time the job ran"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: balance_datetime
+        description: "Timestamp (UTC) the bank last updated this balance; not the time the job ran"
+        tests:
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: account_id
+        description: "SimpleFIN account identifier (opaque Bridge id, not the bank account number)"
+        tests:
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_name
+        description: "Account name as the bank reports it (e.g. EVERYDAY CHECKING ...1234)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: conn_id
+        description: "SimpleFIN connection id the account belongs to"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: institution_name
+        description: "Bank the account belongs to (e.g. Wells Fargo)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: currency
+        description: "ISO 4217 currency code of the balances (e.g. USD)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: balance
+        description: "Ledger balance as of balance_date"
+        tests:
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: available_balance
+        description: "Available balance as of balance_date; null when SimpleFIN omits it because it equals balance"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: holdings
+        description: "Investment holdings from the payload as JSON text; an empty array ([]) for bank and card accounts"
+        config:
+          meta:
+            dimension:
+              type: string
