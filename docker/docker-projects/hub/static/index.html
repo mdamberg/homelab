@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-scheme="slate">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Homelab Hub</title>
+<script>
+  /* Applied before the stylesheets paint so a saved theme never flashes */
+  (function () {
+    var r = document.documentElement, t = null, s = null;
+    try { t = localStorage.getItem('hub-theme'); s = localStorage.getItem('hub-scheme'); } catch (x) {}
+    r.dataset.theme = t || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+    if (s) r.dataset.scheme = s;
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Sora:wght@600;700&display=swap">
+<link rel="stylesheet" href="/static/base.css">
+<link rel="stylesheet" href="/static/themes.css" id="themes-css">
+</head>
+<body>
+<div class="app">
+  <aside class="rail">
+    <div class="brand">Homelab Hub<small>damattberghome</small></div>
+    <nav class="nav" id="nav" aria-label="Pages"></nav>
+    <div class="rail-foot">
+      <span class="meta">Reached over Tailscale. No hub login; each service keeps its own.</span>
+      <div class="schemes" id="schemes" role="group" aria-label="Color scheme"></div>
+      <button class="theme" id="theme" type="button">Light / dark</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <div>
+        <h1 id="title"></h1>
+        <div class="sub" id="subtitle"></div>
+      </div>
+      <div class="clock"><div class="num" id="clock">--:--</div><div class="sub" id="date"></div></div>
+    </div>
+    <div class="banner crit" id="config-error" hidden></div>
+    <div id="pages"></div>
+  </main>
+</div>
+<script type="module" src="/static/app.js"></script>
+</body>
+</html>

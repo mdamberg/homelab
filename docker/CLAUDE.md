@@ -15,6 +15,7 @@ homelab/
 │   │   ├── n8n/                   # Workflow automation
 │   │   ├── lightdash/             # Analytics dashboards
 │   │   ├── backups/               # Duplicati
+│   │   ├── hub/                   # Homelab Hub dashboard (FastAPI + static frontend)
 │   │   └── ...
 │   ├── start-all-services.ps1
 │   ├── stop-all-services.ps1
@@ -69,7 +70,7 @@ Named volumes are **not** covered by Duplicati automatically. If an image requir
 | Service config changes | `docker/docker-projects/<service>/` | Updating compose file |
 | Documentation | `docs/` | How-to guides, READMEs |
 | dbt models | `dbt/` | SQL transformations |
-| Project plans | `docker/docker-projects/project-plans/<type>/` | Planning docs |
+| Project plans | `docker/project-plans/<type>/` | Planning docs |
 | Utility scripts | `docker/` | PowerShell helpers |
 
 ## Common Commands
@@ -127,6 +128,7 @@ devices only. Direct `host:port` access still works.
 | Lightdash | 8090 | lightdash | Analytics dashboards |
 | Portainer | 9443 | portainer | Docker management |
 | Homarr | 7575 | homarr | Dashboard |
+| Homelab Hub | — | hub | Custom dashboard (`docker-projects/hub`); no host port, Caddy only |
 | Dashdot | 3002 | dashdot | System monitor |
 | Flash Todo | 5070 | todo | To-do app |
 | Work Todo | 5071 | worktodo | Work to-do app |
@@ -168,7 +170,7 @@ For non-trivial work, use `/project-planning` to enter structured planning mode:
 7. **User approval** - explicit agreement before implementation
 8. **Auto-handoff** - invoke appropriate builder skill (dbt-sql-standards + dbt-yaml-standards, n8n-workflow, docker-service)
 
-Plans are saved to `docker/docker-projects/project-plans/<type>/` for documentation. For n8n projects, the skill queries the MCP server to understand existing workflows before planning.
+Plans are saved to `docker/project-plans/<type>/` for documentation. For n8n projects, the skill queries the MCP server to understand existing workflows before planning.
 
 ### Deleting media properly
 Delete through Radarr/Sonarr UI, not filesystem. See `docs/media-stack/ops/deleting-media.md`

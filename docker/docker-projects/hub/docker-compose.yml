@@ -1,0 +1,45 @@
+# ============================================
+# Homelab Hub - central dashboard (FastAPI backend + static frontend)
+# Joins each stack's network and reaches services by container name, the same
+# way Caddy does. Every external network below must exist before this starts,
+# so it starts after the stacks and before Caddy.
+# ============================================
+services:
+  hub:
+    build: .
+    image: homelab-hub:1
+    container_name: hub
+    restart: unless-stopped
+    environment:
+      - TZ=America/Chicago
+    env_file: .env
+    volumes:
+      # Bind-mounted read-only so edits show on the next browser refresh
+      - ./static:/srv/static:ro
+      - ./config:/srv/config:ro
+    networks:
+      - default
+      - media_stack
+      - monitoring
+      - home_assist
+      - home_metrics
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    # No published port: reached only through Caddy at hub:8000
+
+networks:
+  media_stack:
+    external: true
+    name: media_stack_default
+  monitoring:
+    external: true
+    name: monitoring_default
+  home_assist:
+    external: true
+    name: home_assist_default
+  home_metrics:
+    external: true
+    name: home-metrics

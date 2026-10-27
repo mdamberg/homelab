@@ -104,6 +104,11 @@
 	}
 
 	# --- Dashboards & analytics ---
+	@hub host hub.damattberghome.duckdns.org
+	handle @hub {
+		reverse_proxy hub:8000
+	}
+
 	@homarr host homarr.damattberghome.duckdns.org
 	handle @homarr {
 		reverse_proxy homarr:7575

@@ -31,6 +31,7 @@ services:
       - linkding
       - phpipam
       - fantasy_football
+      - hub
 
 networks:
   media_stack:
@@ -60,6 +61,9 @@ networks:
   fantasy_football:
     external: true
     name: fantasy-football_default
+  hub:
+    external: true
+    name: hub_default
 
 # Token lives outside the repo; mounted read-only at /run/secrets/duckdns_token
 secrets:

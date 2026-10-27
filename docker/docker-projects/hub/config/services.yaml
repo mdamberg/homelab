@@ -1,0 +1,43 @@
+# Service launcher. One entry per app, grouped as they appear on the Services page.
+#   url:  full URL; named URLs go through Caddy and work on tailnet devices only
+#   kuma: Uptime Kuma monitor name for the health dot (omit when no monitor exists)
+groups:
+  - name: Media
+    items:
+      - { name: Plex, url: "http://100.82.35.70:32400/web", desc: "Stays on its direct port", kuma: Plex }
+      - { name: Overseerr, url: "https://overseerr.damattberghome.duckdns.org", desc: "Requests", kuma: Overseerr }
+      - { name: Radarr, url: "https://radarr.damattberghome.duckdns.org", desc: "Movies", kuma: Radarr }
+      - { name: Sonarr, url: "https://sonarr.damattberghome.duckdns.org", desc: "TV", kuma: Sonarr }
+      - { name: Prowlarr, url: "https://prowlarr.damattberghome.duckdns.org", desc: "Indexers", kuma: Prowlarr }
+      - { name: qBittorrent, url: "https://qbit.damattberghome.duckdns.org", desc: "Downloads, behind Gluetun", kuma: Gluetun }
+      - { name: Tautulli, url: "https://tautulli.damattberghome.duckdns.org", desc: "Plex stats", kuma: Tautulli }
+      - { name: LazyLibrarian, url: "https://books.damattberghome.duckdns.org", desc: "Books", kuma: LazyLibrarian }
+      - { name: Audiobookshelf, url: "https://audiobooks.damattberghome.duckdns.org", desc: "Audiobooks", kuma: Audiobookshelf }
+
+  - name: Home and automation
+    items:
+      - { name: Home Assistant, url: "https://ha.damattberghome.duckdns.org", desc: "Devices and sensors", kuma: Home Assistant }
+      - { name: n8n, url: "https://n8n.damattberghome.duckdns.org", desc: "Workflows", kuma: n8n }
+
+  - name: Monitoring and management
+    items:
+      - { name: Uptime Kuma, url: "https://kuma.damattberghome.duckdns.org", desc: "Up/down checks" }
+      - { name: Glances, url: "https://glances.damattberghome.duckdns.org", desc: "Host metrics", kuma: Glances }
+      - { name: Dashdot, url: "https://dashdot.damattberghome.duckdns.org", desc: "Host dashboard", kuma: Dashdot }
+      - { name: Portainer, url: "https://portainer.damattberghome.duckdns.org", desc: "Containers", kuma: Portainer }
+      - { name: Duplicati, url: "https://duplicati.damattberghome.duckdns.org", desc: "Backups", kuma: Duplicati }
+      - { name: Pi-hole, url: "https://pihole.damattberghome.duckdns.org", desc: "DNS, currently unused", kuma: Pi-hole }
+      - { name: phpIPAM, url: "https://ipam.damattberghome.duckdns.org", desc: "IP address plan", kuma: phpIPAM }
+
+  - name: Dashboards and analytics
+    items:
+      - { name: Homarr, url: "https://homarr.damattberghome.duckdns.org", desc: "The current dashboard", kuma: Homarr }
+      - { name: Lightdash, url: "https://lightdash.damattberghome.duckdns.org", desc: "dbt marts", kuma: Lightdash }
+
+  - name: Personal apps
+    items:
+      - { name: Linkding, url: "https://links.damattberghome.duckdns.org", desc: "Bookmarks", kuma: Linkding }
+      - { name: Flash To-do, url: "https://todo.damattberghome.duckdns.org", desc: "Quick tasks", kuma: Flash To-do }
+      - { name: Work To-do, url: "https://worktodo.damattberghome.duckdns.org", desc: "Work tasks", kuma: Work To-do }
+      - { name: Jelu, url: "https://jelu.damattberghome.duckdns.org", desc: "Reading log", kuma: Jelu }
+      - { name: Call Sheet, url: "https://football.damattberghome.duckdns.org", desc: "Fantasy football", kuma: Call Sheet }

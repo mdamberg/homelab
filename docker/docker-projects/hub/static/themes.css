@@ -1,0 +1,59 @@
+/*
+  Color schemes. Each scheme sets only the neutrals and the accent; status colors
+  (--good/--warn/--crit) and chart series (--s1..--s3) live in base.css and never
+  change, so no scheme can make state or charts unreadable.
+
+  To add a scheme, copy a block pair below and change the id and colors. The
+  picker finds schemes in this file by their data-scheme id, so nothing else
+  needs editing. data-theme on <html> is always "dark" or "light" (set by app.js).
+*/
+
+/* Slate (default) */
+:root, [data-scheme="slate"] {
+  --bg: #0f1214; --panel: #161a1d; --panel-2: #1c2124; --line: #272d31; --grid: #22282c;
+  --accent: #3987e5;
+}
+[data-theme="light"], [data-theme="light"] [data-scheme="slate"] {
+  --bg: #f2f5f5; --panel: #ffffff; --panel-2: #f6f8f8; --line: #dbe2e3; --grid: #e7ecec;
+  --accent: #2a78d6;
+}
+
+/* Amber */
+[data-scheme="amber"] {
+  --bg: #15120d; --panel: #1c1812; --panel-2: #231e16; --line: #2f281d; --grid: #28221a;
+  --accent: #e5a00d;
+}
+[data-theme="light"][data-scheme="amber"], [data-theme="light"] [data-scheme="amber"] {
+  --bg: #f6f2ea; --panel: #fffdf9; --panel-2: #faf6ee; --line: #e4dccb; --grid: #eee7d8;
+  --accent: #b36b00;
+}
+
+/* Terminal */
+[data-scheme="terminal"] {
+  --bg: #0a100c; --panel: #0f1712; --panel-2: #141e18; --line: #1f2d24; --grid: #19251d;
+  --accent: #3ddc84;
+}
+[data-theme="light"][data-scheme="terminal"], [data-theme="light"] [data-scheme="terminal"] {
+  --bg: #eef4ef; --panel: #ffffff; --panel-2: #f4f8f5; --line: #d3e0d6; --grid: #e3ece5;
+  --accent: #17803f;
+}
+
+/* Dusk */
+[data-scheme="dusk"] {
+  --bg: #110f1a; --panel: #181625; --panel-2: #1f1c2e; --line: #2b2740; --grid: #242136;
+  --accent: #9085e9;
+}
+[data-theme="light"][data-scheme="dusk"], [data-theme="light"] [data-scheme="dusk"] {
+  --bg: #f4f2fa; --panel: #ffffff; --panel-2: #f8f6fc; --line: #ded9ee; --grid: #ebe8f5;
+  --accent: #6250d6;
+}
+
+/* Graphite */
+[data-scheme="graphite"] {
+  --bg: #121212; --panel: #1a1a1a; --panel-2: #212121; --line: #2e2e2e; --grid: #262626;
+  --accent: #e8ecec;
+}
+[data-theme="light"][data-scheme="graphite"], [data-theme="light"] [data-scheme="graphite"] {
+  --bg: #f3f3f3; --panel: #ffffff; --panel-2: #f7f7f7; --line: #dedede; --grid: #ebebeb;
+  --accent: #222222;
+}

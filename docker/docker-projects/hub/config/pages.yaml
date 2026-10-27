@@ -1,0 +1,14 @@
+# Pages appear as tabs in this order. The grid is 12 columns; span is a widget's width.
+# A widget id must match a folder in app/widgets/ and static/widgets/.
+# type: services renders the launcher from services.yaml instead of a widget grid.
+pages:
+  - id: overview
+    title: Overview
+    subtitle: Everything that needs a glance, on one screen
+    widgets:
+      - { id: service_health, span: 3 }
+
+  - id: services
+    title: Services
+    subtitle: Every app, grouped, one click away
+    type: services

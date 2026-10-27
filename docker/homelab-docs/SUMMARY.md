@@ -29,6 +29,8 @@
     * [Troubleshooting](media-stack/ops/troubleshooting.md)
   * Decisions
     * [Use WireGuard](media-stack/decisions/0001-use-wireguard.md)
+* Homelab Hub
+  * [Overview](hub/README.md)
 * Monitoring Stack
   * [Overview](monitoring-stack/README.md)
   * [Compose](monitoring-stack/compose.md)
