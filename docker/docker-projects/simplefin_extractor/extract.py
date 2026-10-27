@@ -1,8 +1,8 @@
 """Load posted bank transactions and account balances from SimpleFIN Bridge into Postgres.
 
-Schedule: once a day at 6:00 AM (America/Chicago), run by the Windows Task
-Scheduler task "SimpleFIN extractor" via run.ps1, only while user mattd is
-logged in. The schedule lives in Task Scheduler, not here; change it there.
+Schedule: once a day at 6:00 PM (America/Chicago), after the Bridge's ~4:45 PM
+bank refresh, run by the Windows Task Scheduler task "SimpleFIN extractor" via
+run.ps1, only while user mattd is logged in. The schedule lives in Task Scheduler, not here; change it there.
 
 Modes:
   (default)             load the last LOOKBACK_DAYS of posted transactions

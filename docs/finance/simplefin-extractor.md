@@ -68,7 +68,7 @@ is a non-zero exit, after loading whatever did arrive.
 
 ## Scheduling and monitoring
 
-`run.ps1` runs the job via Task Scheduler (daily at 6:00 AM) and writes timestamped
+`run.ps1` runs the job via Task Scheduler (daily at 6:00 PM) and writes timestamped
 output to one file per run, `%LOCALAPPDATA%\simplefin-extractor\run-yyyyMMdd-HHmmss.log`,
 keeping the newest 30 (`-KeepLogs`). Task Scheduler history is disabled on this machine,
 so these logs and the Kuma heartbeats are the only run record. If Docker is not reachable
@@ -80,8 +80,10 @@ non-zero exit, `run.ps1` pushes `status=down` with the last log lines as the mes
 so Discord alerts within minutes with the reason. A run that never starts shows up as a
 missing heartbeat after the monitor's 26h window.
 
-The Bridge only promises daily updates, so `balances_inserted=0` is normal when the bank
-has not refreshed since the last run; the run still succeeds and pings Kuma.
+The Bridge only promises daily updates. It has refreshed Wells Fargo around 4:40-5:00 PM
+Chicago each day, so the job runs at 6:00 PM to load the same day's refresh.
+`balances_inserted=0` is normal when the bank has not refreshed since the last run; the
+run still succeeds and pings Kuma.
 
 n8n does not run this job: invoking Docker from n8n would mean mounting the Docker
 socket into it, which gives anything with n8n access control of every container and
