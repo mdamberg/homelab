@@ -1,0 +1,107 @@
+models:
+  - name: fct_simplefin_balances
+    description: "One row per account per day from the account's first balance date through today; days with no new bank balance carry the last known balance forward"
+    meta:
+      hidden: true
+    columns:
+      - name: daily_balance_skey
+        description: "Surrogate key from date_day + account_id. Unique row level identifier."
+        tests:
+          - not_null
+          - unique
+        config:
+          meta: 
+            dimension:
+              type: string
+      - name: balance_skey
+        description: "Surrogate key from account_id + the raw balance_date timestamp (balance_datetime)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: month_start_date
+        description: 'Date spine month indicating the specified month, may still be populated if no balance present in that month.'
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: date_day
+        description: "Date spine day, indicating the specified day, may still be populated if no balance present in that day."
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: balance_date
+        description: "Date (UTC) the bank last updated this balance; not the date the job ran"
+        config:
+          meta:
+            dimension:
+              type: date
+      - name: balance_datetime
+        description: "Timestamp (UTC) the bank last updated this balance; not the time the job ran"
+        config:
+          meta:
+            dimension:
+              type: timestamp
+      - name: account_owner
+        description: "Account owner from map_financial_accounts"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_id
+        description: "SimpleFIN account identifier (opaque Bridge id, not the bank account number)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: account_name
+        description: "Clean account name from map_financial_accounts"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: conn_id
+        description: "SimpleFIN connection id the account belongs to"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: institution_name
+        description: "Bank the account belongs to (e.g. Wells Fargo)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: currency
+        description: "ISO 4217 currency code of the balances (e.g. USD)"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: balance
+        description: "Ledger balance as of balance_datetime"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: available_balance
+        description: "Available balance as of balance_datetime; null when SimpleFIN omits it because it equals balance"
+        config:
+          meta:
+            dimension:
+              type: number
+      - name: holdings
+        description: "Investment holdings from the payload as JSON text; an empty array ([]) for bank and card accounts"
+        config:
+          meta:
+            dimension:
+              type: string
+      - name: is_carried_forward
+        description: "True when no new bank balance arrived for this day and the balance fields are carried forward from balance_date"
+        tests:
+          - not_null
+        config:
+          meta:
+            dimension:
+              type: boolean

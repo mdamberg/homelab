@@ -23,3 +23,6 @@
     - Primary key: `desktop_health_sk`
 2. fct_power_daily
     - 1 row per day (aggregates the average for that day)   - NEED TO JOIN TO DATE SPINE
+3. fct_simplefin_balances
+    - Grain: 1 row per account per day, from the account's first balance date through today
+    - Primary key: `daily_balance_skey`

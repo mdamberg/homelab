@@ -15,6 +15,7 @@ with account_names_normalized as (
         balance_datetime,
         account_id,
         fa.account_name_clean as account_name,
+        fa.account_owner,
         conn_id,
         institution_name,
         currency,
