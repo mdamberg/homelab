@@ -21,6 +21,14 @@ models:
           filters:
             - transaction_type: 'Expense'
           format: usd
+        total_expense_abs:
+          description: Sum of Expense transactions as a positive amount, for pie/bar charts.
+          label: "Total Expense (Positive)"
+          type: sum
+          sql: -1 * ${TABLE}.amount
+          filters:
+            - transaction_type: 'Expense'
+          format: usd
         net_income:
           type: number
           description: Total money left over after accounting for expenses (income - expenses)
