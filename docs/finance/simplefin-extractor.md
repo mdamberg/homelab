@@ -65,6 +65,9 @@ is a non-zero exit, after loading whatever did arrive.
 - **Cloudflare:** the Bridge sits behind Cloudflare, which blocks Python's default
   User-Agent with `error code: 1010`. The job sends its own User-Agent; a 1010 is
   reported as a Cloudflare block, not a token problem.
+- **Slow responses:** the Bridge once took over 120s to answer (2026-10-27, 6 PM; a
+  rerun minutes later took 9s). A request that times out is retried once after 5
+  minutes, costing at most one extra request; a second timeout fails the run.
 
 ## Scheduling and monitoring
 

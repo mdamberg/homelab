@@ -26,6 +26,7 @@ import json                         # converts between JSON text and Python dict
 import os                           # reads environment variables (os.environ)
 import re                           # regular expressions (pattern matching on text)
 import sys                          # stderr output and exit codes
+import time                         # time.sleep() pauses before a retry
 from decimal import Decimal         # exact decimal math; floats can't represent money exactly (0.1 + 0.2 != 0.3)
 from pathlib import Path            # object-oriented file paths; Path(...).read_text() reads a file
 from urllib.error import HTTPError, URLError
@@ -45,6 +46,8 @@ from psycopg2.extras import execute_values
 WINDOW = dt.timedelta(days=45)      # a timedelta is a length of time you can add to a datetime
 MAX_REQUESTS_PER_RUN = 20
 USER_AGENT = "homelab-simplefin-extractor/1.0"
+FETCH_TIMEOUT = 120                 # seconds to wait for one SimpleFIN response
+RETRY_DELAY = 300                   # seconds before the single retry after a timeout
 
 
 # A custom exception type. Subclassing Exception and adding nothing ("pass")
@@ -113,6 +116,20 @@ def windows(start, end):
 
 
 def fetch(base, auth, start, end):
+    # The Bridge occasionally takes minutes to answer (seen 2026-10-27 at 6 PM;
+    # a rerun right after took seconds). One delayed retry covers that without
+    # spending much request quota.
+    for attempt in (1, 2):
+        try:
+            return fetch_once(base, auth, start, end)
+        except TimeoutError:
+            if attempt == 2:
+                raise ExtractError(f"SimpleFIN did not answer within {FETCH_TIMEOUT}s, twice") from None
+            print(f"warning: SimpleFIN timed out; retrying in {RETRY_DELAY}s", file=sys.stderr)
+            time.sleep(RETRY_DELAY)
+
+
+def fetch_once(base, auth, start, end):
     # urlencode turns a dict into "start-date=...&end-date=...&version=2".
     # SimpleFIN wants dates as Unix timestamps (seconds since 1970-01-01).
     query = urlencode({
@@ -126,7 +143,9 @@ def fetch(base, auth, start, end):
     try:
         # "with" is a context manager: the response is closed automatically when
         # the block ends, even if an error happens inside it.
-        with urlopen(request, timeout=120) as response:
+        # A slow server raises TimeoutError, not URLError, because urllib only
+        # wraps errors from sending the request; fetch() retries it.
+        with urlopen(request, timeout=FETCH_TIMEOUT) as response:
             return json.load(response)       # parse the JSON body into Python dicts/lists
     # A try can have several "except" blocks. Python runs the first one whose
     # type matches the error. "as exc" gives the error object a name.
