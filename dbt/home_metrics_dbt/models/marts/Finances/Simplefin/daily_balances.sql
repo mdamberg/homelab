@@ -25,6 +25,7 @@ select
     currency,
     balance,
     available_balance,
+    is_current_balance,
     holdings,
     is_carried_forward
 from {{ ref('fct_simplefin_balances') }}

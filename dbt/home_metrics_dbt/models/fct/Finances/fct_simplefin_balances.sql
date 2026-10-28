@@ -128,4 +128,7 @@ daily_balances as (
     window balance_window as (partition by account_id, balance_group order by date_day)
 )
 
-select * from daily_balances
+select 
+*,
+row_number() over(partition by account_id order by date_day desc) as is_current_balance 
+from daily_balances

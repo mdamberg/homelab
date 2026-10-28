@@ -91,6 +91,12 @@ models:
           meta:
             dimension:
               type: number
+      - name: is_current_balance
+        description: "Flag showing 1 if that rows balance for that account is the most current, 0 if it is not."
+        config:
+          meta:
+            dimension:
+              type: number
       - name: holdings
         description: "Investment holdings from the payload as JSON text; an empty array ([]) for bank and card accounts"
         config:
